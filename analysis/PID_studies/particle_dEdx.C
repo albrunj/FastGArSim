@@ -474,6 +474,27 @@ void draw_all_sepPow(std::vector<Float_t>& mupi_mom_vec, std::vector<Float_t>& m
 
 }
 
+struct IQR_results{
+    double mean;
+    double sigma;
+};
+
+IQR_results calc_IQR(TH1F* hist){
+    if (!hist || hist->GetEntries() == 0 || hist->Integral() <= 0){
+        return {0, 0};
+    }
+
+    Double_t quantiles[2];
+    Double_t prob[2] = {0.25, 0.75};
+    hist->GetQuantiles(2, quantiles, prob);
+    double q1 = quantiles[0];
+    double q3 = quantiles[1];
+    double iqr = q3 - q1;
+    double mean = (q1 + q3) / 2;
+    double sigma = iqr / 1.349; // approximate standard deviation from IQR
+
+    return {mean, sigma};
+}
 
 struct fit_results{
     double sigma;
@@ -536,27 +557,7 @@ fit_results calc_res(TH1F* hist){
     return {sigma, mean, res, sigma_err, mean_err, res_err, cov_mean_sigma};
 }
 
-struct IQR_results{
-    double mean;
-    double sigma;
-};
 
-IQR_results calc_IQR(TH1F* hist){
-    if (!hist || hist->GetEntries() == 0 || hist->Integral() <= 0){
-        return {0, 0};
-    }
-
-    Double_t quantiles[2];
-    Double_t prob[2] = {0.25, 0.75};
-    hist->GetQuantiles(2, quantiles, prob);
-    double q1 = quantiles[0];
-    double q3 = quantiles[1];
-    double iqr = q3 - q1;
-    double mean = (q1 + q3) / 2;
-    double sigma = iqr / 1.349; // approximate standard deviation from IQR
-
-    return {mean, sigma};
-}
     
 /*
 struct fit_results{ 
