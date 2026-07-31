@@ -892,7 +892,9 @@ void dE_dx(const std::string& inputFileName, const char* outputFileName, const s
     std::map<int, std::vector<double>> pdg_to_tracklen, pdg_to_dEdx_tracklen;
 
     //count particles stopping in TPC
-    std::map<int, int> pdg_to_count, pdg_to_count_full;
+    std::map<int, int> pdg_to_count, pdg_to_count_full, pdg_to_count_threshold, pdg_to_count_threshold_full;
+
+    const float thresh = 85; //momentum threshold in MeV/c to be consistent with particle gun studies
     
     // Get number of entries
     Long64_t nEntries = chain->GetEntries();
@@ -969,8 +971,14 @@ void dE_dx(const std::string& inputFileName, const char* outputFileName, const s
             bool isInTPC = (std::abs(this_endX) < tpcInstrumentedRadius) && (std::abs(this_endY) < tpcInstrumentedRadius) && (std::abs(this_endZ) < tpcInstrumentedLength/2);
             
             pdg_to_count_full[this_pdg]++;
+            if (this_mom >= thresh) {
+                pdg_to_count_threshold_full[this_pdg]++;
+            }
             if (isInTPC) {
                 pdg_to_count[this_pdg]++;
+                if (this_mom >= thresh) {
+                    pdg_to_count_threshold[this_pdg]++;
+                }
             }
             
             if(isInTPC) continue; // skip if track ends in TPC
@@ -1244,9 +1252,23 @@ void dE_dx(const std::string& inputFileName, const char* outputFileName, const s
     }
 
     // Print particle counts
-    std::cout << "Particle counts (not stopping in TPC):" << std::endl;
+    std::cout << "Particle counts stopping in TPC:" << std::endl;
     for (const auto& pair : pdg_to_count) {
         std::cout << "PDG: " << pair.first << ", Count: " << pair.second << std::endl;
+    }
+
+    std::cout << "Particle counts stopping in TPC with momentum above threshold (" << thresh << " MeV/c):" << std::endl;
+    for (const auto& pair : pdg_to_count_threshold) {
+        std::cout << "PDG: " << pair.first << ", Count: " << pair.second << std::endl;
+    }
+
+    std::cout << "Percentage of particles stopping in TPC with momentum above threshold (" << thresh << " MeV/c):" << std::endl;
+    for (const auto& pair : pdg_to_count_threshold_full) {
+        int pdg = pair.first;
+        int count_full = pair.second;
+        int count_in_tpc_threshold = pdg_to_count_threshold[pdg];
+        double percentage = (static_cast<double>(count_in_tpc_threshold) / count_full) * 100.0;
+        std::cout << "PDG: " << pdg << ", Percentage: " << percentage << "%" << std::endl;
     }
 
     // Draw histograms
@@ -1256,30 +1278,30 @@ void dE_dx(const std::string& inputFileName, const char* outputFileName, const s
     draw_histograms(hMuonMeasdEdx, hPionMeasdEdx, hProtonMeasdEdx, hElectronMeasdEdx, hKaonMeasdEdx, hDeuteronMeasdEdx, ("dE/dx; " + pressure_string).c_str(), ("outputs_pressureStud/" + sampleName + "_dEdx_hist.png").c_str());
 
     //draw p vs dE/dx graphs
-    draw_graphs(pdg_to_p, pdg_to_dEdx, ("outputs_pressureStud/" + sampleName + "_dEdx_calc.png").c_str(), "p vs dE/dx", "Momentum [MeV]", "dE/dx [keV/cm]", 5e4, 35);
+    //draw_graphs(pdg_to_p, pdg_to_dEdx, ("outputs_pressureStud/" + sampleName + "_dEdx_calc.png").c_str(), "p vs dE/dx", "Momentum [MeV]", "dE/dx [keV/cm]", 5e4, 35);
     draw_graphs(pdg_to_p2, pdg_to_dEdx_meas, ("outputs_pressureStud/" + sampleName + "_dEdx_meas.png").c_str(), "p vs dE/dx", "Momentum [MeV]", "dE/dx [keV/cm]", 5e4, 35);
     //draw_graphs(pdg_to_p3, pdg_to_dEdx_untrunc, ("outputs_pressureStud/" + sampleName + "_dEdx_untrunc.png").c_str(), ("p vs dE/dx, P=" + pressure_string).c_str(), "Momentum [MeV]", "dE/dx [keV/cm]", 5e4, 35);
-    draw_overlay(pdg_to_p, pdg_to_dEdx, pdg_to_p_smear, pdg_to_dEdx, ("outputs_pressureStud/" + sampleName + "_dEdx_psmear.png").c_str(), "p vs dE/dx", "Momentum [MeV]", "dE/dx [keV/cm]", 5e4, 35);
-    draw_overlay(pdg_to_p, pdg_to_dEdx, pdg_to_p2, pdg_to_dEdx_meas, ("outputs_pressureStud/" + sampleName + "_dEdx_meas_overlay.png").c_str(), "p vs dE/dx", "Momentum [MeV]", "dE/dx [keV/cm]", 5e4, 35);
-    draw_color_overlay(pdg_to_p, pdg_to_dEdx, pdg_to_p2, pdg_to_dEdx_meas, ("outputs_pressureStud/" + sampleName + "_dEdx_meas_overlay2.png").c_str(), "p vs dE/dx", "Momentum [MeV]", "dE/dx [keV/cm]", 5e4, 35);
+    //draw_overlay(pdg_to_p, pdg_to_dEdx, pdg_to_p_smear, pdg_to_dEdx, ("outputs_pressureStud/" + sampleName + "_dEdx_psmear.png").c_str(), "p vs dE/dx", "Momentum [MeV]", "dE/dx [keV/cm]", 5e4, 35);
+    //draw_overlay(pdg_to_p, pdg_to_dEdx, pdg_to_p2, pdg_to_dEdx_meas, ("outputs_pressureStud/" + sampleName + "_dEdx_meas_overlay.png").c_str(), "p vs dE/dx", "Momentum [MeV]", "dE/dx [keV/cm]", 5e4, 35);
+    //draw_color_overlay(pdg_to_p, pdg_to_dEdx, pdg_to_p2, pdg_to_dEdx_meas, ("outputs_pressureStud/" + sampleName + "_dEdx_meas_overlay2.png").c_str(), "p vs dE/dx", "Momentum [MeV]", "dE/dx [keV/cm]", 5e4, 35);
 
     //draw dE/dx vs track length graph
-    draw_graphs(pdg_to_tracklen, pdg_to_dEdx_tracklen, ("outputs_pressureStud/" + sampleName + "_dEdx_vs_tracklen.png").c_str(), "Track length vs dE/dx", "Track Length [cm]", "dE/dx [keV/cm]", 1e3, 100);
+    //draw_graphs(pdg_to_tracklen, pdg_to_dEdx_tracklen, ("outputs_pressureStud/" + sampleName + "_dEdx_vs_tracklen.png").c_str(), "Track length vs dE/dx", "Track Length [cm]", "dE/dx [keV/cm]", 1e3, 100);
 
     //if pressure = 10bar, draw smeared dE/dx graph
-    if (pressure == 10) {
-        draw_overlay(pdg_to_p, pdg_to_dEdx, pdg_to_p_smear, pdg_to_dEdx_smear, ("outputs_pressureStud/" + sampleName + "_dEdx_smear.png").c_str(), "p vs dE/dx", "Momentum [MeV]", "dE/dx [keV/cm]", 5e4, 35);
-        draw_overlay(pdg_to_p, pdg_to_dEdx, pdg_to_p, pdg_to_dEdx_smear, ("outputs_pressureStud/" + sampleName + "_dEdx_Esmear.png").c_str(), "p vs dE/dx", "Momentum [MeV]", "dE/dx [keV/cm]", 5e4, 35);
-    }
+    //if (pressure == 10) {
+    //    draw_overlay(pdg_to_p, pdg_to_dEdx, pdg_to_p_smear, pdg_to_dEdx_smear, ("outputs_pressureStud/" + sampleName + "_dEdx_smear.png").c_str(), "p vs dE/dx", "Momentum [MeV]", "dE/dx [keV/cm]", 5e4, 35);
+    //    draw_overlay(pdg_to_p, pdg_to_dEdx, pdg_to_p, pdg_to_dEdx_smear, ("outputs_pressureStud/" + sampleName + "_dEdx_Esmear.png").c_str(), "p vs dE/dx", "Momentum [MeV]", "dE/dx [keV/cm]", 5e4, 35);
+    //}
 
     //fit proton zoomed dE/dx histogram
     draw_gaussian_fit(hProtonZoomeddEdx, "Proton", kGreen, "Proton dE/dx p=0.4-0.6 GeV/c", ("outputs_pressureStud/" + sampleName + "_proton_p400to600MeV_dEdx_fit.png").c_str());
     draw_gaussian_fit(hPionZoomeddEdx, "Pion", kRed, "Pion dE/dx p=0.06-0.15 GeV/c", ("outputs_pressureStud/" + sampleName + "_pion_p60to150MeV_dEdx_fit.png").c_str());
 
 
-    draw_graphs(pdg_to_p, pdg_to_dEdx, ("outputs_pressureStud/" + sampleName + "_dEdx_calc_full.png").c_str(), "p vs dE/dx", "Momentum [MeV]", "dE/dx [keV/cm]", 5e4, 35,false);
-    draw_graphs(pdg_to_p2, pdg_to_dEdx_meas, ("outputs_pressureStud/" + sampleName + "_dEdx_meas2_full.png").c_str(), "p vs dE/dx, P", "Momentum [MeV]", "dE/dx [keV/cm]", 5e4, 35,false);
-    draw_color_overlay(pdg_to_p, pdg_to_dEdx, pdg_to_p2, pdg_to_dEdx_meas, ("outputs_pressureStud/" + sampleName + "_dEdx_meas_overlay_full.png").c_str(), "p vs dE/dx", "Momentum [MeV]", "dE/dx [keV/cm]", 5e4, 35,false);
+    //draw_graphs(pdg_to_p, pdg_to_dEdx, ("outputs_pressureStud/" + sampleName + "_dEdx_calc_full.png").c_str(), "p vs dE/dx", "Momentum [MeV]", "dE/dx [keV/cm]", 5e4, 35,false);
+    draw_graphs(pdg_to_p2, pdg_to_dEdx_meas, ("outputs_pressureStud/" + sampleName + "_dEdx_meas_full.png").c_str(), "p vs dE/dx, P", "Momentum [MeV]", "dE/dx [keV/cm]", 5e4, 35,false);
+    //draw_color_overlay(pdg_to_p, pdg_to_dEdx, pdg_to_p2, pdg_to_dEdx_meas, ("outputs_pressureStud/" + sampleName + "_dEdx_meas_overlay_full.png").c_str(), "p vs dE/dx", "Momentum [MeV]", "dE/dx [keV/cm]", 5e4, 35,false);
 
 
 

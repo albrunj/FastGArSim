@@ -9,12 +9,16 @@
  * Description:
  *  Extract dE/dx from hits in TPC of particle gun
  * 
- * Inputs: const std::string& inputFileName (must have form inputFileName_0.root),
+ * Inputs: const std::string& inputFileNameMuon (must have form inputFileName_0.root),
+ *         const std::string& inputFileNamePion (must have form inputFileName_0.root),
+ *         const std::string& inputFileNameProton (must have form inputFileName_0.root),
  *         const std::string& sampleName (for output graphs),
- *         int fileNumber (number of input files),
+ *         int fileNumber (number of input files for each particle type),
+ *         float radius = 260 (radius of TPC in cm),
+ *         float length = 500 (length of TPC in cm),
  *         const char* inputTreeName = "AnaTree", const char* outputTreeName = "dE_dxTree"
  * 
- * Outputs: Output file saved as .root file in outputs/ directory
+ * Outputs: Output file saved as .root file and .png files in outputs_sepPow/ and gaussiandEdx directories
  * 
  ********************************************************************************************/
 
@@ -773,6 +777,7 @@ void particle_dEdx(const std::string& inputFileNameMuon, const std::string& inpu
 
     //histogram to find momentum of 1m tracks
     TH1F* hP_1m = new TH1F("hP_1m", "Momentum for ~1 m tracks;Momentum [MeV/c];Tracks", 100, 0, 5000);
+    TH1F* hH_1m_mu = new TH1F("hH_1m_mu", "Hits for ~1 m muon tracks;Hits;Tracks", 100, 0, 100);
 
     //create output branch
     //outputTree->Branch("hMuon", &hMuon);
@@ -891,6 +896,9 @@ void particle_dEdx(const std::string& inputFileNameMuon, const std::string& inpu
 
             if (track_length > 95 && track_length < 105) {
                 hP_1m->Fill(p);
+                if (pdg == 13) {
+                    hH_1m_mu->Fill(nTpcHits);
+                }
             }
 
             //if (dEdx_values.size()<20) continue;
@@ -925,7 +933,7 @@ void particle_dEdx(const std::string& inputFileNameMuon, const std::string& inpu
         float p_bin_high = std::pow(10, p_bin_min + (i + 1) * (p_bin_max - p_bin_min) / nPBins);
         float p_bin_err = (p_bin_high - p_bin_low) / 2.0;
 
-        if (hMuon[i]->GetEntries() > 100){
+        if (hMuon[i]->GetEntries() > 300){
             //float m = hMuon[i]->GetMean();
             //float s = hMuon[i]->GetRMS();
             //hMuon[i]->Fit("gaus", "Q", "", m - 2*s, m + 2*s);
@@ -941,7 +949,7 @@ void particle_dEdx(const std::string& inputFileNameMuon, const std::string& inpu
                 pdg_to_res_err[13].push_back(mu_fit.res_err);
             }
         }
-        if (hPion[i]->GetEntries() > 100){
+        if (hPion[i]->GetEntries() > 300){
             //float m = hPion[i]->GetMean();
             //float s = hPion[i]->GetRMS();
             //hPion[i]->Fit("gaus", "Q", "", m - 2*s, m + 2*s);
@@ -957,7 +965,7 @@ void particle_dEdx(const std::string& inputFileNameMuon, const std::string& inpu
                 pdg_to_res_err[211].push_back(pi_fit.res_err);
             }
         }
-        if (hProton[i]->GetEntries() > 100){
+        if (hProton[i]->GetEntries() > 300){
             //float m = hProton[i]->GetMean();
             //float s = hProton[i]->GetRMS();
             //hProton[i]->Fit("gaus", "Q", "", m - 2*s, m + 2*s);
@@ -975,7 +983,7 @@ void particle_dEdx(const std::string& inputFileNameMuon, const std::string& inpu
         }
 
         //muon pion separation power
-        if (hMuon[i]->GetEntries() > 100 && hPion[i]->GetEntries() > 100){ //only do this if onw of the particles has enough stats
+        if (hMuon[i]->GetEntries() > 300 && hPion[i]->GetEntries() > 300){ //only do this if onw of the particles has enough stats
             //float m_mu = hMuon[i]->GetMean();
             //float s_mu = hMuon[i]->GetRMS();
             //hMuon[i]->Fit("gaus", "Q", "", m_mu - 2*s_mu, m_mu + 2*s_mu);
@@ -1012,7 +1020,7 @@ void particle_dEdx(const std::string& inputFileNameMuon, const std::string& inpu
         }
 
         //muon proton separation power
-        if (hMuon[i]->GetEntries() > 100 && hProton[i]->GetEntries() > 100){ //only do this if onw of the particles has enough stats
+        if (hMuon[i]->GetEntries() > 300 && hProton[i]->GetEntries() > 300){ //only do this if onw of the particles has enough stats
             //float m_mu = hMuon[i]->GetMean();
             //float s_mu = hMuon[i]->GetRMS();
             //hMuon[i]->Fit("gaus", "Q", "", m_mu - 2*s_mu, m_mu + 2*s_mu);
@@ -1049,7 +1057,7 @@ void particle_dEdx(const std::string& inputFileNameMuon, const std::string& inpu
         }
 
         //pion proton separation power
-        if (hPion[i]->GetEntries() > 100 && hProton[i]->GetEntries() > 100){ //only do this if onw of the particles has enough stats
+        if (hPion[i]->GetEntries() > 300 && hProton[i]->GetEntries() > 300){ //only do this if onw of the particles has enough stats
             //float m_pi = hPion[i]->GetMean();
             //float s_pi = hPion[i]->GetRMS();
             //hPion[i]->Fit("gaus", "Q", "", m_pi - 2*s_pi, m_pi + 2*s_pi);
@@ -1091,9 +1099,9 @@ void particle_dEdx(const std::string& inputFileNameMuon, const std::string& inpu
     for(size_t i = 0; i < nPBins; i++){
         if (sampleName.find("CDR") == std::string::npos) continue; //only draw example histograms for CDR samples
         std::string p_bin_range = std::to_string(i);
-        if (hMuon[i]->GetEntries() > 100 && hMuon[i]->Integral() > 0) draw_gaussian_fit(hMuon[i], "Muon dE/dx", ("gaussiandEdx/" + sampleName + "_muon_dEdx_" + p_bin_range + "_GaussianFit.png").c_str());
-        if (hPion[i]->GetEntries() > 100 && hPion[i]->Integral() > 0) draw_gaussian_fit(hPion[i], "Pion dE/dx", ("gaussiandEdx/" + sampleName + "_pion_dEdx_" + p_bin_range + "_GaussianFit.png").c_str());
-        if (hProton[i]->GetEntries() > 100 && hProton[i]->Integral() > 0) draw_gaussian_fit(hProton[i], "Proton dE/dx", ("gaussiandEdx/" + sampleName + "_proton_dEdx_" + p_bin_range + "_GaussianFit.png").c_str());
+        if (hMuon[i]->GetEntries() > 300 && hMuon[i]->Integral() > 0) draw_gaussian_fit(hMuon[i], "Muon dE/dx", ("gaussiandEdx/" + sampleName + "_muon_dEdx_" + p_bin_range + "_GaussianFit.png").c_str());
+        if (hPion[i]->GetEntries() > 300 && hPion[i]->Integral() > 0) draw_gaussian_fit(hPion[i], "Pion dE/dx", ("gaussiandEdx/" + sampleName + "_pion_dEdx_" + p_bin_range + "_GaussianFit.png").c_str());
+        if (hProton[i]->GetEntries() > 300 && hProton[i]->Integral() > 0) draw_gaussian_fit(hProton[i], "Proton dE/dx", ("gaussiandEdx/" + sampleName + "_proton_dEdx_" + p_bin_range + "_GaussianFit.png").c_str());
     }
 
 
@@ -1109,6 +1117,8 @@ void particle_dEdx(const std::string& inputFileNameMuon, const std::string& inpu
     hP_1m->Write();
     std::cout << "Mean momentum for ~1 m tracks = " << hP_1m->GetMean() << " MeV/c" << std::endl;
     */
+    hH_1m_mu->Write();
+    std::cout << "Mean number of hits for ~1 m muon tracks = " << hH_1m_mu->GetMean() << std::endl;
     
     //make plots
     draw_graphs(pdg_to_p, pdg_to_mean, pdg_to_p_err, pdg_to_mean_err, ("outputs_sepPow/" + sampleName + "_mean_dEdx_fit.png").c_str(), "p vs dE/dx", "Momentum [MeV]", "dE/dx [keV/cm]", 6e3, 35);
