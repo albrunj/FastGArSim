@@ -751,6 +751,7 @@ void dE_dx(const std::string& inputFileName, const char* outputFileName, const s
     std::vector<Float_t>* tpcHitEdep =     nullptr;
     std::vector<Float_t>* tpcHitStepSize = nullptr;
     std::vector<Bool_t>*  tpcHitIsSec = nullptr;
+    std::vector<Float_t>* muidHitTrackID =  nullptr;
      
        
     // Set branch addresses
@@ -775,6 +776,7 @@ void dE_dx(const std::string& inputFileName, const char* outputFileName, const s
     chain->TChain::SetBranchAddress("tpcHitEdep",         &tpcHitEdep);
     chain->TChain::SetBranchAddress("tpcHitStepSize",	&tpcHitStepSize);
     chain->TChain::SetBranchAddress("tpcHitIsSec",      &tpcHitIsSec);
+    chain->TChain::SetBranchAddress("muidHitTrackID",   &muidHitTrackID);
     
    
     // Create output file
@@ -892,9 +894,9 @@ void dE_dx(const std::string& inputFileName, const char* outputFileName, const s
     std::map<int, std::vector<double>> pdg_to_tracklen, pdg_to_dEdx_tracklen;
 
     //count particles stopping in TPC
-    std::map<int, int> pdg_to_count, pdg_to_count_full, pdg_to_count_threshold, pdg_to_count_threshold_full;
+    std::map<int, int> pdg_to_count, pdg_to_count_full, pdg_to_count_threshold, pdg_to_count_threshold_full, pdg_to_count_muid, pdg_to_count_threshold_muid;
 
-    const float thresh = 85; //momentum threshold in MeV/c to be consistent with particle gun studies
+    const float thresh = 70.0; //momentum threshold in MeV/c to be consistent with particle gun studies
     
     // Get number of entries
     Long64_t nEntries = chain->GetEntries();
@@ -931,6 +933,7 @@ void dE_dx(const std::string& inputFileName, const char* outputFileName, const s
     		chain->TChain::SetBranchAddress("tpcHitEdep",         &tpcHitEdep);
     		chain->TChain::SetBranchAddress("tpcHitStepSize",	&tpcHitStepSize);
             chain->TChain::SetBranchAddress("tpcHitIsSec",      &tpcHitIsSec);
+            chain->TChain::SetBranchAddress("muidHitTrackID",   &muidHitTrackID);
 
         }
 
@@ -969,7 +972,8 @@ void dE_dx(const std::string& inputFileName, const char* outputFileName, const s
 
             //check if track ends in TPC
             bool isInTPC = (std::abs(this_endX) < tpcInstrumentedRadius) && (std::abs(this_endY) < tpcInstrumentedRadius) && (std::abs(this_endZ) < tpcInstrumentedLength/2);
-            
+            bool isInMuID = (muidHitTrackID->size() > 0);
+
             pdg_to_count_full[this_pdg]++;
             if (this_mom >= thresh) {
                 pdg_to_count_threshold_full[this_pdg]++;
@@ -978,6 +982,12 @@ void dE_dx(const std::string& inputFileName, const char* outputFileName, const s
                 pdg_to_count[this_pdg]++;
                 if (this_mom >= thresh) {
                     pdg_to_count_threshold[this_pdg]++;
+                }
+            }
+            if (isInMuID) {
+                pdg_to_count_muid[this_pdg]++;
+                if (this_mom >= thresh) {
+                    pdg_to_count_threshold_muid[this_pdg]++;
                 }
             }
             
@@ -1268,6 +1278,17 @@ void dE_dx(const std::string& inputFileName, const char* outputFileName, const s
         int count_full = pair.second;
         int count_in_tpc_threshold = pdg_to_count_threshold[pdg];
         double percentage = (static_cast<double>(count_in_tpc_threshold) / count_full) * 100.0;
+        std::cout << "PDG: " << pdg << ", Percentage: " << percentage << "%" << std::endl;
+    }
+
+    //calculate percentage of particles stopping in ECal
+    std::cout << "Percentage of particles stopping in ECal (of particles leaving TPC):" << std::endl;
+    for (const auto& pair : pdg_to_count_threshold) {
+        int pdg = pair.first;
+        int count_full = pair.second;
+        int count_in_muid = pdg_to_count_threshold_muid[pdg];
+        int count_in_ecal = count_full - count_in_muid;
+        double percentage = (static_cast<double>(count_in_ecal) / count_full) * 100.0;
         std::cout << "PDG: " << pdg << ", Percentage: " << percentage << "%" << std::endl;
     }
 

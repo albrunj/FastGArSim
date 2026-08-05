@@ -30,6 +30,8 @@
 #include <algorithm>
 #include <cmath>
 #include <string>
+#include <fstream>
+#include <map>
 
 #include "TFile.h"
 #include "TTree.h"
@@ -53,6 +55,18 @@ void draw_gaussian_fit(TH1F* hist, const char* title, const std::string& outName
     // Set style options for statistics box and fit parameters
     gStyle->SetOptStat(1111);
     gStyle->SetOptFit(1111);
+
+    TLatex dune;
+    dune.SetNDC();
+    dune.SetTextFont(62);     // Bold Helvetica
+    dune.SetTextSize(0.045);
+    dune.DrawLatex(0.12, 0.93, "DUNE");
+
+    TLatex prelim;
+    prelim.SetNDC();
+    prelim.SetTextFont(42);   // Regular Helvetica
+    prelim.SetTextSize(0.040);
+    prelim.DrawLatex(0.215, 0.93, "Simulation Preliminary");
 
     hist->SetStats(kTRUE);
 
@@ -126,7 +140,19 @@ void draw_graphs(std::map<int, std::vector<double>>& pdg_to_p, std::map<int, std
         1.2* max_y
     );
 
-    frame->SetTitle(title);
+    TLatex dune;
+    dune.SetNDC();
+    dune.SetTextFont(62);     // Bold Helvetica
+    dune.SetTextSize(0.045);
+    dune.DrawLatex(0.12, 0.93, "DUNE");
+
+    TLatex prelim;
+    prelim.SetNDC();
+    prelim.SetTextFont(42);   // Regular Helvetica
+    prelim.SetTextSize(0.040);
+    prelim.DrawLatex(0.215, 0.93, "Simulation Preliminary");
+
+    //frame->SetTitle(title);
     frame->GetXaxis()->SetTitle(Xtitle);
     frame->GetYaxis()->SetTitle(Ytitle);
 
@@ -246,7 +272,19 @@ void draw_sepPow(std::vector<Float_t>& mom_vec, std::vector<Float_t>& sep_pow_ve
         1.2*max_y
     );
 
-    frame->SetTitle(title);
+    TLatex dune;
+    dune.SetNDC();
+    dune.SetTextFont(62);     // Bold Helvetica
+    dune.SetTextSize(0.045);
+    dune.DrawLatex(0.12, 0.93, "DUNE");
+
+    TLatex prelim;
+    prelim.SetNDC();
+    prelim.SetTextFont(42);   // Regular Helvetica
+    prelim.SetTextSize(0.040);
+    prelim.DrawLatex(0.215, 0.93, "Simulation Preliminary");
+
+    //frame->SetTitle(title);
     frame->GetXaxis()->SetTitle(Xtitle);
     frame->GetYaxis()->SetTitle(Ytitle);
     
@@ -427,7 +465,20 @@ void draw_all_sepPow(std::vector<Float_t>& mupi_mom_vec, std::vector<Float_t>& m
         1.2*max_y
     );
 
-    frame->SetTitle(title);
+
+    TLatex dune;
+    dune.SetNDC();
+    dune.SetTextFont(62);     // Bold Helvetica
+    dune.SetTextSize(0.045);
+    dune.DrawLatex(0.12, 0.93, "DUNE");
+
+    TLatex prelim;
+    prelim.SetNDC();
+    prelim.SetTextFont(42);   // Regular Helvetica
+    prelim.SetTextSize(0.040);
+    prelim.DrawLatex(0.215, 0.93, "Simulation Preliminary");
+
+    //frame->SetTitle(title);
     frame->GetXaxis()->SetTitle(Xtitle);
     frame->GetYaxis()->SetTitle(Ytitle);
 
@@ -557,7 +608,9 @@ fit_results calc_res(TH1F* hist){
     double cov_mean_sigma = cov(1, 2);
 
     double res = sigma / mean;
-    double res_err = 1/mean * std::sqrt(res*res * mean_err*mean_err + sigma_err*sigma_err - 2 * sigma * cov_mean_sigma / (mean*mean*mean));
+    double del_sig = 1 / mean;
+    double del_mu = -sigma / (mean * mean);
+    double res_err = std::sqrt(del_sig * del_sig * sigma_err * sigma_err + del_mu * del_mu * mean_err * mean_err + 2 * del_sig * del_mu * cov_mean_sigma);
     return {sigma, mean, res, sigma_err, mean_err, res_err, cov_mean_sigma};
 }
 
@@ -716,6 +769,12 @@ void particle_dEdx(const std::string& inputFileNameMuon, const std::string& inpu
     //make output file and tree
     TFile* outputFile = new TFile(Form("outputs_sepPow/%s_dEdx.root", sampleName.c_str()), "RECREATE");
     TTree* outputTree = new TTree("SepTree", "Tree to hold separation power");
+    std::ofstream txtOutputFile(Form("outputs_sepPow/%s_dEdx.txt", sampleName.c_str()));
+
+    if (!txtOutputFile.is_open()) {
+        std::cerr << "Error: Could not open output file.\n";
+        return;
+    }
 
     //create vectors for momentum, resolution, mean, sigma
     std::map<int, std::vector<double>> pdg_to_p, pdg_to_sigma, pdg_to_mean, pdg_to_res;
@@ -727,8 +786,20 @@ void particle_dEdx(const std::string& inputFileNameMuon, const std::string& inpu
     std::vector<Float_t> mom_vec1_err, mom_vec2_err, mom_vec3_err;
     std::vector<Float_t> muon_pion_sp_err, muon_proton_sp_err, pion_proton_sp_err;
 
+    // Muon
+    std::vector<double> mu_p, mu_sigma, mu_mean, mu_res;
+    std::vector<double> mu_p_err, mu_sigma_err, mu_mean_err, mu_res_err;
+
+    // Pion
+    std::vector<double> pi_p, pi_sigma, pi_mean, pi_res;
+    std::vector<double> pi_p_err, pi_sigma_err, pi_mean_err, pi_res_err;
+
+    // Proton
+    std::vector<double> pr_p, pr_sigma, pr_mean, pr_res;
+    std::vector<double> pr_p_err, pr_sigma_err, pr_mean_err, pr_res_err;
+
     //constants
-    const float p_min = 85.0; // MeV
+    const float p_min = 70.0; // MeV
     const float p_max = 5e3; // MeV
     const int nPBins = 100; // number of momentum bins for p vs dE/dx graph
     const float p_interval = (p_max - p_min) / nPBins; // MeV
@@ -752,6 +823,30 @@ void particle_dEdx(const std::string& inputFileNameMuon, const std::string& inpu
     outputTree->Branch("muon_size", &muon_size);
     outputTree->Branch("pion_size", &pion_size);
     outputTree->Branch("proton_size", &proton_size);
+    outputTree->Branch("mu_p", &mu_p);
+    outputTree->Branch("mu_sigma", &mu_sigma);
+    outputTree->Branch("mu_mean", &mu_mean);
+    outputTree->Branch("mu_res", &mu_res);
+    outputTree->Branch("mu_p_err", &mu_p_err);
+    outputTree->Branch("mu_sigma_err", &mu_sigma_err);
+    outputTree->Branch("mu_mean_err", &mu_mean_err);
+    outputTree->Branch("mu_res_err", &mu_res_err);
+    outputTree->Branch("pi_p", &pi_p);
+    outputTree->Branch("pi_sigma", &pi_sigma);
+    outputTree->Branch("pi_mean", &pi_mean);
+    outputTree->Branch("pi_res", &pi_res);
+    outputTree->Branch("pi_p_err", &pi_p_err);
+    outputTree->Branch("pi_sigma_err", &pi_sigma_err);
+    outputTree->Branch("pi_mean_err", &pi_mean_err);
+    outputTree->Branch("pi_res_err", &pi_res_err);
+    outputTree->Branch("pr_p", &pr_p);
+    outputTree->Branch("pr_sigma", &pr_sigma);
+    outputTree->Branch("pr_mean", &pr_mean);
+    outputTree->Branch("pr_res", &pr_res);
+    outputTree->Branch("pr_p_err", &pr_p_err);
+    outputTree->Branch("pr_sigma_err", &pr_sigma_err);
+    outputTree->Branch("pr_mean_err", &pr_mean_err);
+    outputTree->Branch("pr_res_err", &pr_res_err);
 
 
     //bool isContained = false;
@@ -947,6 +1042,14 @@ void particle_dEdx(const std::string& inputFileNameMuon, const std::string& inpu
                 pdg_to_mean_err[13].push_back(mu_fit.mean_err);
                 pdg_to_sigma_err[13].push_back(mu_fit.sigma_err);
                 pdg_to_res_err[13].push_back(mu_fit.res_err);
+                mu_p.push_back(p_bin_center);
+                mu_mean.push_back(mu_fit.mean);
+                mu_sigma.push_back(mu_fit.sigma);
+                mu_res.push_back(mu_fit.res);
+                mu_p_err.push_back(p_bin_err);
+                mu_mean_err.push_back(mu_fit.mean_err);
+                mu_sigma_err.push_back(mu_fit.sigma_err);
+                mu_res_err.push_back(mu_fit.res_err);
             }
         }
         if (hPion[i]->GetEntries() > 300){
@@ -963,6 +1066,14 @@ void particle_dEdx(const std::string& inputFileNameMuon, const std::string& inpu
                 pdg_to_mean_err[211].push_back(pi_fit.mean_err);
                 pdg_to_sigma_err[211].push_back(pi_fit.sigma_err);
                 pdg_to_res_err[211].push_back(pi_fit.res_err);
+                pi_p.push_back(p_bin_center);
+                pi_mean.push_back(pi_fit.mean);
+                pi_sigma.push_back(pi_fit.sigma);
+                pi_res.push_back(pi_fit.res);
+                pi_p_err.push_back(p_bin_err);
+                pi_mean_err.push_back(pi_fit.mean_err);
+                pi_sigma_err.push_back(pi_fit.sigma_err);
+                pi_res_err.push_back(pi_fit.res_err);
             }
         }
         if (hProton[i]->GetEntries() > 300){
@@ -979,6 +1090,14 @@ void particle_dEdx(const std::string& inputFileNameMuon, const std::string& inpu
                 pdg_to_mean_err[2212].push_back(p_fit.mean_err);
                 pdg_to_sigma_err[2212].push_back(p_fit.sigma_err);
                 pdg_to_res_err[2212].push_back(p_fit.res_err);
+                pr_p.push_back(p_bin_center);
+                pr_mean.push_back(p_fit.mean);
+                pr_sigma.push_back(p_fit.sigma);
+                pr_res.push_back(p_fit.res);
+                pr_p_err.push_back(p_bin_err);
+                pr_mean_err.push_back(p_fit.mean_err);
+                pr_sigma_err.push_back(p_fit.sigma_err);
+                pr_res_err.push_back(p_fit.res_err);
             }
         }
 
@@ -1128,11 +1247,11 @@ void particle_dEdx(const std::string& inputFileNameMuon, const std::string& inpu
 
     //draw separation power graphs
     if (muon_pion_sp.size() > 0) {
-        draw_sepPow(mom_vec1, muon_pion_sp, muon_pion_sp_err, mom_vec1_err, ("outputs_sepPow/" + sampleName + "_sep_pow_muon_pion.png").c_str(), "Muon-Pion Separation Power", "Momentum [MeV]", "Separation Power", 6e2, 5, false);
+        draw_sepPow(mom_vec1, muon_pion_sp, muon_pion_sp_err, mom_vec1_err, ("outputs_sepPow/" + sampleName + "_sep_pow_muon_pion.png").c_str(), "Muon-Pion Separation Power", "Momentum [MeV]", "Separation Power", 6e3, 5, false);
         //draw_sepPow(mom_vec1, muon_pion_sp, muon_pion_sp_err, mom_vec1_err, ("outputs_sepPow/" + sampleName + "_sep_pow_muon_pion_zoomed.png").c_str(), "Muon-Pion Separation Power", "Momentum [MeV]", "Separation Power", 6e3, 5, true);
     }
     if (muon_proton_sp.size() > 0) {
-        draw_sepPow(mom_vec2, muon_proton_sp, muon_proton_sp_err, mom_vec2_err, ("outputs_sepPow/" + sampleName + "_sep_pow_muon_proton.png").c_str(), "Muon-Proton Separation Power", "Momentum [MeV]", "Separation Power", 6e2, 5, false);
+        draw_sepPow(mom_vec2, muon_proton_sp, muon_proton_sp_err, mom_vec2_err, ("outputs_sepPow/" + sampleName + "_sep_pow_muon_proton.png").c_str(), "Muon-Proton Separation Power", "Momentum [MeV]", "Separation Power", 6e3, 5, false);
         //draw_sepPow(mom_vec2, muon_proton_sp, muon_proton_sp_err, mom_vec2_err, ("outputs_sepPow/" + sampleName + "_sep_pow_muon_proton_zoomed.png").c_str(), "Muon-Proton Separation Power", "Momentum [MeV]", "Separation Power", 6e3, 10, true);
     }
     if (pion_proton_sp.size() > 0) {
@@ -1143,6 +1262,43 @@ void particle_dEdx(const std::string& inputFileNameMuon, const std::string& inpu
     if (muon_pion_sp.size() > 0 || muon_proton_sp.size() > 0 || pion_proton_sp.size() > 0){
         draw_all_sepPow(mom_vec1, muon_pion_sp, muon_pion_sp_err, mom_vec1_err, mom_vec2, muon_proton_sp, muon_proton_sp_err, mom_vec2_err, mom_vec3, pion_proton_sp, pion_proton_sp_err, mom_vec3_err, ("outputs_sepPow/" + sampleName + "_sep_pow_all.png").c_str(), "dE/dx Separation Power", "Momentum [MeV]", "Separation Power");
     }
+
+    //write separation power to text file
+    txtOutputFile << "Separation Power Values:\n\n";
+
+    txtOutputFile << std::left
+                << std::setw(15) << "Particle Pair"
+                << std::setw(15) << "Momentum (MeV)"
+                << "Separation Power\n";
+    
+    txtOutputFile << std::string(65, '-') << '\n';
+    txtOutputFile << std::fixed << std::setprecision(3);
+
+    //write muon-pion separation power
+    for (size_t i = 0; i < mom_vec1.size(); ++i) {
+        txtOutputFile << std::setw(15) << "Muon-Pion"
+            << std::setw(15) << mom_vec1[i]
+            << std::setw(20) << muon_pion_sp[i]<< " ± " << muon_pion_sp_err[i]
+            << '\n';
+    }
+
+    //write muon-proton separation power
+    for (size_t i = 0; i < mom_vec2.size(); ++i) {
+        txtOutputFile << std::setw(15) << "Muon-Proton"
+            << std::setw(15) << mom_vec2[i]
+            << std::setw(20) << muon_proton_sp[i]<< " ± " << muon_proton_sp_err[i]
+            << '\n';
+    }
+
+    //write pion-proton separation power
+    for (size_t i = 0; i < mom_vec3.size(); ++i) {
+        txtOutputFile << std::setw(15) << "Pion-Proton"
+            << std::setw(15) << mom_vec3[i]
+            << std::setw(20) << pion_proton_sp[i]<< " ± " << pion_proton_sp_err[i]
+            << '\n';
+    }
+    txtOutputFile.close();
+
 
     // Write output tree and close
     outputTree->Fill();
