@@ -37,6 +37,7 @@
 #include "TAxis.h"
 #include "TMath.h"
 #include "TString.h"
+#include "TLatex.h"
 
 #include "geometry.h"
 using namespace geometry; 
@@ -46,6 +47,18 @@ void draw_histograms(TH1F* hMuon, TH1F* hPion, TH1F* hProton, TH1F* hElectron, T
     // Create canvas
     TCanvas* canvas = new TCanvas("canvas", title, 800, 600);
     canvas->SetLogy(); // log-scale for y-axis
+
+    TLatex dune;
+    dune.SetNDC();
+    dune.SetTextFont(62);     // Bold Helvetica
+    dune.SetTextSize(0.045);
+    dune.DrawLatex(0.12, 0.93, "DUNE");
+
+    TLatex prelim;
+    prelim.SetNDC();
+    prelim.SetTextFont(42);   // Regular Helvetica
+    prelim.SetTextSize(0.040);
+    prelim.DrawLatex(0.215, 0.93, "Simulation Preliminary");
 
     // Draw muon histogram
     hMuon->Scale(1.0 / hMuon->Integral(), "width");
@@ -159,6 +172,18 @@ void draw_graphs(std::map<int, std::vector<double>>& pdg_to_p, std::map<int, std
     int graphIndex = 0;
     std::vector<TGraph*> graphs;
 
+    TLatex dune;
+    dune.SetNDC();
+    dune.SetTextFont(62);     // Bold Helvetica
+    dune.SetTextSize(0.045);
+    dune.DrawLatex(0.12, 0.93, "DUNE");
+
+    TLatex prelim;
+    prelim.SetNDC();
+    prelim.SetTextFont(42);   // Regular Helvetica
+    prelim.SetTextSize(0.040);
+    prelim.DrawLatex(0.215, 0.93, "Simulation Preliminary");
+
     for (const auto& entry : pdg_to_p) {
     	int pdg = entry.first;
     	const auto& p_vec = entry.second;
@@ -179,7 +204,7 @@ void draw_graphs(std::map<int, std::vector<double>>& pdg_to_p, std::map<int, std
 
         // draw first graph with axis titles
     	if (graphIndex == 0) {
-    		gr->SetTitle(title);
+    		//gr->SetTitle(title);
             gr->GetXaxis()->SetTitle(Xtitle);
             gr->GetYaxis()->SetTitle(Ytitle);
     		gr->Draw("AP");
@@ -236,6 +261,18 @@ void draw_overlay(std::map<int, std::vector<double>>& pdg_to_p1, std::map<int, s
     std::vector<TGraph*> graphs1;
     std::vector<TGraph*> graphs2;
 
+    TLatex dune;
+    dune.SetNDC();
+    dune.SetTextFont(62);     // Bold Helvetica
+    dune.SetTextSize(0.045);
+    dune.DrawLatex(0.12, 0.93, "DUNE");
+
+    TLatex prelim;
+    prelim.SetNDC();
+    prelim.SetTextFont(42);   // Regular Helvetica
+    prelim.SetTextSize(0.040);
+    prelim.DrawLatex(0.215, 0.93, "Simulation Preliminary");
+
     for (const auto& entry : pdg_to_p1) {
     	int pdg = entry.first;
     	const auto& p1_vec = entry.second;
@@ -264,7 +301,9 @@ void draw_overlay(std::map<int, std::vector<double>>& pdg_to_p1, std::map<int, s
 
         // draw first graph with axis titles
     	if (graphIndex == 0) {
-    		gr2->SetTitle("p vs dE/dx; Momentum [MeV]; dE/dx [keV/cm]");
+    		//gr2->SetTitle("p vs dE/dx; Momentum [MeV]; dE/dx [keV/cm]");
+            gr2->GetXaxis()->SetTitle("dE/dx [keV/cm]");
+            gr2->GetXaxis()->SetTitle("Momentum [MeV]");
     		gr2->Draw("AP");
     	}
     	
@@ -326,6 +365,18 @@ void draw_color_overlay(std::map<int, std::vector<double>>& pdg_to_p1, std::map<
     std::vector<TGraph*> graphs1;
     std::vector<TGraph*> graphs2;
 
+    TLatex dune;
+    dune.SetNDC();
+    dune.SetTextFont(62);     // Bold Helvetica
+    dune.SetTextSize(0.045);
+    dune.DrawLatex(0.12, 0.93, "DUNE");
+
+    TLatex prelim;
+    prelim.SetNDC();
+    prelim.SetTextFont(42);   // Regular Helvetica
+    prelim.SetTextSize(0.040);
+    prelim.DrawLatex(0.215, 0.93, "Simulation Preliminary");
+
     for (const auto& entry : pdg_to_p1) {
     	int pdg = entry.first;
     	const auto& p1_vec = entry.second;
@@ -358,7 +409,9 @@ void draw_color_overlay(std::map<int, std::vector<double>>& pdg_to_p1, std::map<
 
         // draw first graph with axis titles
     	if (graphIndex == 0) {
-    		gr2->SetTitle("p vs dE/dx; Momentum [MeV]; dE/dx [keV/cm]");
+    		//gr2->SetTitle("p vs dE/dx; Momentum [MeV]; dE/dx [keV/cm]");
+            gr2->GetXaxis()->SetTitle("dE/dx [keV/cm]");
+            gr2->GetXaxis()->SetTitle("Momentum [MeV]");
     		gr2->Draw("AP");
     	}
     	
