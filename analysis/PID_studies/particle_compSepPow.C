@@ -2624,6 +2624,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
 
     outFile.close();
 
+    /*
     //find average percentage differences for each sample and particle pair
     auto calculate_average_percentage_difference = [](const std::vector<std::pair<float, float>>& perc_vector) {
         float sum = 0.0;
@@ -2757,6 +2758,8 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
                 << std::setw(20) << avg_piP_perc6 << " ± " << calc_average_percentage_difference_err(piP_perc6, piP_perc_err6) 
                 << "\n";
 
+                */
+
     //count the number of momentum bins where the separation power is higher than the pilot design for each sample and particle pair within uncertainty
     auto count_higher_than_pilot =
     [](const std::vector<std::pair<float, float>>& perc_vector,
@@ -2839,23 +2842,35 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
                 << std::setw(20) << muPi_lower2 
                 << "\n";
     std::cout << std::left 
-                << std::setw(20) << sample2
-                << std::setw(20) << "Muon-Proton" 
-                << std::setw(20) << muP_higher2 
-                << std::setw(20) << muP_lower2 
-                << "\n";
-    std::cout << std::left 
-                << std::setw(20) << sample2 
-                << std::setw(20) << "Pion-Proton" 
-                << std::setw(20) << piP_higher2 
-                << std::setw(20) << piP_lower2 
-                << "\n";
-
-    std::cout << std::left 
                 << std::setw(20) << sample3 
                 << std::setw(20) << "Muon-Pion" 
                 << std::setw(20) << muPi_higher3 
                 << std::setw(20) << muPi_lower3 
+                << "\n";
+    std::cout << std::left 
+                << std::setw(20) << sample4 
+                << std::setw(20) << "Muon-Pion" 
+                << std::setw(20) << muPi_higher4 
+                << std::setw(20) << muPi_lower4 
+                << "\n";
+    std::cout << std::left 
+                << std::setw(20) << sample5 
+                << std::setw(20) << "Muon-Pion" 
+                << std::setw(20) << muPi_higher5 
+                << std::setw(20) << muPi_lower5 
+                << "\n";
+    std::cout << std::left 
+                << std::setw(20) << sample6 
+                << std::setw(20) << "Muon-Pion" 
+                << std::setw(20) << muPi_higher6 
+                << std::setw(20) << muPi_lower6 
+                << "\n";
+
+    std::cout << std::left 
+                << std::setw(20) << sample2
+                << std::setw(20) << "Muon-Proton" 
+                << std::setw(20) << muP_higher2 
+                << std::setw(20) << muP_lower2 
                 << "\n";
     std::cout << std::left 
                 << std::setw(20) << sample3
@@ -2864,36 +2879,10 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
                 << std::setw(20) << muP_lower3 
                 << "\n";
     std::cout << std::left 
-                << std::setw(20) << sample3 
-                << std::setw(20) << "Pion-Proton" 
-                << std::setw(20) << piP_higher3 
-                << std::setw(20) << piP_lower3 
-                << "\n";
-        
-    std::cout << std::left 
-                << std::setw(20) << sample4 
-                << std::setw(20) << "Muon-Pion" 
-                << std::setw(20) << muPi_higher4 
-                << std::setw(20) << muPi_lower4 
-                << "\n";
-    std::cout << std::left 
                 << std::setw(20) << sample4
                 << std::setw(20) << "Muon-Proton" 
                 << std::setw(20) << muP_higher4 
                 << std::setw(20) << muP_lower4 
-                << "\n";
-    std::cout << std::left 
-                << std::setw(20) << sample4 
-                << std::setw(20) << "Pion-Proton" 
-                << std::setw(20) << piP_higher4 
-                << std::setw(20) << piP_lower4 
-                << "\n";
-
-    std::cout << std::left 
-                << std::setw(20) << sample5 
-                << std::setw(20) << "Muon-Pion" 
-                << std::setw(20) << muPi_higher5 
-                << std::setw(20) << muPi_lower5 
                 << "\n";
     std::cout << std::left 
                 << std::setw(20) << sample5
@@ -2902,23 +2891,35 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
                 << std::setw(20) << muP_lower5 
                 << "\n";
     std::cout << std::left 
-                << std::setw(20) << sample5 
-                << std::setw(20) << "Pion-Proton" 
-                << std::setw(20) << piP_higher5 
-                << std::setw(20) << piP_lower5 
-                << "\n";
-
-    std::cout << std::left 
-                << std::setw(20) << sample6 
-                << std::setw(20) << "Muon-Pion" 
-                << std::setw(20) << muPi_higher6 
-                << std::setw(20) << muPi_lower6 
-                << "\n";
-    std::cout << std::left 
                 << std::setw(20) << sample6
                 << std::setw(20) << "Muon-Proton" 
                 << std::setw(20) << muP_higher6 
                 << std::setw(20) << muP_lower6 
+                << "\n";
+
+    std::cout << std::left 
+                << std::setw(20) << sample2 
+                << std::setw(20) << "Pion-Proton" 
+                << std::setw(20) << piP_higher2 
+                << std::setw(20) << piP_lower2 
+                << "\n";
+    std::cout << std::left 
+                << std::setw(20) << sample3 
+                << std::setw(20) << "Pion-Proton" 
+                << std::setw(20) << piP_higher3 
+                << std::setw(20) << piP_lower3 
+                << "\n";
+    std::cout << std::left 
+                << std::setw(20) << sample4 
+                << std::setw(20) << "Pion-Proton" 
+                << std::setw(20) << piP_higher4 
+                << std::setw(20) << piP_lower4 
+                << "\n";
+    std::cout << std::left 
+                << std::setw(20) << sample5 
+                << std::setw(20) << "Pion-Proton" 
+                << std::setw(20) << piP_higher5 
+                << std::setw(20) << piP_lower5 
                 << "\n";
     std::cout << std::left 
                 << std::setw(20) << sample6 
@@ -2978,23 +2979,35 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
                 << std::setw(20) << mu_res_lower2 
                 << "\n";
     std::cout << std::left 
-                << std::setw(20) << sample2
-                << std::setw(20) << "Pion" 
-                << std::setw(20) << pi_res_higher2 
-                << std::setw(20) << pi_res_lower2 
-                << "\n";
-    std::cout << std::left 
-                << std::setw(20) << sample2 
-                << std::setw(20) << "Proton" 
-                << std::setw(20) << p_res_higher2 
-                << std::setw(20) << p_res_lower2 
-                << "\n";
-
-    std::cout << std::left 
                 << std::setw(20) << sample3 
                 << std::setw(20) << "Muon" 
                 << std::setw(20) << mu_res_higher3 
                 << std::setw(20) << mu_res_lower3 
+                << "\n";
+    std::cout << std::left 
+                << std::setw(20) << sample4 
+                << std::setw(20) << "Muon" 
+                << std::setw(20) << mu_res_higher4 
+                << std::setw(20) << mu_res_lower4 
+                << "\n";
+    std::cout << std::left 
+                << std::setw(20) << sample5 
+                << std::setw(20) << "Muon" 
+                << std::setw(20) << mu_res_higher5 
+                << std::setw(20) << mu_res_lower5 
+                << "\n";
+    std::cout << std::left 
+                << std::setw(20) << sample6 
+                << std::setw(20) << "Muon" 
+                << std::setw(20) << mu_res_higher6 
+                << std::setw(20) << mu_res_lower6 
+                << "\n";
+
+    std::cout << std::left 
+                << std::setw(20) << sample2
+                << std::setw(20) << "Pion" 
+                << std::setw(20) << pi_res_higher2 
+                << std::setw(20) << pi_res_lower2 
                 << "\n";
     std::cout << std::left 
                 << std::setw(20) << sample3
@@ -3003,36 +3016,10 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
                 << std::setw(20) << pi_res_lower3 
                 << "\n";
     std::cout << std::left 
-                << std::setw(20) << sample3 
-                << std::setw(20) << "Proton" 
-                << std::setw(20) << p_res_higher3 
-                << std::setw(20) << p_res_lower3 
-                << "\n";
-
-    std::cout << std::left 
-                << std::setw(20) << sample4 
-                << std::setw(20) << "Muon" 
-                << std::setw(20) << mu_res_higher4 
-                << std::setw(20) << mu_res_lower4 
-                << "\n";
-    std::cout << std::left 
                 << std::setw(20) << sample4
                 << std::setw(20) << "Pion" 
                 << std::setw(20) << pi_res_higher4 
                 << std::setw(20) << pi_res_lower4 
-                << "\n";
-    std::cout << std::left 
-                << std::setw(20) << sample4 
-                << std::setw(20) << "Proton" 
-                << std::setw(20) << p_res_higher4 
-                << std::setw(20) << p_res_lower4 
-                << "\n";
-
-    std::cout << std::left 
-                << std::setw(20) << sample5 
-                << std::setw(20) << "Muon" 
-                << std::setw(20) << mu_res_higher5 
-                << std::setw(20) << mu_res_lower5 
                 << "\n";
     std::cout << std::left 
                 << std::setw(20) << sample5
@@ -3041,23 +3028,35 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
                 << std::setw(20) << pi_res_lower5 
                 << "\n";
     std::cout << std::left 
-                << std::setw(20) << sample5 
-                << std::setw(20) << "Proton" 
-                << std::setw(20) << p_res_higher5 
-                << std::setw(20) << p_res_lower5 
-                << "\n";
-
-    std::cout << std::left 
-                << std::setw(20) << sample6 
-                << std::setw(20) << "Muon" 
-                << std::setw(20) << mu_res_higher6 
-                << std::setw(20) << mu_res_lower6 
-                << "\n";
-    std::cout << std::left 
                 << std::setw(20) << sample6
                 << std::setw(20) << "Pion" 
                 << std::setw(20) << pi_res_higher6 
                 << std::setw(20) << pi_res_lower6 
+                << "\n";
+
+    std::cout << std::left 
+                << std::setw(20) << sample2 
+                << std::setw(20) << "Proton" 
+                << std::setw(20) << p_res_higher2 
+                << std::setw(20) << p_res_lower2 
+                << "\n";
+    std::cout << std::left 
+                << std::setw(20) << sample3 
+                << std::setw(20) << "Proton" 
+                << std::setw(20) << p_res_higher3 
+                << std::setw(20) << p_res_lower3 
+                << "\n";
+    std::cout << std::left 
+                << std::setw(20) << sample4 
+                << std::setw(20) << "Proton" 
+                << std::setw(20) << p_res_higher4 
+                << std::setw(20) << p_res_lower4 
+                << "\n";
+    std::cout << std::left 
+                << std::setw(20) << sample5 
+                << std::setw(20) << "Proton" 
+                << std::setw(20) << p_res_higher5 
+                << std::setw(20) << p_res_lower5 
                 << "\n";
     std::cout << std::left 
                 << std::setw(20) << sample6 
@@ -3066,4 +3065,189 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
                 << std::setw(20) << p_res_lower6 
                 << "\n";
 
+    /*
+
+    //find bins where seperation power is above/below 3sigma within uncertainty for each sample and particle pair
+    auto count_above_3sigma = [](const std::vector<std::pair<float, float>>& sep_vector,
+                                 const std::vector<std::pair<float, float>>& sep_err_vector) {
+        size_t n = std::min(sep_vector.size(), sep_err_vector.size());
+        int count = 0;
+        for (size_t i = 0; i < n; ++i) {
+            float low  = sep_vector[i].second - sep_err_vector[i].second;
+            // Entire uncertainty band is above 3
+            if (low > 3) ++count;
+        }
+        return count;
+    };
+    auto count_below_3sigma = [](const std::vector<std::pair<float, float>>& sep_vector,
+                                 const std::vector<std::pair<float, float>>& sep_err_vector) {
+        size_t n = std::min(sep_vector.size(), sep_err_vector.size());
+        int count = 0;
+        for (size_t i = 0; i < n; ++i) {
+            float high  = sep_vector[i].second + sep_err_vector[i].second;
+            // Entire uncertainty band is below 3
+            if (high < 3) ++count;
+        }
+        return count;
+    };
+
+    int muPi_above3_1 = count_above_3sigma(muPi_sep1, muPi_err1);
+    int muPi_below3_1 = count_below_3sigma(muPi_sep1, muPi_err1);
+    int muP_above3_1 = count_above_3sigma(muP_sep1, muP_err1);
+    int muP_below3_1 = count_below_3sigma(muP_sep1, muP_err1);
+    int piP_above3_1 = count_above_3sigma(piP_sep1, piP_err1);
+    int piP_below3_1 = count_below_3sigma(piP_sep1, piP_err1);
+    int muPi_above3_2 = count_above_3sigma(muPi_sep2, muPi_err2);
+    int muPi_below3_2 = count_below_3sigma(muPi_sep2, muPi_err2);
+    int muP_above3_2 = count_above_3sigma(muP_sep2, muP_err2);
+    int muP_below3_2 = count_below_3sigma(muP_sep2, muP_err2);
+    int piP_above3_2 = count_above_3sigma(piP_sep2, piP_err2);
+    int piP_below3_2 = count_below_3sigma(piP_sep2, piP_err2);
+    int muPi_above3_3 = count_above_3sigma(muPi_sep3, muPi_err3);
+    int muPi_below3_3 = count_below_3sigma(muPi_sep3, muPi_err3);
+    int muP_above3_3 = count_above_3sigma(muP_sep3, muP_err3);
+    int muP_below3_3 = count_below_3sigma(muP_sep3, muP_err3);
+    int piP_above3_3 = count_above_3sigma(piP_sep3, piP_err3);
+    int piP_below3_3 = count_below_3sigma(piP_sep3, piP_err3);
+    int muPi_above3_4 = count_above_3sigma(muPi_sep4, muPi_err4);
+    int muPi_below3_4 = count_below_3sigma(muPi_sep4, muPi_err4);
+    int muP_above3_4 = count_above_3sigma(muP_sep4, muP_err4);
+    int muP_below3_4 = count_below_3sigma(muP_sep4, muP_err4);
+    int piP_above3_4 = count_above_3sigma(piP_sep4, piP_err4);
+    int piP_below3_4 = count_below_3sigma(piP_sep4, piP_err4);
+    int muPi_above3_5 = count_above_3sigma(muPi_sep5, muPi_err5);
+    int muPi_below3_5 = count_below_3sigma(muPi_sep5, muPi_err5);
+    int muP_above3_5 = count_above_3sigma(muP_sep5, muP_err5);
+    int muP_below3_5 = count_below_3sigma(muP_sep5, muP_err5);
+    int piP_above3_5 = count_above_3sigma(piP_sep5, piP_err5);
+    int piP_below3_5 = count_below_3sigma(piP_sep5, piP_err5);
+    int muPi_above3_6 = count_above_3sigma(muPi_sep6, muPi_err6);
+    int muPi_below3_6 = count_below_3sigma(muPi_sep6, muPi_err6);
+    int muP_above3_6 = count_above_3sigma(muP_sep6, muP_err6);
+    int muP_below3_6 = count_below_3sigma(muP_sep6, muP_err6);
+    int piP_above3_6 = count_above_3sigma(piP_sep6, piP_err6);
+    int piP_below3_6 = count_below_3sigma(piP_sep6, piP_err6);
+
+    std::cout << "\nNumber of momentum bins where the separation power is higher or lower than 3sigma for each sample and particle type:\n\n";
+    std::cout << std::left 
+                << std::setw(20) << "Sample" 
+                    << std::setw(20) << "Particle Pair" 
+                    << std::setw(20) << "Higher than 3#sigma" 
+                    << std::setw(20) << "Lower than 3#sigma" 
+                    << "\n";
+    std::cout << std::string(80, '-') << "\n";
+    std::cout << std::fixed << std::setprecision(0);
+
+    std::cout << std::left 
+                << std::setw(20) << "Pilot Design" 
+                << std::setw(20) << "Muon-Pion" 
+                << std::setw(20) << muPi_above3_1 
+                << std::setw(20) << muPi_below3_1 
+                << "\n";
+    std::cout << std::left 
+                << std::setw(20) << sample2 
+                << std::setw(20) << "Muon-Pion" 
+                << std::setw(20) << muPi_above3_2 
+                << std::setw(20) << muPi_below3_2 
+                << "\n";
+    std::cout << std::left 
+                << std::setw(20) << sample3 
+                << std::setw(20) << "Muon-Pion" 
+                << std::setw(20) << muPi_above3_3 
+                << std::setw(20) << muPi_below3_3 
+                << "\n";
+    std::cout << std::left 
+                << std::setw(20) << sample4 
+                << std::setw(20) << "Muon-Pion" 
+                << std::setw(20) << muPi_above3_4 
+                << std::setw(20) << muPi_below3_4 
+                << "\n";
+    std::cout << std::left 
+                << std::setw(20) << sample5 
+                << std::setw(20) << "Muon-Pion" 
+                << std::setw(20) << muPi_above3_5 
+                << std::setw(20) << muPi_below3_5 
+                << "\n";
+    std::cout << std::left 
+                << std::setw(20) << sample6 
+                << std::setw(20) << "Muon-Pion" 
+                << std::setw(20) << muPi_above3_6 
+                << std::setw(20) << muPi_below3_6 
+                << "\n";
+
+    std::cout << std::left 
+                << std::setw(20) << "Pilot Design"
+                << std::setw(20) << "Muon-Proton"
+                << std::setw(20) << muP_above3_1 
+                << std::setw(20) << muP_below3_1 
+                << "\n";
+    std::cout << std::left 
+                << std::setw(20) << sample2
+                << std::setw(20) << "Muon-Proton"
+                << std::setw(20) << muP_above3_2 
+                << std::setw(20) << muP_below3_2 
+                << "\n";
+    std::cout << std::left 
+                << std::setw(20) << sample3
+                << std::setw(20) << "Muon-Proton"
+                << std::setw(20) << muP_above3_3 
+                << std::setw(20) << muP_below3_3 
+                << "\n";
+    std::cout << std::left 
+                << std::setw(20) << sample4
+                << std::setw(20) << "Muon-Proton"
+                << std::setw(20) << muP_above3_4 
+                << std::setw(20) << muP_below3_4 
+                << "\n";
+    std::cout << std::left 
+                << std::setw(20) << sample5
+                << std::setw(20) << "Muon-Proton"
+                << std::setw(20) << muP_above3_5 
+                << std::setw(20) << muP_below3_5 
+                << "\n";
+    std::cout << std::left 
+                << std::setw(20) << sample6
+                << std::setw(20) << "Muon-Proton"
+                << std::setw(20) << muP_above3_6 
+                << std::setw(20) << muP_below3_6 
+                << "\n";
+
+    std::cout << std::left 
+                << std::setw(20) << "Pilot Design" 
+                << std::setw(20) << "Pion-Proton" 
+                << std::setw(20) << piP_above3_1 
+                << std::setw(20) << piP_below3_1 
+                << "\n";
+    std::cout << std::left 
+                << std::setw(20) << sample2 
+                << std::setw(20) << "Pion-Proton" 
+                << std::setw(20) << piP_above3_2 
+                << std::setw(20) << piP_below3_2 
+                << "\n";
+    std::cout << std::left 
+                << std::setw(20) << sample3 
+                << std::setw(20) << "Pion-Proton" 
+                << std::setw(20) << piP_above3_3 
+                << std::setw(20) << piP_below3_3 
+                << "\n";
+    std::cout << std::left 
+                << std::setw(20) << sample4 
+                << std::setw(20) << "Pion-Proton" 
+                << std::setw(20) << piP_above3_4 
+                << std::setw(20) << piP_below3_4 
+                << "\n";
+    std::cout << std::left 
+                << std::setw(20) << sample5 
+                << std::setw(20) << "Pion-Proton" 
+                << std::setw(20) << piP_above3_5 
+                << std::setw(20) << piP_below3_5 
+                << "\n";
+    std::cout << std::left 
+                << std::setw(20) << sample6 
+                << std::setw(20) << "Pion-Proton" 
+                << std::setw(20) << piP_above3_6 
+                << std::setw(20) << piP_below3_6 
+                << "\n";
+
+    */
 }
