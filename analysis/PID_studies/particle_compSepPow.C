@@ -26,6 +26,8 @@
 #include <map>
 #include <cmath>
 
+#include <TVirtualFitter.h>
+
 #include "TFile.h"
 #include "TTree.h"
 #include "TChain.h"
@@ -245,7 +247,7 @@ void draw_graphs(std::vector<std::pair<float, float>> points1, std::vector<std::
     if (x_max<1e3) x_max = 1e3;
 
     TH1F* frame = canvas->DrawFrame(
-        0.8*8.5e1,
+        0.8*7.0e1,
         0,
         1.2*x_max,
         1.2*y_max
@@ -530,7 +532,7 @@ void draw_differences(std::vector<std::pair<float, float>> diff2, std::vector<st
     if (x_max<1e3) x_max = 1e3;
 
     TH1F* frame = canvas->DrawFrame(
-        0.8*8.5e1,
+        0.8*7.0e1,
         1.2*y_min,
         1.2*x_max,
         1.2*y_max
@@ -771,13 +773,13 @@ void draw_percentages(std::vector<std::pair<float, float>> perc2, std::vector<st
     });
 
     if (y_min > -0.1) y_min = -0.1;
-    if (y_max < 40) y_max = 40;
+    if (y_max < 25) y_max = 25; //make sure legend doesnt cover points
     if (y_min < -100) y_min = -100;
     if (y_max > 100) y_max = 100;
     if (x_max<1e3) x_max = 1e3;
 
     TH1F* frame = canvas->DrawFrame(
-        0.8*8.5e1,
+        0.8*7.0e1,
         1.2*y_min,
         1.2*x_max,
         1.2*y_max
@@ -833,7 +835,615 @@ void draw_percentages(std::vector<std::pair<float, float>> perc2, std::vector<st
     gr6->Draw("P SAME");
 
 
-    TLine* CDR = new TLine(0.8*8.5e1,0, 1.2*x_max, 0);
+    TLine* CDR = new TLine(0.8*7.0e1,0, 1.2*x_max, 0);
+    CDR->SetLineStyle(2);
+    CDR->SetLineWidth(2);
+    //CDR->SetLineColor(kRed);
+    CDR->Draw("SAME");
+
+    // Create legend
+    TLegend *legend = new TLegend(0.85, 0.74, 1, 0.94);
+    legend->AddEntry(gr2, name2.c_str(), "p");
+    legend->AddEntry(gr3, name3.c_str(), "p");
+    legend->AddEntry(gr4, name4.c_str(), "p");
+    legend->AddEntry(gr5, name5.c_str(), "p");
+    legend->AddEntry(gr6, name6.c_str(), "p");
+    legend->Draw();    
+
+    canvas->SaveAs((outName).c_str());
+
+    delete gr2;
+    delete gr3;
+    delete gr4;
+    delete gr5;
+    delete gr6;
+    //delete gs2;
+    //delete gs3;
+    //delete gs4;
+    delete CDR;
+    delete canvas;
+
+}
+
+//uncertainty bands
+static TGraphErrors* MakeFitBand(TGraphErrors* gr, TF1* f, int color, double cl = 0.68)
+{
+    const int nBand = 200;
+    auto band = new TGraphErrors(nBand);
+
+    double x0, y0, x1, y1;
+    gr->GetPoint(0, x0, y0);
+    gr->GetPoint(gr->GetN() - 1, x1, y1);
+
+    if (x0 <= 0) x0 = 1e-6;
+
+    for (int i = 0; i < nBand; ++i) {
+        double x = x0 + (x1 - x0) * i / double(nBand - 1);
+        band->SetPoint(i, x, f->Eval(x));
+    }
+
+    TVirtualFitter::GetFitter()->GetConfidenceIntervals(band, cl);
+
+    band->SetFillColorAlpha(color, 0.20);
+    band->SetLineColor(color);
+    band->SetLineWidth(0);
+    return band;
+}
+
+// function for creating fit
+static TF1* fitGraphQuad(TGraphErrors* gr, const char* fname, int color){
+
+    int n = gr->GetN();
+    if (n < 2) return nullptr;
+
+    //find range of data
+    double x0, y0, x1, y1;
+    gr->GetPoint(0, x0, y0);
+    gr->GetPoint(n-1, x1, y1);
+
+    //safety for log-x plots
+    if (x0 <= 0) x0 = 1e-6;
+
+    //quadratic in log10(x)
+    TF1* f = new TF1(fname,
+        "[0] + [1]*log10(x) + [2]*pow(log10(x),2)",
+        x0, x1);
+
+    f->SetParName(0, "offset");
+    f->SetParName(1, "linear");
+    f->SetParName(2, "quadratic");
+
+    f->SetLineColor(color);
+    f->SetLineWidth(3);
+    f->SetNpx(300);
+
+    gr->Fit(f, "QRS");   // Q = quiet, R = restrict to range
+    //f->Draw("SAME");
+    return f;
+
+}
+
+// function for creating fit
+static TF1* fitGraphBreak(TGraphErrors* gr, const char* fname, int color){
+
+    int n = gr->GetN();
+    if (n < 2) return nullptr;
+
+    //find range of data
+    double x0, y0, x1, y1;
+    gr->GetPoint(0, x0, y0);
+    gr->GetPoint(n-1, x1, y1);
+
+    //safety for log-x plots
+    if (x0 <= 0) x0 = 1e-6;
+
+    // Breakpoint in log10(x)
+    TF1* f = new TF1(fname,
+        "[0] + [1]*log10(x) + ([2]-[1])*TMath::Max(0., log10(x)-[3])",
+        x0, x1);
+
+    f->SetParName(0, "offset");
+    f->SetParName(1, "slope1");
+    f->SetParName(2, "slope2");
+    f->SetParName(3, "log10(x_break)");
+
+    f->SetLineColor(color);
+    f->SetLineWidth(3);
+    f->SetNpx(300);
+
+    // Good starting values
+    f->SetParameters(0., -1., -3., 2.7);   // 10^2.7 ~ 500 MeV
+
+    gr->Fit(f, "QRS");   // Q = quiet, R = restrict to range
+    //f->Draw("SAME");
+    return f;
+}
+
+//draw differences in separation power to CDR
+void draw_percentagesWithFit(std::vector<std::pair<float, float>> perc2, std::vector<std::pair<float, float>> perc3, std::vector<std::pair<float, float>> perc4, std::vector<std::pair<float, float>> perc5, std::vector<std::pair<float, float>> perc6,
+    std::vector<std::pair<float, float>> err_points2,std::vector<std::pair<float, float>> err_points3, std::vector<std::pair<float, float>> err_points4, std::vector<std::pair<float, float>> err_points5, std::vector<std::pair<float, float>> err_points6,
+    const std::string& name2, const std::string& name3, const std::string& name4, const std::string& name5, const std::string& name6,
+    const std::string& outName, const char* title, const char* Xtitle, const char* Ytitle, float x_lim, bool useQuad){
+
+    TCanvas* canvas = new TCanvas("canvas", title, 900, 700);
+    canvas->SetLogx();
+    canvas->SetLeftMargin(0.15);
+
+    struct point{
+        double x, y, sigma_x, sigma_y;
+    };
+
+    std::vector<point> group2, group3, group4, group5, group6;
+
+    for(size_t i = 0; i < perc2.size(); i++){
+        group2.push_back({perc2[i].first, perc2[i].second, err_points2[i].first, err_points2[i].second});
+    }
+    for(size_t i = 0; i < perc3.size(); i++){
+        group3.push_back({perc3[i].first, perc3[i].second, err_points3[i].first, err_points3[i].second});
+    }
+    for(size_t i = 0; i < perc4.size(); i++){
+        group4.push_back({perc4[i].first, perc4[i].second, err_points4[i].first, err_points4[i].second});
+    }
+    for(size_t i = 0; i < perc5.size(); i++){
+        group5.push_back({perc5[i].first, perc5[i].second, err_points5[i].first, err_points5[i].second});
+    }
+    for(size_t i = 0; i < perc6.size(); i++){
+        group6.push_back({perc6[i].first, perc6[i].second, err_points6[i].first, err_points6[i].second});
+    }
+
+    std::sort(group2.begin(), group2.end(), [](const auto& a, const auto& b) {
+        return a.x < b.x;
+    });
+    std::sort(group3.begin(), group3.end(), [](const auto& a, const auto& b) {
+        return a.x < b.x;
+    });
+    std::sort(group4.begin(), group4.end(), [](const auto& a, const auto& b) {
+        return a.x < b.x;
+    });
+    std::sort(group5.begin(), group5.end(), [](const auto& a, const auto& b) {
+        return a.x < b.x;
+    });
+    std::sort(group6.begin(), group6.end(), [](const auto& a, const auto& b) {
+        return a.x < b.x;
+    });
+
+    std::vector<float> clean_x2, clean_y2, clean_x3, clean_y3, clean_x4, clean_y4, clean_x5, clean_y5, clean_x6, clean_y6;
+    std::vector<float> err_x2, err_y2, err_x3, err_y3, err_x4, err_y4, err_x5, err_y5, err_x6, err_y6;
+
+    for (size_t i = 0; i < group2.size(); i++){
+        //if (i > 0 && std::abs(points2[i].first - points2[i-1].first) < 1e-6) continue; // skip if x values are too close
+        clean_x2.push_back(group2[i].x);
+        clean_y2.push_back(group2[i].y);
+        err_x2.push_back(group2[i].sigma_x);
+        err_y2.push_back(group2[i].sigma_y);
+    }
+    for (size_t i = 0; i < group3.size(); i++){
+        //if (i > 0 && std::abs(points2[i].first - points2[i-1].first) < 1e-6) continue; // skip if x values are too close
+        clean_x3.push_back(group3[i].x);
+        clean_y3.push_back(group3[i].y);
+        err_x3.push_back(group3[i].sigma_x);
+        err_y3.push_back(group3[i].sigma_y);
+    }
+    for (size_t i = 0; i < group4.size(); i++){
+        //if (i > 0 && std::abs(points2[i].first - points2[i-1].first) < 1e-6) continue; // skip if x values are too close
+        clean_x4.push_back(group4[i].x);
+        clean_y4.push_back(group4[i].y);
+        err_x4.push_back(group4[i].sigma_x);
+        err_y4.push_back(group4[i].sigma_y);
+    }
+    for (size_t i = 0; i < group5.size(); i++){
+        //if (i > 0 && std::abs(points2[i].first - points2[i-1].first) < 1e-6) continue; // skip if x values are too close
+        clean_x5.push_back(group5[i].x);
+        clean_y5.push_back(group5[i].y);
+        err_x5.push_back(group5[i].sigma_x);
+        err_y5.push_back(group5[i].sigma_y);
+    }
+    for (size_t i = 0; i < group6.size(); i++){
+        //if (i > 0 && std::abs(points2[i].first - points2[i-1].first) < 1e-6) continue; // skip if x values are too close
+        clean_x6.push_back(group6[i].x);
+        clean_y6.push_back(group6[i].y);
+        err_x6.push_back(group6[i].sigma_x);
+        err_y6.push_back(group6[i].sigma_y);
+    }
+
+    std::vector<float> err_max2, err_max3, err_max4, err_max5, err_max6;
+    std::vector<float> err_min2, err_min3, err_min4, err_min5, err_min6;
+
+    for (size_t i = 0; i < group2.size(); i++){
+        float frac_err = err_y2[i] / clean_y2[i];
+        if (frac_err >= 0.5) continue;
+        err_max2.push_back(clean_y2[i] + err_y2[i]);
+        err_min2.push_back(clean_y2[i] - err_y2[i]);
+    }
+    for (size_t i = 0; i < group3.size(); i++){
+        float frac_err = err_y3[i] / clean_y3[i];
+        if (frac_err >= 0.5) continue;
+        err_max3.push_back(clean_y3[i] + err_y3[i]);
+        err_min3.push_back(clean_y3[i] - err_y3[i]);
+    }
+    for (size_t i = 0; i < group4.size(); i++){
+        float frac_err = err_y4[i] / clean_y4[i];
+        if (frac_err >= 0.5) continue;
+        err_max4.push_back(clean_y4[i] + err_y4[i]);
+        err_min4.push_back(clean_y4[i] - err_y4[i]);
+    }
+    for (size_t i = 0; i < group5.size(); i++){
+        float frac_err = err_y5[i] / clean_y5[i];
+        if (frac_err >= 0.5) continue;
+        err_max5.push_back(clean_y5[i] + err_y5[i]);
+        err_min5.push_back(clean_y5[i] - err_y5[i]);
+    }
+    for (size_t i = 0; i < group6.size(); i++){
+        float frac_err = err_y6[i] / clean_y6[i];
+        if (frac_err >= 0.5) continue;
+        err_max6.push_back(clean_y6[i] + err_y6[i]);
+        err_min6.push_back(clean_y6[i] - err_y6[i]);
+    }
+
+    float y_max = std::max({
+        *std::max_element(clean_y2.begin(), clean_y2.end()),
+        *std::max_element(clean_y3.begin(), clean_y3.end()),
+        *std::max_element(clean_y4.begin(), clean_y4.end()),
+        *std::max_element(clean_y5.begin(), clean_y5.end()),
+        *std::max_element(clean_y6.begin(), clean_y6.end()),
+        *std::max_element(err_max2.begin(), err_max2.end()),
+        *std::max_element(err_max3.begin(), err_max3.end()),
+        *std::max_element(err_max4.begin(), err_max4.end()),
+        *std::max_element(err_max5.begin(), err_max5.end()),
+        *std::max_element(err_max6.begin(), err_max6.end())
+    });
+
+    float y_min = std::min({
+        *std::min_element(clean_y2.begin(), clean_y2.end()),
+        *std::min_element(clean_y3.begin(), clean_y3.end()),
+        *std::min_element(clean_y4.begin(), clean_y4.end()),
+        *std::min_element(clean_y5.begin(), clean_y5.end()),
+        *std::min_element(clean_y6.begin(), clean_y6.end()),
+        *std::min_element(err_min2.begin(), err_min2.end()),
+        *std::min_element(err_min3.begin(), err_min3.end()),
+        *std::min_element(err_min4.begin(), err_min4.end()),
+        *std::min_element(err_min5.begin(), err_min5.end()),
+        *std::min_element(err_min6.begin(), err_min6.end())
+    });
+
+    float x_max = std::max({
+        *std::max_element(clean_x2.begin(), clean_x2.end()),
+        *std::max_element(clean_x3.begin(), clean_x3.end()),
+        *std::max_element(clean_x4.begin(), clean_x4.end()),
+        *std::max_element(clean_x5.begin(), clean_x5.end()),
+        *std::max_element(clean_x6.begin(), clean_x6.end())
+    });
+
+    if (y_min > -0.1) y_min = -0.1;
+    if (y_max < 25) y_max = 25; //make sure legend doesnt cover points
+    if (y_min < -100) y_min = -100;
+    if (y_max > 100) y_max = 100;
+    if (x_max<1e3) x_max = 1e3;
+
+    TH1F* frame = canvas->DrawFrame(
+        0.8*7.0e1,
+        1.2*y_min,
+        1.2*x_max,
+        1.2*y_max
+    );
+
+    TLatex dune;
+    dune.SetNDC();
+    dune.SetTextFont(62);     // Bold Helvetica
+    dune.SetTextSize(0.045);
+    dune.DrawLatex(0.12, 0.93, "DUNE");
+
+    TLatex prelim;
+    prelim.SetNDC();
+    prelim.SetTextFont(42);   // Regular Helvetica
+    prelim.SetTextSize(0.040);
+    prelim.DrawLatex(0.215, 0.93, "Simulation Preliminary");
+
+    //frame->SetTitle(title);
+    frame->GetXaxis()->SetTitle(Xtitle);
+    frame->GetYaxis()->SetTitle(Ytitle);
+
+    TGraphErrors* gr2 = new TGraphErrors(clean_x2.size(), clean_x2.data(), clean_y2.data(), err_x2.data(), err_y2.data());
+    gr2->SetMarkerStyle(20);
+    gr2->SetMarkerColor(kBlue);
+    gr2->SetLineColor(kBlue);
+    gr2->Draw("P SAME");
+    TF1* fit2 = useQuad ? fitGraphQuad(gr2, "fit2", kBlue) : fitGraphBreak(gr2, "fit2", kBlue);
+    fit2->Draw("SAME");
+
+    TGraphErrors* gr3 = new TGraphErrors(clean_x3.size(), clean_x3.data(), clean_y3.data(), err_x3.data(), err_y3.data());
+    gr3->SetMarkerStyle(20);
+    gr3->SetMarkerColor(kGreen);
+    gr3->SetLineColor(kGreen);
+    gr3->Draw("P SAME");
+    TF1* fit3 = useQuad ? fitGraphQuad(gr3, "fit3", kGreen) : fitGraphBreak(gr3, "fit3", kGreen);
+    fit3->Draw("SAME");
+
+    TGraphErrors* gr4 = new TGraphErrors(clean_x4.size(), clean_x4.data(), clean_y4.data(), err_x4.data(), err_y4.data());
+    gr4->SetMarkerStyle(20);
+    gr4->SetMarkerColor(kOrange);
+    gr4->SetLineColor(kOrange);
+    gr4->Draw("P SAME");
+    TF1* fit4 = useQuad ? fitGraphQuad(gr4, "fit4", kOrange) : fitGraphBreak(gr4, "fit4", kOrange);
+    fit4->Draw("SAME");
+
+    TGraphErrors* gr5 = new TGraphErrors(clean_x5.size(), clean_x5.data(), clean_y5.data(), err_x5.data(), err_y5.data());
+    gr5->SetMarkerStyle(20);
+    gr5->SetMarkerColor(kMagenta);
+    gr5->SetLineColor(kMagenta);
+    gr5->Draw("P SAME");
+    TF1* fit5 = useQuad ? fitGraphQuad(gr5, "fit5", kMagenta) : fitGraphBreak(gr5, "fit5", kMagenta);
+    fit5->Draw("SAME");
+
+    TGraphErrors* gr6 = new TGraphErrors(clean_x6.size(), clean_x6.data(), clean_y6.data(), err_x6.data(), err_y6.data());
+    gr6->SetMarkerStyle(20);
+    gr6->SetMarkerColor(kCyan-5);
+    gr6->SetLineColor(kCyan-5);
+    gr6->Draw("P SAME");
+    TF1* fit6 = useQuad ? fitGraphQuad(gr6, "fit6", kCyan-5) : fitGraphBreak(gr6, "fit6", kCyan-5);
+    fit6->Draw("SAME");
+
+    TLine* CDR = new TLine(0.8*7.0e1,0, 1.2*x_max, 0);
+    CDR->SetLineStyle(2);
+    CDR->SetLineWidth(2);
+    //CDR->SetLineColor(kRed);
+    CDR->Draw("SAME");
+
+    // Create legend
+    TLegend *legend = new TLegend(0.85, 0.74, 1, 0.94);
+    legend->AddEntry(gr2, name2.c_str(), "p");
+    legend->AddEntry(gr3, name3.c_str(), "p");
+    legend->AddEntry(gr4, name4.c_str(), "p");
+    legend->AddEntry(gr5, name5.c_str(), "p");
+    legend->AddEntry(gr6, name6.c_str(), "p");
+    legend->Draw();    
+
+    canvas->SaveAs((outName).c_str());
+
+    delete gr2;
+    delete gr3;
+    delete gr4;
+    delete gr5;
+    delete gr6;
+    //delete gs2;
+    //delete gs3;
+    //delete gs4;
+    delete CDR;
+    delete canvas;
+
+}
+
+//draw differences in separation power to CDR
+void draw_percentagesFit(std::vector<std::pair<float, float>> perc2, std::vector<std::pair<float, float>> perc3, std::vector<std::pair<float, float>> perc4, std::vector<std::pair<float, float>> perc5, std::vector<std::pair<float, float>> perc6,
+    std::vector<std::pair<float, float>> err_points2,std::vector<std::pair<float, float>> err_points3, std::vector<std::pair<float, float>> err_points4, std::vector<std::pair<float, float>> err_points5, std::vector<std::pair<float, float>> err_points6,
+    const std::string& name2, const std::string& name3, const std::string& name4, const std::string& name5, const std::string& name6,
+    const std::string& outName, const char* title, const char* Xtitle, const char* Ytitle, float x_lim, bool useQuad){
+
+    TCanvas* canvas = new TCanvas("canvas", title, 900, 700);
+    canvas->SetLogx();
+    canvas->SetLeftMargin(0.15);
+
+    struct point{
+        double x, y, sigma_x, sigma_y;
+    };
+
+    std::vector<point> group2, group3, group4, group5, group6;
+
+    for(size_t i = 0; i < perc2.size(); i++){
+        group2.push_back({perc2[i].first, perc2[i].second, err_points2[i].first, err_points2[i].second});
+    }
+    for(size_t i = 0; i < perc3.size(); i++){
+        group3.push_back({perc3[i].first, perc3[i].second, err_points3[i].first, err_points3[i].second});
+    }
+    for(size_t i = 0; i < perc4.size(); i++){
+        group4.push_back({perc4[i].first, perc4[i].second, err_points4[i].first, err_points4[i].second});
+    }
+    for(size_t i = 0; i < perc5.size(); i++){
+        group5.push_back({perc5[i].first, perc5[i].second, err_points5[i].first, err_points5[i].second});
+    }
+    for(size_t i = 0; i < perc6.size(); i++){
+        group6.push_back({perc6[i].first, perc6[i].second, err_points6[i].first, err_points6[i].second});
+    }
+
+    std::sort(group2.begin(), group2.end(), [](const auto& a, const auto& b) {
+        return a.x < b.x;
+    });
+    std::sort(group3.begin(), group3.end(), [](const auto& a, const auto& b) {
+        return a.x < b.x;
+    });
+    std::sort(group4.begin(), group4.end(), [](const auto& a, const auto& b) {
+        return a.x < b.x;
+    });
+    std::sort(group5.begin(), group5.end(), [](const auto& a, const auto& b) {
+        return a.x < b.x;
+    });
+    std::sort(group6.begin(), group6.end(), [](const auto& a, const auto& b) {
+        return a.x < b.x;
+    });
+
+    std::vector<float> clean_x2, clean_y2, clean_x3, clean_y3, clean_x4, clean_y4, clean_x5, clean_y5, clean_x6, clean_y6;
+    std::vector<float> err_x2, err_y2, err_x3, err_y3, err_x4, err_y4, err_x5, err_y5, err_x6, err_y6;
+
+    for (size_t i = 0; i < group2.size(); i++){
+        //if (i > 0 && std::abs(points2[i].first - points2[i-1].first) < 1e-6) continue; // skip if x values are too close
+        clean_x2.push_back(group2[i].x);
+        clean_y2.push_back(group2[i].y);
+        err_x2.push_back(group2[i].sigma_x);
+        err_y2.push_back(group2[i].sigma_y);
+    }
+    for (size_t i = 0; i < group3.size(); i++){
+        //if (i > 0 && std::abs(points2[i].first - points2[i-1].first) < 1e-6) continue; // skip if x values are too close
+        clean_x3.push_back(group3[i].x);
+        clean_y3.push_back(group3[i].y);
+        err_x3.push_back(group3[i].sigma_x);
+        err_y3.push_back(group3[i].sigma_y);
+    }
+    for (size_t i = 0; i < group4.size(); i++){
+        //if (i > 0 && std::abs(points2[i].first - points2[i-1].first) < 1e-6) continue; // skip if x values are too close
+        clean_x4.push_back(group4[i].x);
+        clean_y4.push_back(group4[i].y);
+        err_x4.push_back(group4[i].sigma_x);
+        err_y4.push_back(group4[i].sigma_y);
+    }
+    for (size_t i = 0; i < group5.size(); i++){
+        //if (i > 0 && std::abs(points2[i].first - points2[i-1].first) < 1e-6) continue; // skip if x values are too close
+        clean_x5.push_back(group5[i].x);
+        clean_y5.push_back(group5[i].y);
+        err_x5.push_back(group5[i].sigma_x);
+        err_y5.push_back(group5[i].sigma_y);
+    }
+    for (size_t i = 0; i < group6.size(); i++){
+        //if (i > 0 && std::abs(points2[i].first - points2[i-1].first) < 1e-6) continue; // skip if x values are too close
+        clean_x6.push_back(group6[i].x);
+        clean_y6.push_back(group6[i].y);
+        err_x6.push_back(group6[i].sigma_x);
+        err_y6.push_back(group6[i].sigma_y);
+    }
+
+    std::vector<float> err_max2, err_max3, err_max4, err_max5, err_max6;
+    std::vector<float> err_min2, err_min3, err_min4, err_min5, err_min6;
+
+    for (size_t i = 0; i < group2.size(); i++){
+        float frac_err = err_y2[i] / clean_y2[i];
+        if (frac_err >= 0.5) continue;
+        err_max2.push_back(clean_y2[i] + err_y2[i]);
+        err_min2.push_back(clean_y2[i] - err_y2[i]);
+    }
+    for (size_t i = 0; i < group3.size(); i++){
+        float frac_err = err_y3[i] / clean_y3[i];
+        if (frac_err >= 0.5) continue;
+        err_max3.push_back(clean_y3[i] + err_y3[i]);
+        err_min3.push_back(clean_y3[i] - err_y3[i]);
+    }
+    for (size_t i = 0; i < group4.size(); i++){
+        float frac_err = err_y4[i] / clean_y4[i];
+        if (frac_err >= 0.5) continue;
+        err_max4.push_back(clean_y4[i] + err_y4[i]);
+        err_min4.push_back(clean_y4[i] - err_y4[i]);
+    }
+    for (size_t i = 0; i < group5.size(); i++){
+        float frac_err = err_y5[i] / clean_y5[i];
+        if (frac_err >= 0.5) continue;
+        err_max5.push_back(clean_y5[i] + err_y5[i]);
+        err_min5.push_back(clean_y5[i] - err_y5[i]);
+    }
+    for (size_t i = 0; i < group6.size(); i++){
+        float frac_err = err_y6[i] / clean_y6[i];
+        if (frac_err >= 0.5) continue;
+        err_max6.push_back(clean_y6[i] + err_y6[i]);
+        err_min6.push_back(clean_y6[i] - err_y6[i]);
+    }
+
+    float y_max = std::max({
+        *std::max_element(clean_y2.begin(), clean_y2.end()),
+        *std::max_element(clean_y3.begin(), clean_y3.end()),
+        *std::max_element(clean_y4.begin(), clean_y4.end()),
+        *std::max_element(clean_y5.begin(), clean_y5.end()),
+        *std::max_element(clean_y6.begin(), clean_y6.end())/*,
+        *std::max_element(err_max2.begin(), err_max2.end()),
+        *std::max_element(err_max3.begin(), err_max3.end()),
+        *std::max_element(err_max4.begin(), err_max4.end()),
+        *std::max_element(err_max5.begin(), err_max5.end()),
+        *std::max_element(err_max6.begin(), err_max6.end())*/
+    });
+
+    float y_min = std::min({
+        *std::min_element(clean_y2.begin(), clean_y2.end()),
+        *std::min_element(clean_y3.begin(), clean_y3.end()),
+        *std::min_element(clean_y4.begin(), clean_y4.end()),
+        *std::min_element(clean_y5.begin(), clean_y5.end()),
+        *std::min_element(clean_y6.begin(), clean_y6.end())/*,
+        *std::min_element(err_min2.begin(), err_min2.end()),
+        *std::min_element(err_min3.begin(), err_min3.end()),
+        *std::min_element(err_min4.begin(), err_min4.end()),
+        *std::min_element(err_min5.begin(), err_min5.end()),
+        *std::min_element(err_min6.begin(), err_min6.end())*/
+    });
+
+    float x_max = std::max({
+        *std::max_element(clean_x2.begin(), clean_x2.end()),
+        *std::max_element(clean_x3.begin(), clean_x3.end()),
+        *std::max_element(clean_x4.begin(), clean_x4.end()),
+        *std::max_element(clean_x5.begin(), clean_x5.end()),
+        *std::max_element(clean_x6.begin(), clean_x6.end())
+    });
+
+    if (y_min > -0.1) y_min = -0.1;
+    //if (y_max < 40) y_max = 40;
+    if (y_min < -100) y_min = -100;
+    if (y_max > 100) y_max = 100;
+    if (x_max<1e3) x_max = 1e3;
+
+    TH1F* frame = canvas->DrawFrame(
+        0.8*7.0e1,
+        1.2*y_min,
+        1.2*x_max,
+        1.2*y_max
+    );
+
+    TLatex dune;
+    dune.SetNDC();
+    dune.SetTextFont(62);     // Bold Helvetica
+    dune.SetTextSize(0.045);
+    dune.DrawLatex(0.12, 0.93, "DUNE");
+
+    TLatex prelim;
+    prelim.SetNDC();
+    prelim.SetTextFont(42);   // Regular Helvetica
+    prelim.SetTextSize(0.040);
+    prelim.DrawLatex(0.215, 0.93, "Simulation Preliminary");
+
+    //frame->SetTitle(title);
+    frame->GetXaxis()->SetTitle(Xtitle);
+    frame->GetYaxis()->SetTitle(Ytitle);
+
+    TGraphErrors* gr2 = new TGraphErrors(clean_x2.size(), clean_x2.data(), clean_y2.data(), err_x2.data(), err_y2.data());
+    gr2->SetMarkerStyle(20);
+    gr2->SetMarkerColor(kBlue);
+    gr2->SetLineColor(kBlue);
+    TF1* fit2 = useQuad ? fitGraphQuad(gr2, "fit2", kBlue) : fitGraphBreak(gr2, "fit2", kBlue);
+    auto band2 = MakeFitBand(gr2, fit2, kBlue);
+    band2->Draw("3 SAME");
+    fit2->Draw("SAME");
+
+    TGraphErrors* gr3 = new TGraphErrors(clean_x3.size(), clean_x3.data(), clean_y3.data(), err_x3.data(), err_y3.data());
+    gr3->SetMarkerStyle(20);
+    gr3->SetMarkerColor(kGreen);
+    gr3->SetLineColor(kGreen);
+    TF1* fit3 = useQuad ? fitGraphQuad(gr3, "fit3", kGreen) : fitGraphBreak(gr3, "fit3", kGreen);
+    auto band3 = MakeFitBand(gr3, fit3, kGreen);
+    band3->Draw("3 SAME");
+    fit3->Draw("SAME");
+
+    TGraphErrors* gr4 = new TGraphErrors(clean_x4.size(), clean_x4.data(), clean_y4.data(), err_x4.data(), err_y4.data());
+    gr4->SetMarkerStyle(20);
+    gr4->SetMarkerColor(kOrange);
+    gr4->SetLineColor(kOrange);
+    TF1* fit4 = useQuad ? fitGraphQuad(gr4, "fit4", kOrange) : fitGraphBreak(gr4, "fit4", kOrange);
+    auto band4 = MakeFitBand(gr4, fit4, kOrange);
+    band4->Draw("3 SAME");
+    fit4->Draw("SAME");
+
+    TGraphErrors* gr5 = new TGraphErrors(clean_x5.size(), clean_x5.data(), clean_y5.data(), err_x5.data(), err_y5.data());
+    gr5->SetMarkerStyle(20);
+    gr5->SetMarkerColor(kMagenta);
+    gr5->SetLineColor(kMagenta);
+    TF1* fit5 = useQuad ? fitGraphQuad(gr5, "fit5", kMagenta) : fitGraphBreak(gr5, "fit5", kMagenta);
+    auto band5 = MakeFitBand(gr5, fit5, kMagenta);
+    band5->Draw("3 SAME");
+    fit5->Draw("SAME");
+
+    TGraphErrors* gr6 = new TGraphErrors(clean_x6.size(), clean_x6.data(), clean_y6.data(), err_x6.data(), err_y6.data());
+    gr6->SetMarkerStyle(20);
+    gr6->SetMarkerColor(kCyan-5);
+    gr6->SetLineColor(kCyan-5);
+    TF1* fit6 = useQuad ? fitGraphQuad(gr6, "fit6", kCyan-5) : fitGraphBreak(gr6, "fit6", kCyan-5);
+    auto band6 = MakeFitBand(gr6, fit6, kCyan-5);
+    band6->Draw("3 SAME");
+    fit6->Draw("SAME");
+
+
+    TLine* CDR = new TLine(0.8*7.0e1,0, 1.2*x_max, 0);
     CDR->SetLineStyle(2);
     CDR->SetLineWidth(2);
     //CDR->SetLineColor(kRed);
@@ -2479,6 +3089,23 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
     draw_percentages(mu_res_perc2, mu_res_perc3, mu_res_perc4, mu_res_perc5, mu_res_perc6, mu_res_perc_err2, mu_res_perc_err3, mu_res_perc_err4, mu_res_perc_err5, mu_res_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonResDiffPerc.png" ).c_str(), "Difference in Muon Resolution", "Momentum [MeV]", "(R-R_{Pilot})/R_{Pilot} *100", 5e4);
     draw_percentages(pi_res_perc2, pi_res_perc3, pi_res_perc4, pi_res_perc5, pi_res_perc6, pi_res_perc_err2, pi_res_perc_err3, pi_res_perc_err4, pi_res_perc_err5, pi_res_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionResDiffPerc.png" ).c_str(), "Difference in Pion Resolution", "Momentum [MeV]", "(R-R_{Pilot})/R_{Pilot} *100", 5e4);
     draw_percentages(p_res_perc2, p_res_perc3, p_res_perc4, p_res_perc5, p_res_perc6, p_res_perc_err2, p_res_perc_err3, p_res_perc_err4, p_res_perc_err5, p_res_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_ProtonResDiffPerc.png" ).c_str(), "Difference in Proton Resolution", "Momentum [MeV]", "(R-R_{Pilot})/R_{Pilot} *100", 5e4);
+
+    draw_percentagesWithFit(muPi_perc2, muPi_perc3, muPi_perc4, muPi_perc5, muPi_perc6, muPi_perc_err2, muPi_perc_err3, muPi_perc_err4, muPi_perc_err5, muPi_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonPionSepPowDiffPercWithFit.png" ).c_str(), "Difference in Muon Pion Separation", "Momentum [MeV]", "(S-S_{Pilot})/S_{Pilot} *100", 5e4, true);
+    draw_percentagesWithFit(muP_perc2, muP_perc3, muP_perc4, muP_perc5, muP_perc6, muP_perc_err2, muP_perc_err3, muP_perc_err4, muP_perc_err5, muP_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonProtonSepPowDiffPercWithFit.png" ).c_str(), "Difference in Muon Proton Separation", "Momentum [MeV]", "(S-S_{Pilot})/S_{Pilot} *100", 5e4, false);
+    draw_percentagesWithFit(piP_perc2, piP_perc3, piP_perc4, piP_perc5, piP_perc6, piP_perc_err2, piP_perc_err3, piP_perc_err4, piP_perc_err5, piP_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionProtonSepPowDiffPercWithFit.png" ).c_str(), "Difference in Pion Proton Separation", "Momentum [MeV]", "(S-S_{Pilot})/S_{Pilot} *100", 5e4, false);
+
+    draw_percentagesWithFit(mu_res_perc2, mu_res_perc3, mu_res_perc4, mu_res_perc5, mu_res_perc6, mu_res_perc_err2, mu_res_perc_err3, mu_res_perc_err4, mu_res_perc_err5, mu_res_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonResDiffPercWithFit.png" ).c_str(), "Difference in Muon Resolution", "Momentum [MeV]", "(R-R_{Pilot})/R_{Pilot} *100", 5e4, true);
+    draw_percentagesWithFit(pi_res_perc2, pi_res_perc3, pi_res_perc4, pi_res_perc5, pi_res_perc6, pi_res_perc_err2, pi_res_perc_err3, pi_res_perc_err4, pi_res_perc_err5, pi_res_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionResDiffPercWithFit.png" ).c_str(), "Difference in Pion Resolution", "Momentum [MeV]", "(R-R_{Pilot})/R_{Pilot} *100", 5e4, true);
+    draw_percentagesWithFit(p_res_perc2, p_res_perc3, p_res_perc4, p_res_perc5, p_res_perc6, p_res_perc_err2, p_res_perc_err3, p_res_perc_err4, p_res_perc_err5, p_res_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_ProtonResDiffPercWithFit.png" ).c_str(), "Difference in Proton Resolution", "Momentum [MeV]", "(R-R_{Pilot})/R_{Pilot} *100", 5e4, false);
+
+    draw_percentagesFit(muPi_perc2, muPi_perc3, muPi_perc4, muPi_perc5, muPi_perc6, muPi_perc_err2, muPi_perc_err3, muPi_perc_err4, muPi_perc_err5, muPi_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonPionSepPowDiffPercFit.png" ).c_str(), "Difference in Muon Pion Separation", "Momentum [MeV]", "(S-S_{Pilot})/S_{Pilot} *100", 5e4, true);
+    draw_percentagesFit(muP_perc2, muP_perc3, muP_perc4, muP_perc5, muP_perc6, muP_perc_err2, muP_perc_err3, muP_perc_err4, muP_perc_err5, muP_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonProtonSepPowDiffPercFit.png" ).c_str(), "Difference in Muon Proton Separation", "Momentum [MeV]", "(S-S_{Pilot})/S_{Pilot} *100", 5e4, false);
+    draw_percentagesFit(piP_perc2, piP_perc3, piP_perc4, piP_perc5, piP_perc6, piP_perc_err2, piP_perc_err3, piP_perc_err4, piP_perc_err5, piP_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionProtonSepPowDiffPercFit.png" ).c_str(), "Difference in Pion Proton Separation", "Momentum [MeV]", "(S-S_{Pilot})/S_{Pilot} *100", 5e4, false);
+
+    draw_percentagesFit(mu_res_perc2, mu_res_perc3, mu_res_perc4, mu_res_perc5, mu_res_perc6, mu_res_perc_err2, mu_res_perc_err3, mu_res_perc_err4, mu_res_perc_err5, mu_res_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonResDiffPercFit.png" ).c_str(), "Difference in Muon Resolution", "Momentum [MeV]", "(R-R_{Pilot})/R_{Pilot} *100", 5e4, true);
+    draw_percentagesFit(pi_res_perc2, pi_res_perc3, pi_res_perc4, pi_res_perc5, pi_res_perc6, pi_res_perc_err2, pi_res_perc_err3, pi_res_perc_err4, pi_res_perc_err5, pi_res_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionResDiffPercFit.png" ).c_str(), "Difference in Pion Resolution", "Momentum [MeV]", "(R-R_{Pilot})/R_{Pilot} *100", 5e4, true);
+    draw_percentagesFit(p_res_perc2, p_res_perc3, p_res_perc4, p_res_perc5, p_res_perc6, p_res_perc_err2, p_res_perc_err3, p_res_perc_err4, p_res_perc_err5, p_res_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_ProtonResDiffPercFit.png" ).c_str(), "Difference in Proton Resolution", "Momentum [MeV]", "(R-R_{Pilot})/R_{Pilot} *100", 5e4, false);
+
 
     //print percentage differences
     outFile << "Percentage differences in separation power for muon-pion, muon-proton, and pion-proton pairs:\n\n";
