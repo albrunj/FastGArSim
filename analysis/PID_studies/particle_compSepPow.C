@@ -1473,6 +1473,68 @@ void draw_percentagesFit(std::vector<std::pair<float, float>> perc2, std::vector
 
 }
 
+void draw_histogram_overlay(TH1F* h1, TH1F* h2, const std::string& name1, const std::string& name2, Color_t color1, Color_t color2, const char* title, const std::string& outName, float ylim, bool norm){
+
+    TCanvas* canvas = new TCanvas("canvas", title, 800, 600);
+    
+    // Set style options for statistics box and fit parameters
+    gStyle->SetOptStat(0);
+    gStyle->SetOptFit(0);  
+
+    // Draw histograms
+    if (h1->Integral() != 0 && norm) {
+        h1->Scale(1.0 / h1->Integral(), "width");
+    }
+    if (h2->Integral() != 0 && norm) {
+        h2->Scale(1.0 / h2->Integral(), "width");
+    }
+
+    h2->SetLineWidth(2);
+    h2->SetLineColor(color2);
+    h2->SetFillStyle(0);
+    h2->SetTitle("");
+    h2->GetXaxis()->SetTitle("dE/dx [keV/cm]");
+    h2->GetYaxis()->SetTitle("Counts");
+    h2->GetYaxis()->SetRangeUser(0,ylim);
+    h2->Draw("hist");
+        
+    h1->SetLineWidth(2);
+    h1->SetLineColor(color1);
+    h1->SetFillStyle(0);
+    h1->Draw("hist same");
+
+    //add legend
+    TLegend* legend = new TLegend(0.65, 0.7, 0.9, 0.88);
+    legend->AddEntry(h1, name1.c_str(), "f");
+    legend->AddEntry(h2, name2.c_str(), "f");
+    legend->Draw();
+
+    TLatex dune;
+    dune.SetNDC();
+    dune.SetTextFont(62);     // Bold Helvetica
+    dune.SetTextSize(0.045);
+    dune.DrawLatex(0.12, 0.93, "DUNE");
+
+    TLatex prelim;
+    prelim.SetNDC();
+    prelim.SetTextFont(42);   // Regular Helvetica
+    prelim.SetTextSize(0.040);
+    prelim.DrawLatex(0.215, 0.93, "Simulation Preliminary");
+
+    // Save canvas to file
+    canvas->SaveAs(outName.c_str());
+    delete canvas;
+}
+
+auto getHist = [](TFile* f, const char* prefix, float low, float high) -> TH1F* {
+    TString name = Form("%s_p%.2f-%.2f", prefix, low, high);
+    auto* h = dynamic_cast<TH1F*>(f->Get(name));
+    if (!h) {
+        std::cerr << "Missing histogram: " << name << std::endl;
+    }
+    return h;
+};
+
 // main function
 void particle_compSepPow(const char* outName, const char* sample2, const char* sample3, const char* sample4, const char* sample5, const char* sample6, const char* inputTreeName = "SepTree") {
 
@@ -1930,6 +1992,65 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
     const int nPBins = 100; // number of momentum bins for p vs dE/dx graph
     float p_bin_min = std::log10(p_min); // MeV
     float p_bin_max = std::log10(p_max); // MeV
+
+    //create histogram vectors
+    std::vector<TH1F*> hMuon1(nPBins, nullptr), hPion1(nPBins, nullptr), hProton1(nPBins, nullptr);
+    std::vector<TH1F*> hMuon2(nPBins, nullptr), hPion2(nPBins, nullptr), hProton2(nPBins, nullptr);
+    std::vector<TH1F*> hMuon3(nPBins, nullptr), hPion3(nPBins, nullptr), hProton3(nPBins, nullptr);
+    std::vector<TH1F*> hMuon4(nPBins, nullptr), hPion4(nPBins, nullptr), hProton4(nPBins, nullptr);
+    std::vector<TH1F*> hMuon5(nPBins, nullptr), hPion5(nPBins, nullptr), hProton5(nPBins, nullptr);
+    std::vector<TH1F*> hMuon6(nPBins, nullptr), hPion6(nPBins, nullptr), hProton6(nPBins, nullptr);
+
+     //get histograms from files
+    for (size_t i = 0; i < nPBins; i++){
+
+        //define momentum edges for histogram names
+        //float p_bin_low = p_min + i * p_interval;
+        //float p_bin_high = p_min + (i + 1) * p_interval;
+        float p_bin_low = std::pow(10, p_bin_min + i * (p_bin_max - p_bin_min) / nPBins);
+        float p_bin_high = std::pow(10, p_bin_min + (i + 1) * (p_bin_max - p_bin_min) / nPBins);
+
+        //load histograms
+        TH1F* hMu1 = getHist(inputFile1, "hMuon",   p_bin_low, p_bin_high);
+        TH1F* hMu2 = getHist(inputFile2, "hMuon",   p_bin_low, p_bin_high);
+        TH1F* hMu3 = getHist(inputFile3, "hMuon",   p_bin_low, p_bin_high);
+        TH1F* hMu4 = getHist(inputFile4, "hMuon",   p_bin_low, p_bin_high);
+        TH1F* hMu5 = getHist(inputFile5, "hMuon",   p_bin_low, p_bin_high);
+        TH1F* hMu6 = getHist(inputFile6, "hMuon",   p_bin_low, p_bin_high);
+        TH1F* hPi1 = getHist(inputFile1, "hPion",   p_bin_low, p_bin_high);
+        TH1F* hPi2 = getHist(inputFile2, "hPion",   p_bin_low, p_bin_high);
+        TH1F* hPi3 = getHist(inputFile3, "hPion",   p_bin_low, p_bin_high);
+        TH1F* hPi4 = getHist(inputFile4, "hPion",   p_bin_low, p_bin_high);
+        TH1F* hPi5 = getHist(inputFile5, "hPion",   p_bin_low, p_bin_high);
+        TH1F* hPi6 = getHist(inputFile6, "hPion",   p_bin_low, p_bin_high);
+        TH1F* hPr1 =  getHist(inputFile1, "hProton", p_bin_low, p_bin_high);
+        TH1F* hPr2 =  getHist(inputFile2, "hProton", p_bin_low, p_bin_high);
+        TH1F* hPr3 =  getHist(inputFile3, "hProton", p_bin_low, p_bin_high);
+        TH1F* hPr4 =  getHist(inputFile4, "hProton", p_bin_low, p_bin_high);
+        TH1F* hPr5 =  getHist(inputFile5, "hProton", p_bin_low, p_bin_high);
+        TH1F* hPr6 =  getHist(inputFile6, "hProton", p_bin_low, p_bin_high);
+
+        hMuon1[i] = dynamic_cast<TH1F*>(hMu1->Clone(Form("hMuon1_p%.2f-%.2f", p_bin_low, p_bin_high)));
+        hMuon2[i] = dynamic_cast<TH1F*>(hMu2->Clone(Form("hMuon2_p%.2f-%.2f", p_bin_low, p_bin_high)));
+        hMuon3[i] = dynamic_cast<TH1F*>(hMu3->Clone(Form("hMuon3_p%.2f-%.2f", p_bin_low, p_bin_high)));
+        hMuon4[i] = dynamic_cast<TH1F*>(hMu4->Clone(Form("hMuon4_p%.2f-%.2f", p_bin_low, p_bin_high)));
+        hMuon5[i] = dynamic_cast<TH1F*>(hMu5->Clone(Form("hMuon5_p%.2f-%.2f", p_bin_low, p_bin_high)));
+        hMuon6[i] = dynamic_cast<TH1F*>(hMu6->Clone(Form("hMuon6_p%.2f-%.2f", p_bin_low, p_bin_high)));
+
+        hPion1[i] = dynamic_cast<TH1F*>(hPi1->Clone(Form("hPion1_p%.2f-%.2f", p_bin_low, p_bin_high)));
+        hPion2[i] = dynamic_cast<TH1F*>(hPi2->Clone(Form("hPion2_p%.2f-%.2f", p_bin_low, p_bin_high)));
+        hPion3[i] = dynamic_cast<TH1F*>(hPi3->Clone(Form("hPion3_p%.2f-%.2f", p_bin_low, p_bin_high)));
+        hPion4[i] = dynamic_cast<TH1F*>(hPi4->Clone(Form("hPion4_p%.2f-%.2f", p_bin_low, p_bin_high)));
+        hPion5[i] = dynamic_cast<TH1F*>(hPi5->Clone(Form("hPion5_p%.2f-%.2f", p_bin_low, p_bin_high)));
+        hPion6[i] = dynamic_cast<TH1F*>(hPi6->Clone(Form("hPion6_p%.2f-%.2f", p_bin_low, p_bin_high)));
+
+        hProton1[i] = dynamic_cast<TH1F*>(hPr1->Clone(Form("hProton1_p%.2f-%.2f", p_bin_low, p_bin_high)));
+        hProton2[i] = dynamic_cast<TH1F*>(hPr2->Clone(Form("hProton2_p%.2f-%.2f", p_bin_low, p_bin_high)));
+        hProton3[i] = dynamic_cast<TH1F*>(hPr3->Clone(Form("hProton3_p%.2f-%.2f", p_bin_low, p_bin_high)));
+        hProton4[i] = dynamic_cast<TH1F*>(hPr4->Clone(Form("hProton4_p%.2f-%.2f", p_bin_low, p_bin_high)));
+        hProton5[i] = dynamic_cast<TH1F*>(hPr5->Clone(Form("hProton5_p%.2f-%.2f", p_bin_low, p_bin_high)));
+        hProton6[i] = dynamic_cast<TH1F*>(hPr6->Clone(Form("hProton6_p%.2f-%.2f", p_bin_low, p_bin_high)));
+    }
 
     //get vectors
     std::vector<std::pair<float, float>> muPi_sep1, muP_sep1, piP_sep1;
@@ -3106,6 +3227,90 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
     draw_percentagesFit(pi_res_perc2, pi_res_perc3, pi_res_perc4, pi_res_perc5, pi_res_perc6, pi_res_perc_err2, pi_res_perc_err3, pi_res_perc_err4, pi_res_perc_err5, pi_res_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionResDiffPercFit.png" ).c_str(), "Difference in Pion Resolution", "Momentum [MeV]", "(R-R_{Pilot})/R_{Pilot} *100", 5e4, true);
     draw_percentagesFit(p_res_perc2, p_res_perc3, p_res_perc4, p_res_perc5, p_res_perc6, p_res_perc_err2, p_res_perc_err3, p_res_perc_err4, p_res_perc_err5, p_res_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_ProtonResDiffPercFit.png" ).c_str(), "Difference in Proton Resolution", "Momentum [MeV]", "(R-R_{Pilot})/R_{Pilot} *100", 5e4, false);
 
+    for (size_t i = 0; i < nPBins; i++){
+        //find momentum ranges
+        float p_bin_low = std::pow(10, p_bin_min + i * (p_bin_max - p_bin_min) / nPBins);
+        float p_bin_high = std::pow(10, p_bin_min + (i + 1) * (p_bin_max - p_bin_min) / nPBins);
+
+        std::string filename_mupi1 = "output_dEdx/" + std::string(outName) + "_muon_pion_p" + std::to_string(p_bin_low) + "_" + std::to_string(p_bin_high) + "_CDR_dEdx.png";
+        std::string filename_pip1 = "output_dEdx/" + std::string(outName) + "_pion_proton_p" + std::to_string(p_bin_low) + "_" + std::to_string(p_bin_high) + "_CDR_dEdx.png";
+        std::string filename_mup1 = "output_dEdx/" + std::string(outName) + "_muon_proton_p" + std::to_string(p_bin_low) + "_" + std::to_string(p_bin_high) + "_CDR_dEdx.png";
+    
+        std::string filename_mupi2 = "output_dEdx/" + std::string(outName) + "_muon_pion_p" + std::to_string(p_bin_low) + "_" + std::to_string(p_bin_high) + "_" + sample2 + "_dEdx.png";
+        std::string filename_pip2 = "output_dEdx/" + std::string(outName) + "_pion_proton_p" + std::to_string(p_bin_low) + "_" + std::to_string(p_bin_high) + "_" + sample2 + "_dEdx.png";
+        std::string filename_mup2 = "output_dEdx/" + std::string(outName) + "_muon_proton_p" + std::to_string(p_bin_low) + "_" + std::to_string(p_bin_high) + "_" + sample2 + "_dEdx.png";
+    
+        std::string filename_mupi3 = "output_dEdx/" + std::string(outName) + "_muon_pion_p" + std::to_string(p_bin_low) + "_" + std::to_string(p_bin_high) + "_" + sample3 + "_dEdx.png";
+        std::string filename_pip3 = "output_dEdx/" + std::string(outName) + "_pion_proton_p" + std::to_string(p_bin_low) + "_" + std::to_string(p_bin_high) + "_" + sample3 + "_dEdx.png";
+        std::string filename_mup3 = "output_dEdx/" + std::string(outName) + "_muon_proton_p" + std::to_string(p_bin_low) + "_" + std::to_string(p_bin_high) + "_" + sample3 + "_dEdx.png";
+    
+        std::string filename_mupi4 = "output_dEdx/" + std::string(outName) + "_muon_pion_p" + std::to_string(p_bin_low) + "_" + std::to_string(p_bin_high) + "_" + sample4 + "_dEdx.png";
+        std::string filename_pip4 = "output_dEdx/" + std::string(outName) + "_pion_proton_p" + std::to_string(p_bin_low) + "_" + std::to_string(p_bin_high) + "_" + sample4 + "_dEdx.png";
+        std::string filename_mup4 = "output_dEdx/" + std::string(outName) + "_muon_proton_p" + std::to_string(p_bin_low) + "_" + std::to_string(p_bin_high) + "_" + sample4 + "_dEdx.png";
+    
+        std::string filename_mupi5 = "output_dEdx/" + std::string(outName) + "_muon_pion_p" + std::to_string(p_bin_low) + "_" + std::to_string(p_bin_high) + "_" + sample5 + "_dEdx.png";
+        std::string filename_pip5 = "output_dEdx/" + std::string(outName) + "_pion_proton_p" + std::to_string(p_bin_low) + "_" + std::to_string(p_bin_high) + "_" + sample5 + "_dEdx.png";
+        std::string filename_mup5 = "output_dEdx/" + std::string(outName) + "_muon_proton_p" + std::to_string(p_bin_low) + "_" + std::to_string(p_bin_high) + "_" + sample5 + "_dEdx.png";
+    
+        std::string filename_mupi6 = "output_dEdx/" + std::string(outName) + "_muon_pion_p" + std::to_string(p_bin_low) + "_" + std::to_string(p_bin_high) + "_" + sample6 + "_dEdx.png";
+        std::string filename_pip6 = "output_dEdx/" + std::string(outName) + "_pion_proton_p" + std::to_string(p_bin_low) + "_" + std::to_string(p_bin_high) + "_" + sample6 + "_dEdx.png";
+        std::string filename_mup6 = "output_dEdx/" + std::string(outName) + "_muon_proton_p" + std::to_string(p_bin_low) + "_" + std::to_string(p_bin_high) + "_" + sample6 + "_dEdx.png";
+    
+        if (hMuon1[i]->GetEntries() > 300 && hPion1[i]->GetEntries() > 300 && (i > 34 && i < 57)){
+            if (hMuon1[i]->Integral() != 0) {
+                hMuon1[i]->Scale(1.0 / hMuon1[i]->Integral(), "width");
+            }
+            if (hPion1[i]->Integral() != 0) {
+                hPion1[i]->Scale(1.0 / hPion1[i]->Integral(), "width");
+            }
+            float lim = std::max(hMuon1[i]->GetMaximum(),hPion1[i]->GetMaximum())*1.2;
+            Color_t col_mu = kBlue;
+            Color_t col_pi = kRed;
+            draw_histogram_overlay(hPion1[i], hMuon1[i], "Pion", "Muon", col_pi, col_mu, "Muon-Pion", filename_mupi1.c_str(), lim, false);
+            draw_histogram_overlay(hPion2[i], hMuon2[i], "Pion", "Muon", col_pi, col_mu, "Muon-Pion", filename_mupi2.c_str(), lim, true);
+            draw_histogram_overlay(hPion3[i], hMuon3[i], "Pion", "Muon", col_pi, col_mu, "Muon-Pion", filename_mupi3.c_str(), lim, true);
+            draw_histogram_overlay(hPion4[i], hMuon4[i], "Pion", "Muon", col_pi, col_mu, "Muon-Pion", filename_mupi4.c_str(), lim, true);
+            draw_histogram_overlay(hPion5[i], hMuon5[i], "Pion", "Muon", col_pi, col_mu, "Muon-Pion", filename_mupi5.c_str(), lim, true);
+            draw_histogram_overlay(hPion6[i], hMuon6[i], "Pion", "Muon", col_pi, col_mu, "Muon-Pion", filename_mupi6.c_str(), lim, true);
+        }
+
+        if (hMuon1[i]->GetEntries() > 300 && hProton1[i]->GetEntries() > 300 && (i > 62 && i < 88)){
+            if (hMuon1[i]->Integral() != 0) {
+                hMuon1[i]->Scale(1.0 / hMuon1[i]->Integral(), "width");
+            }
+            if (hProton1[i]->Integral() != 0) {
+                hProton1[i]->Scale(1.0 / hProton1[i]->Integral(), "width");
+            }
+            float lim = std::max(hMuon1[i]->GetMaximum(),hProton1[i]->GetMaximum())*1.2;
+            Color_t col_mu = kBlue;
+            Color_t col_p = kGreen;
+            draw_histogram_overlay(hProton1[i], hMuon1[i], "Proton", "Muon", col_p, col_mu, "Muon-Proton", filename_mup1.c_str(), lim, false);
+            draw_histogram_overlay(hProton2[i], hMuon2[i], "Proton", "Muon", col_p, col_mu, "Muon-Proton", filename_mup2.c_str(), lim, true);
+            draw_histogram_overlay(hProton3[i], hMuon3[i], "Proton", "Muon", col_p, col_mu, "Muon-Proton", filename_mup3.c_str(), lim, true);
+            draw_histogram_overlay(hProton4[i], hMuon4[i], "Proton", "Muon", col_p, col_mu, "Muon-Proton", filename_mup4.c_str(), lim, true);
+            draw_histogram_overlay(hProton5[i], hMuon5[i], "Proton", "Muon", col_p, col_mu, "Muon-Proton", filename_mup5.c_str(), lim, true);
+            draw_histogram_overlay(hProton6[i], hMuon6[i], "Proton", "Muon", col_p, col_mu, "Muon-Proton", filename_mup6.c_str(), lim, true);
+        }
+
+        if (hPion1[i]->GetEntries() > 300 && hProton1[i]->GetEntries() > 300 && (i > 62 && i < 88)){
+            if (hPion1[i]->Integral() != 0) {
+                hPion1[i]->Scale(1.0 / hPion1[i]->Integral(), "width");
+            }
+            if (hProton1[i]->Integral() != 0) {
+                hProton1[i]->Scale(1.0 / hProton1[i]->Integral(), "width");
+            }
+            float lim = std::max(hPion1[i]->GetMaximum(),hProton1[i]->GetMaximum())*1.2;
+            Color_t col_pi = kRed;
+            Color_t col_p = kGreen;
+            draw_histogram_overlay(hProton1[i], hPion1[i], "Proton", "Pion", col_p, col_pi, "Pion-Proton", filename_pip1.c_str(), lim, false);
+            draw_histogram_overlay(hProton2[i], hPion2[i], "Proton", "Pion", col_p, col_pi, "Pion-Proton", filename_pip2.c_str(), lim, true);
+            draw_histogram_overlay(hProton3[i], hPion3[i], "Proton", "Pion", col_p, col_pi, "Pion-Proton", filename_pip3.c_str(), lim, true);
+            draw_histogram_overlay(hProton4[i], hPion4[i], "Proton", "Pion", col_p, col_pi, "Pion-Proton", filename_pip4.c_str(), lim, true);
+            draw_histogram_overlay(hProton5[i], hPion5[i], "Proton", "Pion", col_p, col_pi, "Pion-Proton", filename_pip5.c_str(), lim, true);
+            draw_histogram_overlay(hProton6[i], hPion6[i], "Proton", "Pion", col_p, col_pi, "Pion-Proton", filename_pip6.c_str(), lim, true);
+        }
+
+    }
 
     //print percentage differences
     outFile << "Percentage differences in separation power for muon-pion, muon-proton, and pion-proton pairs:\n\n";

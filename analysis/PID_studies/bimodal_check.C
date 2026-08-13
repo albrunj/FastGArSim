@@ -187,7 +187,8 @@ void draw_histogram_overlay(TH1F* h1, TH1F* h2, TH1F* h3, TH1F* h4, TH1F* h5, co
 }
 
 
-void draw_histogram_overlay2(TH1F* h1, TH1F* h2, const char* title, const std::string& outName){
+
+void draw_histogram_overlay2(TH1F* h1, TH1F* h2, const std::string& name1, const std::string& name2, const char* title, const std::string& outName){
 
     TCanvas* canvas = new TCanvas("canvas", title, 800, 600);
     
@@ -221,8 +222,8 @@ void draw_histogram_overlay2(TH1F* h1, TH1F* h2, const char* title, const std::s
 
     //add legend
     TLegend* legend = new TLegend(0.65, 0.7, 0.9, 0.88);
-    legend->AddEntry(h1, "Untruncated", "f");
-    legend->AddEntry(h2, "Truncated", "f");
+    legend->AddEntry(h1, name1.c_str(), "f");
+    legend->AddEntry(h2, name2.c_str(), "f");
     legend->Draw();
 
     TLatex dune;
@@ -398,6 +399,7 @@ void bimodal_check(const std::string& inputFileNameMuon, const std::string& inpu
     TH1F* hMuonOther = new TH1F("hMuonOther", "Muon dE/dx;dE/dx [keV/cm];Counts", 100, 0, 200);
     TH1F* hPionOther = new TH1F("hPionOther", "Pion dE/dx;dE/dx [keV/cm];Counts", 100, 0, 200);
     TH1F* hProtonOther = new TH1F("hProtonOther", "Proton dE/dx;dE/dx [keV/cm];Counts", 100, 0, 200);
+
 
     std::map<std::string, int> endProcessCountsMuon, endProcessCountsPion, endProcessCountsProton;
 
@@ -610,9 +612,9 @@ void bimodal_check(const std::string& inputFileNameMuon, const std::string& inpu
     draw_histogram_overlay(hPionDecay, hPionIons, hPionTrans, hPionOther, hPion, "Pion dE/dx Overlay", ("gaussiandEdx/" + sampleName + "_pion_dEdx_Overlay.png").c_str());
     draw_histogram_overlay(hProtonDecay, hProtonIons, hProtonTrans, hProtonOther, hProton, "Proton dE/dx Overlay", ("gaussiandEdx/" + sampleName + "_proton_dEdx_Overlay.png").c_str());
 
-    draw_histogram_overlay2(hMuonUntrLeave, hMuonLeaveTPC, "Muon Truncation", ("gaussiandEdx/" + sampleName + "_muon_dEdx_TruncOverlay.png").c_str());
-    draw_histogram_overlay2(hPionUntrLeave, hPionLeaveTPC, "Pion Truncation", ("gaussiandEdx/" + sampleName + "_pion_dEdx_TruncOverlay.png").c_str());
-    draw_histogram_overlay2(hProtonUntrLeave, hProtonLeaveTPC, "Proton Truncation", ("gaussiandEdx/" + sampleName + "_proton_dEdx_TruncOverlay.png").c_str());
+    draw_histogram_overlay2(hMuonUntrLeave, hMuonLeaveTPC, "Untruncated", "Truncated", "Muon Truncation", ("gaussiandEdx/" + sampleName + "_muon_dEdx_TruncOverlay.png").c_str());
+    draw_histogram_overlay2(hPionUntrLeave, hPionLeaveTPC, "Untruncated", "Truncated", "Pion Truncation", ("gaussiandEdx/" + sampleName + "_pion_dEdx_TruncOverlay.png").c_str());
+    draw_histogram_overlay2(hProtonUntrLeave, hProtonLeaveTPC, "Untruncated", "Truncated", "Proton Truncation", ("gaussiandEdx/" + sampleName + "_proton_dEdx_TruncOverlay.png").c_str());
 
     std::cout << "End process counts (Muon):\n";
     for (const auto& [process, count] : endProcessCountsMuon) {
