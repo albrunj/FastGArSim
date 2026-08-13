@@ -224,51 +224,51 @@ void comparison_particle_dEdx(const std::string& inputFileNameMuon, const std::s
     for (int i = 0; i < 5; i++) {
         float p_bin_low = 300 + 100 * i;
         float p_bin_high = 400 + 100 * i;
-        hMuonCDR[i] = new TH1F(Form("hMuonCDR_p%0.2f-%0.2f", p_bin_low, p_bin_high), Form("Muon dE/dx for p=%0.2f-%0.2f MeV/c; dE/dx [keV/cm]; Counts", p_bin_low, p_bin_high), 25, 0, 50);
-        hPionCDR[i] = new TH1F(Form("hPionCDR_p%0.2f-%0.2f", p_bin_low, p_bin_high), Form("Pion dE/dx for p=%0.2f-%0.2f MeV/c; dE/dx [keV/cm]; Counts", p_bin_low, p_bin_high), 25, 0, 50);
+        hMuonCDR[i] = new TH1F(Form("hMuonCDR_p%0.2f-%0.2f", p_bin_low, p_bin_high), Form("Muon dE/dx for p=%0.2f-%0.2f MeV/c; dE/dx [keV/cm]; Counts", p_bin_low, p_bin_high), 200, 0, 50);
+        hPionCDR[i] = new TH1F(Form("hPionCDR_p%0.2f-%0.2f", p_bin_low, p_bin_high), Form("Pion dE/dx for p=%0.2f-%0.2f MeV/c; dE/dx [keV/cm]; Counts", p_bin_low, p_bin_high), 200, 0, 50);
         
-        hMuon250[i] = new TH1F(Form("hMuon250_p%0.2f-%0.2f", p_bin_low, p_bin_high), Form("Muon dE/dx for p=%0.2f-%0.2f MeV/c; dE/dx [keV/cm]; Counts", p_bin_low, p_bin_high), 25, 0, 50);
-        hPion250[i] = new TH1F(Form("hPion250_p%0.2f-%0.2f", p_bin_low, p_bin_high), Form("Pion dE/dx for p=%0.2f-%0.2f MeV/c; dE/dx [keV/cm]; Counts", p_bin_low, p_bin_high), 25, 0, 50);
+        hMuon250[i] = new TH1F(Form("hMuon250_p%0.2f-%0.2f", p_bin_low, p_bin_high), Form("Muon dE/dx for p=%0.2f-%0.2f MeV/c; dE/dx [keV/cm]; Counts", p_bin_low, p_bin_high), 200, 0, 50);
+        hPion250[i] = new TH1F(Form("hPion250_p%0.2f-%0.2f", p_bin_low, p_bin_high), Form("Pion dE/dx for p=%0.2f-%0.2f MeV/c; dE/dx [keV/cm]; Counts", p_bin_low, p_bin_high), 200, 0, 50);
 
-        hMuon240[i] = new TH1F(Form("hMuon240_p%0.2f-%0.2f", p_bin_low, p_bin_high), Form("Muon dE/dx for p=%0.2f-%0.2f MeV/c; dE/dx [keV/cm]; Counts", p_bin_low, p_bin_high), 25, 0, 50);
-        hPion240[i] = new TH1F(Form("hPion240_p%0.2f-%0.2f", p_bin_low, p_bin_high), Form("Pion dE/dx for p=%0.2f-%0.2f MeV/c; dE/dx [keV/cm]; Counts", p_bin_low, p_bin_high), 25, 0, 50);
+        hMuon240[i] = new TH1F(Form("hMuon240_p%0.2f-%0.2f", p_bin_low, p_bin_high), Form("Muon dE/dx for p=%0.2f-%0.2f MeV/c; dE/dx [keV/cm]; Counts", p_bin_low, p_bin_high), 200, 0, 50);
+        hPion240[i] = new TH1F(Form("hPion240_p%0.2f-%0.2f", p_bin_low, p_bin_high), Form("Pion dE/dx for p=%0.2f-%0.2f MeV/c; dE/dx [keV/cm]; Counts", p_bin_low, p_bin_high), 200, 0, 50);
 
-        hMuon230[i] = new TH1F(Form("hMuon230_p%0.2f-%0.2f", p_bin_low, p_bin_high), Form("Muon dE/dx for p=%0.2f-%0.2f MeV/c; dE/dx [keV/cm]; Counts", p_bin_low, p_bin_high), 25, 0, 50);
-        hPion230[i] = new TH1F(Form("hPion230_p%0.2f-%0.2f", p_bin_low, p_bin_high), Form("Pion dE/dx for p=%0.2f-%0.2f MeV/c; dE/dx [keV/cm]; Counts", p_bin_low, p_bin_high), 25, 0, 50);
+        hMuon230[i] = new TH1F(Form("hMuon230_p%0.2f-%0.2f", p_bin_low, p_bin_high), Form("Muon dE/dx for p=%0.2f-%0.2f MeV/c; dE/dx [keV/cm]; Counts", p_bin_low, p_bin_high), 200, 0, 50);
+        hPion230[i] = new TH1F(Form("hPion230_p%0.2f-%0.2f", p_bin_low, p_bin_high), Form("Pion dE/dx for p=%0.2f-%0.2f MeV/c; dE/dx [keV/cm]; Counts", p_bin_low, p_bin_high), 200, 0, 50);
 
-        hMuon220[i] = new TH1F(Form("hMuon220_p%0.2f-%0.2f", p_bin_low, p_bin_high), Form("Muon dE/dx for p=%0.2f-%0.2f MeV/c; dE/dx [keV/cm]; Counts", p_bin_low, p_bin_high), 25, 0, 50);
-        hPion220[i] = new TH1F(Form("hPion220_p%0.2f-%0.2f", p_bin_low, p_bin_high), Form("Pion dE/dx for p=%0.2f-%0.2f MeV/c; dE/dx [keV/cm]; Counts", p_bin_low, p_bin_high), 25, 0, 50);
+        hMuon220[i] = new TH1F(Form("hMuon220_p%0.2f-%0.2f", p_bin_low, p_bin_high), Form("Muon dE/dx for p=%0.2f-%0.2f MeV/c; dE/dx [keV/cm]; Counts", p_bin_low, p_bin_high), 200, 0, 50);
+        hPion220[i] = new TH1F(Form("hPion220_p%0.2f-%0.2f", p_bin_low, p_bin_high), Form("Pion dE/dx for p=%0.2f-%0.2f MeV/c; dE/dx [keV/cm]; Counts", p_bin_low, p_bin_high), 200, 0, 50);
 
-        hMuon210[i] = new TH1F(Form("hMuon210_p%0.2f-%0.2f", p_bin_low, p_bin_high), Form("Muon dE/dx for p=%0.2f-%0.2f MeV/c; dE/dx [keV/cm]; Counts", p_bin_low, p_bin_high), 25, 0, 50);
-        hPion210[i] = new TH1F(Form("hPion210_p%0.2f-%0.2f", p_bin_low, p_bin_high), Form("Pion dE/dx for p=%0.2f-%0.2f MeV/c; dE/dx [keV/cm]; Counts", p_bin_low, p_bin_high), 25, 0, 50);
+        hMuon210[i] = new TH1F(Form("hMuon210_p%0.2f-%0.2f", p_bin_low, p_bin_high), Form("Muon dE/dx for p=%0.2f-%0.2f MeV/c; dE/dx [keV/cm]; Counts", p_bin_low, p_bin_high), 200, 0, 50);
+        hPion210[i] = new TH1F(Form("hPion210_p%0.2f-%0.2f", p_bin_low, p_bin_high), Form("Pion dE/dx for p=%0.2f-%0.2f MeV/c; dE/dx [keV/cm]; Counts", p_bin_low, p_bin_high), 200, 0, 50);
 
     }
     for (int i = 0; i < 5; i++) {
         float p_bin_low = 1000 + 400 * i;
         float p_bin_high = 1400 + 400 * i;
-        hMuonCDR[5+i] = new TH1F(Form("hMuonCDR_p%0.2f-%0.2f", p_bin_low, p_bin_high), Form("Muon dE/dx for p=%0.2f-%0.2f MeV/c; dE/dx [keV/cm]; Counts", p_bin_low, p_bin_high), 100, 0, 200);
-        hPionCDR[5+i] = new TH1F(Form("hPionCDR_p%0.2f-%0.2f", p_bin_low, p_bin_high), Form("Pion dE/dx for p=%0.2f-%0.2f MeV/c; dE/dx [keV/cm]; Counts", p_bin_low, p_bin_high), 100, 0, 200);
-        hProtonCDR[i] = new TH1F(Form("hProtonCDR_p%0.2f-%0.2f", p_bin_low, p_bin_high), Form("Proton dE/dx for p=%0.2f-%0.2f MeV/c; dE/dx [keV/cm]; Counts", p_bin_low, p_bin_high), 250, 0, 500);
+        hMuonCDR[5+i] = new TH1F(Form("hMuonCDR_p%0.2f-%0.2f", p_bin_low, p_bin_high), Form("Muon dE/dx for p=%0.2f-%0.2f MeV/c; dE/dx [keV/cm]; Counts", p_bin_low, p_bin_high), 200, 0, 50);
+        hPionCDR[5+i] = new TH1F(Form("hPionCDR_p%0.2f-%0.2f", p_bin_low, p_bin_high), Form("Pion dE/dx for p=%0.2f-%0.2f MeV/c; dE/dx [keV/cm]; Counts", p_bin_low, p_bin_high), 200, 0, 50);
+        hProtonCDR[i] = new TH1F(Form("hProtonCDR_p%0.2f-%0.2f", p_bin_low, p_bin_high), Form("Proton dE/dx for p=%0.2f-%0.2f MeV/c; dE/dx [keV/cm]; Counts", p_bin_low, p_bin_high), 200, 0, 50);
     
-        hMuon250[5+i] = new TH1F(Form("hMuon250_p%0.2f-%0.2f", p_bin_low, p_bin_high), Form("Muon dE/dx for p=%0.2f-%0.2f MeV/c; dE/dx [keV/cm]; Counts", p_bin_low, p_bin_high), 100, 0, 200);
-        hPion250[5+i] = new TH1F(Form("hPion250_p%0.2f-%0.2f", p_bin_low, p_bin_high), Form("Pion dE/dx for p=%0.2f-%0.2f MeV/c; dE/dx [keV/cm]; Counts", p_bin_low, p_bin_high), 100, 0, 200);
-        hProton250[i] = new TH1F(Form("hProton250_p%0.2f-%0.2f", p_bin_low, p_bin_high), Form("Proton dE/dx for p=%0.2f-%0.2f MeV/c; dE/dx [keV/cm]; Counts", p_bin_low, p_bin_high), 250, 0, 500);
+        hMuon250[5+i] = new TH1F(Form("hMuon250_p%0.2f-%0.2f", p_bin_low, p_bin_high), Form("Muon dE/dx for p=%0.2f-%0.2f MeV/c; dE/dx [keV/cm]; Counts", p_bin_low, p_bin_high), 200, 0, 50);
+        hPion250[5+i] = new TH1F(Form("hPion250_p%0.2f-%0.2f", p_bin_low, p_bin_high), Form("Pion dE/dx for p=%0.2f-%0.2f MeV/c; dE/dx [keV/cm]; Counts", p_bin_low, p_bin_high), 200, 0, 50);
+        hProton250[i] = new TH1F(Form("hProton250_p%0.2f-%0.2f", p_bin_low, p_bin_high), Form("Proton dE/dx for p=%0.2f-%0.2f MeV/c; dE/dx [keV/cm]; Counts", p_bin_low, p_bin_high), 200, 0, 50);
     
-        hMuon240[5+i] = new TH1F(Form("hMuon240_p%0.2f-%0.2f", p_bin_low, p_bin_high), Form("Muon dE/dx for p=%0.2f-%0.2f MeV/c; dE/dx [keV/cm]; Counts", p_bin_low, p_bin_high), 100, 0, 200);
-        hPion240[5+i] = new TH1F(Form("hPion240_p%0.2f-%0.2f", p_bin_low, p_bin_high), Form("Pion dE/dx for p=%0.2f-%0.2f MeV/c; dE/dx [keV/cm]; Counts", p_bin_low, p_bin_high), 100, 0, 200);
-        hProton240[i] = new TH1F(Form("hProton240_p%0.2f-%0.2f", p_bin_low, p_bin_high), Form("Proton dE/dx for p=%0.2f-%0.2f MeV/c; dE/dx [keV/cm]; Counts", p_bin_low, p_bin_high), 250, 0, 500);
+        hMuon240[5+i] = new TH1F(Form("hMuon240_p%0.2f-%0.2f", p_bin_low, p_bin_high), Form("Muon dE/dx for p=%0.2f-%0.2f MeV/c; dE/dx [keV/cm]; Counts", p_bin_low, p_bin_high), 200, 0, 50);
+        hPion240[5+i] = new TH1F(Form("hPion240_p%0.2f-%0.2f", p_bin_low, p_bin_high), Form("Pion dE/dx for p=%0.2f-%0.2f MeV/c; dE/dx [keV/cm]; Counts", p_bin_low, p_bin_high), 200, 0, 50);
+        hProton240[i] = new TH1F(Form("hProton240_p%0.2f-%0.2f", p_bin_low, p_bin_high), Form("Proton dE/dx for p=%0.2f-%0.2f MeV/c; dE/dx [keV/cm]; Counts", p_bin_low, p_bin_high), 200, 0, 50);
     
-        hMuon230[5+i] = new TH1F(Form("hMuon230_p%0.2f-%0.2f", p_bin_low, p_bin_high), Form("Muon dE/dx for p=%0.2f-%0.2f MeV/c; dE/dx [keV/cm]; Counts", p_bin_low, p_bin_high), 100, 0, 200);
-        hPion230[5+i] = new TH1F(Form("hPion230_p%0.2f-%0.2f", p_bin_low, p_bin_high), Form("Pion dE/dx for p=%0.2f-%0.2f MeV/c; dE/dx [keV/cm]; Counts", p_bin_low, p_bin_high), 100, 0, 200);
-        hProton230[i] = new TH1F(Form("hProton230_p%0.2f-%0.2f", p_bin_low, p_bin_high), Form("Proton dE/dx for p=%0.2f-%0.2f MeV/c; dE/dx [keV/cm]; Counts", p_bin_low, p_bin_high), 250, 0, 500);
+        hMuon230[5+i] = new TH1F(Form("hMuon230_p%0.2f-%0.2f", p_bin_low, p_bin_high), Form("Muon dE/dx for p=%0.2f-%0.2f MeV/c; dE/dx [keV/cm]; Counts", p_bin_low, p_bin_high), 200, 0, 50);
+        hPion230[5+i] = new TH1F(Form("hPion230_p%0.2f-%0.2f", p_bin_low, p_bin_high), Form("Pion dE/dx for p=%0.2f-%0.2f MeV/c; dE/dx [keV/cm]; Counts", p_bin_low, p_bin_high), 200, 0, 50);
+        hProton230[i] = new TH1F(Form("hProton230_p%0.2f-%0.2f", p_bin_low, p_bin_high), Form("Proton dE/dx for p=%0.2f-%0.2f MeV/c; dE/dx [keV/cm]; Counts", p_bin_low, p_bin_high), 200, 0, 50);
     
-        hMuon220[5+i] = new TH1F(Form("hMuon220_p%0.2f-%0.2f", p_bin_low, p_bin_high), Form("Muon dE/dx for p=%0.2f-%0.2f MeV/c; dE/dx [keV/cm]; Counts", p_bin_low, p_bin_high), 100, 0, 200);
-        hPion220[5+i] = new TH1F(Form("hPion220_p%0.2f-%0.2f", p_bin_low, p_bin_high), Form("Pion dE/dx for p=%0.2f-%0.2f MeV/c; dE/dx [keV/cm]; Counts", p_bin_low, p_bin_high), 100, 0, 200);
-        hProton220[i] = new TH1F(Form("hProton220_p%0.2f-%0.2f", p_bin_low, p_bin_high), Form("Proton dE/dx for p=%0.2f-%0.2f MeV/c; dE/dx [keV/cm]; Counts", p_bin_low, p_bin_high), 250, 0, 500);
+        hMuon220[5+i] = new TH1F(Form("hMuon220_p%0.2f-%0.2f", p_bin_low, p_bin_high), Form("Muon dE/dx for p=%0.2f-%0.2f MeV/c; dE/dx [keV/cm]; Counts", p_bin_low, p_bin_high), 200, 0, 50);
+        hPion220[5+i] = new TH1F(Form("hPion220_p%0.2f-%0.2f", p_bin_low, p_bin_high), Form("Pion dE/dx for p=%0.2f-%0.2f MeV/c; dE/dx [keV/cm]; Counts", p_bin_low, p_bin_high), 200, 0, 50);
+        hProton220[i] = new TH1F(Form("hProton220_p%0.2f-%0.2f", p_bin_low, p_bin_high), Form("Proton dE/dx for p=%0.2f-%0.2f MeV/c; dE/dx [keV/cm]; Counts", p_bin_low, p_bin_high), 200, 0, 50);
     
-        hMuon210[5+i] = new TH1F(Form("hMuon210_p%0.2f-%0.2f", p_bin_low, p_bin_high), Form("Muon dE/dx for p=%0.2f-%0.2f MeV/c; dE/dx [keV/cm]; Counts", p_bin_low, p_bin_high), 100, 0, 200);
-        hPion210[5+i] = new TH1F(Form("hPion210_p%0.2f-%0.2f", p_bin_low, p_bin_high), Form("Pion dE/dx for p=%0.2f-%0.2f MeV/c; dE/dx [keV/cm]; Counts", p_bin_low, p_bin_high), 100, 0, 200);
-        hProton210[i] = new TH1F(Form("hProton210_p%0.2f-%0.2f", p_bin_low, p_bin_high), Form("Proton dE/dx for p=%0.2f-%0.2f MeV/c; dE/dx [keV/cm]; Counts", p_bin_low, p_bin_high), 250, 0, 500);
+        hMuon210[5+i] = new TH1F(Form("hMuon210_p%0.2f-%0.2f", p_bin_low, p_bin_high), Form("Muon dE/dx for p=%0.2f-%0.2f MeV/c; dE/dx [keV/cm]; Counts", p_bin_low, p_bin_high), 200, 0, 50);
+        hPion210[5+i] = new TH1F(Form("hPion210_p%0.2f-%0.2f", p_bin_low, p_bin_high), Form("Pion dE/dx for p=%0.2f-%0.2f MeV/c; dE/dx [keV/cm]; Counts", p_bin_low, p_bin_high), 200, 0, 50);
+        hProton210[i] = new TH1F(Form("hProton210_p%0.2f-%0.2f", p_bin_low, p_bin_high), Form("Proton dE/dx for p=%0.2f-%0.2f MeV/c; dE/dx [keV/cm]; Counts", p_bin_low, p_bin_high), 200, 0, 50);
     
     }
 
