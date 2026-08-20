@@ -614,6 +614,30 @@ fit_results calc_res(TH1F* hist){
     return {sigma, mean, res, sigma_err, mean_err, res_err, cov_mean_sigma};
 }
 
+fit_results calc_res_iqr(TH1F* hist){
+    //TF1* fit = hist->Fit("gaus");
+
+    if (!hist || hist->GetEntries() == 0 || hist->Integral() <= 0){
+        return {0, 0, 0, 0, 0, 0, 0};
+    }
+
+    IQR_results iqr_results = calc_IQR(hist);
+    if (iqr_results.sigma == 0 || iqr_results.mean == 0){
+        return {0, 0, 0, 0, 0, 0, 0};
+    }
+
+    double mean      = iqr_results.mean;
+    double mean_err  = 0;
+    double sigma     = iqr_results.sigma;
+    double sigma_err = 0;
+
+    double cov_mean_sigma = 0;
+
+    double res = sigma / mean;
+    double res_err = 0;
+    return {sigma, mean, res, sigma_err, mean_err, res_err, cov_mean_sigma};
+}
+
 
     
 /*
@@ -1111,15 +1135,18 @@ void particle_dEdx(const std::string& inputFileNameMuon, const std::string& inpu
             //float s_pi = hPion[i]->GetRMS();
             //hPion[i]->Fit("gaus", "Q", "", m_pi - 2*s_pi, m_pi + 2*s_pi);
             fit_results pi_fit = calc_res(hPion[i]); //get fit parameters
+            /*
             float frac_err_mu = mu_fit.mean_err / mu_fit.mean;
             float frac_err_pi = pi_fit.mean_err / pi_fit.mean;
             float frac_err_sigma_mu = mu_fit.sigma_err / mu_fit.sigma;
             float frac_err_sigma_pi = pi_fit.sigma_err / pi_fit.sigma;
+            */
             if((mu_fit.sigma > 0 && mu_fit.mean > 0) && (pi_fit.sigma > 0 && pi_fit.mean > 0)){// && (frac_err_mu < 0.5) && (frac_err_pi < 0.5) && (frac_err_sigma_mu < 0.5) && (frac_err_sigma_pi < 0.5)){ //skip if either fail
                 float denominator = std::sqrt(mu_fit.sigma * mu_fit.sigma + pi_fit.sigma * pi_fit.sigma);
                 float numerator = std::abs(mu_fit.mean - pi_fit.mean);
                 if (denominator != 0){ //avoid division by 0
                     float sep_pow = numerator / denominator;
+                    
                     float dS_dmu1 = 1/denominator;
                     float dS_dmu2 = -1/denominator;
                     float dS_dsigma1 = -numerator * mu_fit.sigma / (denominator*denominator*denominator);
@@ -1130,6 +1157,8 @@ void particle_dEdx(const std::string& inputFileNameMuon, const std::string& inpu
                         + dS_dsigma2*dS_dsigma2 * pi_fit.sigma_err*pi_fit.sigma_err
                         + 2 * dS_dmu1 * dS_dsigma1 * mu_fit.cov_mean_sigma
                         + 2 * dS_dmu2 * dS_dsigma2 * pi_fit.cov_mean_sigma);
+                        
+                    //float sep_pow_err = 0;
                     muon_pion_sp.push_back(sep_pow);
                     mom_vec1.push_back(p_bin_center);
                     mom_vec1_err.push_back(p_bin_err);
@@ -1148,15 +1177,18 @@ void particle_dEdx(const std::string& inputFileNameMuon, const std::string& inpu
             //float s_p = hProton[i]->GetRMS();
             //hProton[i]->Fit("gaus", "Q", "", m_p - 2*s_p, m_p + 2*s_p);
             fit_results p_fit = calc_res(hProton[i]); //get fit parameters
+            /*
             float frac_err_mu = mu_fit.mean_err / mu_fit.mean;
             float frac_err_p = p_fit.mean_err / p_fit.mean;
             float frac_err_sigma_mu = mu_fit.sigma_err / mu_fit.sigma;
             float frac_err_sigma_p = p_fit.sigma_err / p_fit.sigma;
+            */
             if((mu_fit.sigma > 0 && mu_fit.mean > 0) && (p_fit.sigma > 0 && p_fit.mean > 0)){// && (frac_err_mu < 0.5) && (frac_err_p < 0.5) && (frac_err_sigma_mu < 0.5) && (frac_err_sigma_p < 0.5)){ //skip if either fail
                 float denominator = std::sqrt(mu_fit.sigma * mu_fit.sigma + p_fit.sigma * p_fit.sigma);
                 float numerator = std::abs(mu_fit.mean - p_fit.mean);
                 if (denominator != 0) { //avoid division by 0
                     float sep_pow = numerator / denominator;
+                    
                     float dS_dmu1 = 1/denominator;
                     float dS_dmu2 = -1/denominator;
                     float dS_dsigma1 = -numerator * mu_fit.sigma / (denominator*denominator*denominator);
@@ -1167,6 +1199,8 @@ void particle_dEdx(const std::string& inputFileNameMuon, const std::string& inpu
                         + dS_dsigma2*dS_dsigma2 * p_fit.sigma_err*p_fit.sigma_err
                         + 2 * dS_dmu1 * dS_dsigma1 * mu_fit.cov_mean_sigma
                         + 2 * dS_dmu2 * dS_dsigma2 * p_fit.cov_mean_sigma);
+                        
+                    //float sep_pow_err = 0;
                     muon_proton_sp.push_back(sep_pow);
                     mom_vec2.push_back(p_bin_center);
                     mom_vec2_err.push_back(p_bin_err);
@@ -1185,25 +1219,30 @@ void particle_dEdx(const std::string& inputFileNameMuon, const std::string& inpu
             //float s_p = hProton[i]->GetRMS();
             //hProton[i]->Fit("gaus", "Q", "", m_p - 2*s_p, m_p + 2*s_p);
             fit_results p_fit = calc_res(hProton[i]); //get fit parameters
+            /*
             float frac_err_pi = pi_fit.mean_err / pi_fit.mean;
             float frac_err_p = p_fit.mean_err / p_fit.mean;
             float frac_err_sigma_pi = pi_fit.sigma_err / pi_fit.sigma;
             float frac_err_sigma_p = p_fit.sigma_err / p_fit.sigma;
+            */
             if((pi_fit.sigma > 0 && pi_fit.mean > 0) && (p_fit.sigma > 0 && p_fit.mean > 0)){// && (frac_err_pi < 0.5) && (frac_err_p < 0.5) && (frac_err_sigma_pi < 0.5) && (frac_err_sigma_p < 0.5)){ //skip if either fail
                 float denominator = std::sqrt(pi_fit.sigma * pi_fit.sigma + p_fit.sigma * p_fit.sigma);
                 float numerator = std::abs(pi_fit.mean - p_fit.mean);
                 if (denominator != 0){ //avoid division by 0
                     float sep_pow = numerator / denominator;
+                    
                     float dS_dmu1 = 1/denominator;
                     float dS_dmu2 = -1/denominator;
-                    float dS_dsigma1 = -numerator * pi_fit.sigma / (denominator*denominator*denominator);
-                    float dS_dsigma2 = -numerator * p_fit.sigma / (denominator*denominator*denominator);
-                    float sep_pow_err = std::sqrt(dS_dmu1*dS_dmu1 * pi_fit.mean_err*pi_fit.mean_err 
-                        + dS_dmu2*dS_dmu2 * p_fit.mean_err*p_fit.mean_err 
-                        + dS_dsigma1*dS_dsigma1 * pi_fit.sigma_err*pi_fit.sigma_err 
-                        + dS_dsigma2*dS_dsigma2 * p_fit.sigma_err*p_fit.sigma_err
-                        + 2 * dS_dmu1 * dS_dsigma1 * pi_fit.cov_mean_sigma
-                        + 2 * dS_dmu2 * dS_dsigma2 * p_fit.cov_mean_sigma);
+                    float dS_dsigma1 = -numerator * p_fit.sigma / (denominator*denominator*denominator);
+                    float dS_dsigma2 = -numerator * pi_fit.sigma / (denominator*denominator*denominator);
+                    float sep_pow_err = std::sqrt(dS_dmu1*dS_dmu1 * p_fit.mean_err*p_fit.mean_err 
+                        + dS_dmu2*dS_dmu2 * pi_fit.mean_err*pi_fit.mean_err 
+                        + dS_dsigma1*dS_dsigma1 * p_fit.sigma_err*p_fit.sigma_err 
+                        + dS_dsigma2*dS_dsigma2 * pi_fit.sigma_err*pi_fit.sigma_err
+                        + 2 * dS_dmu1 * dS_dsigma1 * p_fit.cov_mean_sigma
+                        + 2 * dS_dmu2 * dS_dsigma2 * pi_fit.cov_mean_sigma);
+                        
+                    //float sep_pow_err = 0;
                     pion_proton_sp.push_back(sep_pow);
                     mom_vec3.push_back(p_bin_center);
                     mom_vec3_err.push_back(p_bin_err);

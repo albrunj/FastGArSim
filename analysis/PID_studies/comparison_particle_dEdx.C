@@ -56,12 +56,13 @@ void draw_histogram_overlay(TH1F* h1, TH1F* h2, const std::string& name1, const 
     gStyle->SetOptFit(0);  
 
     // Draw histograms
+    /*
     if (h1->Integral() != 0 && norm) {
         h1->Scale(1.0 / h1->Integral(), "width");
     }
     if (h2->Integral() != 0 && norm) {
         h2->Scale(1.0 / h2->Integral(), "width");
-    }
+    }*/
 
     h2->SetLineWidth(2);
     h2->SetLineColor(color2);
@@ -372,8 +373,10 @@ void comparison_particle_dEdx(const std::string& inputFileNameMuon, const std::s
             size_t nTpcHits = tpcHitTrackID->size();
             int this_trackID = trackID->at(i);
 
+            if (creatorProcess->at(i) != "primary") continue;
+
             for (size_t j = 0; j < nTpcHits; j++) {
-                if (tpcHitTrackID->at(j) == this_trackID && creatorProcess->at(i) == "primary") {
+                if (tpcHitTrackID->at(j) == this_trackID) {
                     if (tpcHitIsSec->at(j)) continue; // skip secondary hits
                     if (tpcHitEdep->at(j) <= 0) continue; // skip hits with no energy deposit
                     if (tpcHitStepSize->at(j) <= 0) continue; // skip hits with no step size
@@ -381,22 +384,22 @@ void comparison_particle_dEdx(const std::string& inputFileNameMuon, const std::s
                     float edep = tpcHitEdep->at(j);
                     float stepSize = tpcHitStepSize->at(j);
                     if (stepSize <= 0) continue;
-                    if ((std::abs(tpcHitX->at(j)) <= 260 && std::abs(tpcHitY->at(j)) <= 260) && ((std::abs(end_x) >= 260) && (std::abs(end_y) >= 260))){
+                    if ((std::abs(tpcHitX->at(j)) <= 260 && std::abs(tpcHitY->at(j)) <= 260) && ((std::abs(end_x) >= 260) || (std::abs(end_y) >= 260))){
                         dEdx_valuesCDR.push_back((edep / stepSize)*1000); // convert to keV/cm
                     }
-                    if ((std::abs(tpcHitX->at(j)) <= 250 && std::abs(tpcHitY->at(j)) <= 250) && ((std::abs(end_x) >= 250) && (std::abs(end_y) >= 250))){
+                    if ((std::abs(tpcHitX->at(j)) <= 250 && std::abs(tpcHitY->at(j)) <= 250) && ((std::abs(end_x) >= 250) || (std::abs(end_y) >= 250))){
                         dEdx_values250.push_back((edep / stepSize)*1000); // convert to keV/cm
                     }
-                    if ((std::abs(tpcHitX->at(j)) <= 240 && std::abs(tpcHitY->at(j)) <= 240) && ((std::abs(end_x) >= 240) && (std::abs(end_y) >= 240))){
+                    if ((std::abs(tpcHitX->at(j)) <= 240 && std::abs(tpcHitY->at(j)) <= 240) && ((std::abs(end_x) >= 240) || (std::abs(end_y) >= 240))){
                         dEdx_values240.push_back((edep / stepSize)*1000); // convert to keV/cm
                     }
-                    if ((std::abs(tpcHitX->at(j)) <= 230 && std::abs(tpcHitY->at(j)) <= 230) && ((std::abs(end_x) >= 230) && (std::abs(end_y) >= 230))){
+                    if ((std::abs(tpcHitX->at(j)) <= 230 && std::abs(tpcHitY->at(j)) <= 230) && ((std::abs(end_x) >= 230) || (std::abs(end_y) >= 230))){
                         dEdx_values230.push_back((edep / stepSize)*1000); // convert to keV/cm
                     }
-                    if ((std::abs(tpcHitX->at(j)) <= 220 && std::abs(tpcHitY->at(j)) <= 220) && ((std::abs(end_x) >= 220) && (std::abs(end_y) >= 220))){
+                    if ((std::abs(tpcHitX->at(j)) <= 220 && std::abs(tpcHitY->at(j)) <= 220) && ((std::abs(end_x) >= 220) || (std::abs(end_y) >= 220))){
                         dEdx_values220.push_back((edep / stepSize)*1000); // convert to keV/cm
                     }
-                    if ((std::abs(tpcHitX->at(j)) <= 210 && std::abs(tpcHitY->at(j)) <= 210) && ((std::abs(end_x) >= 210) && (std::abs(end_y) >= 210))){
+                    if ((std::abs(tpcHitX->at(j)) <= 210 && std::abs(tpcHitY->at(j)) <= 210) && ((std::abs(end_x) >= 210) || (std::abs(end_y) >= 210))){
                         dEdx_values210.push_back((edep / stepSize)*1000); // convert to keV/cm
                     }
                 }
@@ -516,7 +519,6 @@ void comparison_particle_dEdx(const std::string& inputFileNameMuon, const std::s
         float p_bin_low = 1000 + 400 * i;
         float p_bin_high = 1400 + 400 * i;
 
-
         Color_t col_mu = kBlue;
         Color_t col_pi = kRed;
         Color_t col_p = kGreen;
@@ -546,12 +548,14 @@ void comparison_particle_dEdx(const std::string& inputFileNameMuon, const std::s
         std::string filename_mup6 = "output_dEdx_comp/" + std::string(sampleName) + "_muon_proton_p" + std::to_string(p_bin_low) + "_" + std::to_string(p_bin_high) + "_rad210cm_dEdx.png";
     
         if (hMuonCDR[i]->GetEntries() > 300 && hPionCDR[i]->GetEntries() > 300){
+            /*
             if (hMuonCDR[i]->Integral() != 0) {
                 hMuonCDR[i]->Scale(1.0 / hMuonCDR[i]->Integral(), "width");
             }
             if (hPionCDR[i]->Integral() != 0) {
                 hPionCDR[i]->Scale(1.0 / hPionCDR[i]->Integral(), "width");
             }
+            */
             float lim = std::max(hMuonCDR[i]->GetMaximum(),hPionCDR[i]->GetMaximum())*1.2;
             
             draw_histogram_overlay(hPionCDR[i], hMuonCDR[i], "Pion", "Muon", col_pi, col_mu, "Muon-Pion", filename_mupi1.c_str(), lim, false);
@@ -563,12 +567,13 @@ void comparison_particle_dEdx(const std::string& inputFileNameMuon, const std::s
         }
 
         if (hMuonCDR[i+5]->GetEntries() > 300 && hProtonCDR[i]->GetEntries() > 300){
+            /*
             if (hMuonCDR[i+5]->Integral() != 0) {
                 hMuonCDR[i+5]->Scale(1.0 / hMuonCDR[i+5]->Integral(), "width");
             }
             if (hProtonCDR[i]->Integral() != 0) {
                 hProtonCDR[i]->Scale(1.0 / hProtonCDR[i]->Integral(), "width");
-            }
+            }*/
             float lim = std::max(hMuonCDR[i+5]->GetMaximum(),hProtonCDR[i]->GetMaximum())*1.2;
 
             draw_histogram_overlay(hProtonCDR[i], hMuonCDR[i+5], "Proton", "Muon", col_p, col_mu, "Muon-Proton", filename_mup1.c_str(), lim, false);
@@ -580,12 +585,13 @@ void comparison_particle_dEdx(const std::string& inputFileNameMuon, const std::s
         }
 
         if (hPionCDR[i+5]->GetEntries() > 300 && hProtonCDR[i]->GetEntries() > 300){
+            /*
             if (hPionCDR[i+5]->Integral() != 0) {
                 hPionCDR[i+5]->Scale(1.0 / hPionCDR[i+5]->Integral(), "width");
             }
             if (hProtonCDR[i]->Integral() != 0) {
                 hProtonCDR[i]->Scale(1.0 / hProtonCDR[i]->Integral(), "width");
-            }
+            }*/
             float lim = std::max(hPionCDR[i+5]->GetMaximum(),hProtonCDR[i]->GetMaximum())*1.2;
             
             draw_histogram_overlay(hProtonCDR[i], hPionCDR[i+5], "Proton", "Pion", col_p, col_pi, "Pion-Proton", filename_pip1.c_str(), lim, false);
