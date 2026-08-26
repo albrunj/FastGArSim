@@ -772,14 +772,23 @@ void draw_percentages(std::vector<std::pair<float, float>> perc2, std::vector<st
         *std::max_element(clean_x6.begin(), clean_x6.end())
     });
 
+    float x_min = std::max({
+        *std::min_element(clean_x2.begin(), clean_x2.end()),
+        *std::min_element(clean_x3.begin(), clean_x3.end()),
+        *std::min_element(clean_x4.begin(), clean_x4.end()),
+        *std::min_element(clean_x5.begin(), clean_x5.end()),
+        *std::min_element(clean_x6.begin(), clean_x6.end())
+    });
+
     if (y_min > -0.1) y_min = -0.1;
     if (y_max < 25) y_max = 25; //make sure legend doesnt cover points
     if (y_min < -100) y_min = -100;
     if (y_max > 100) y_max = 100;
     if (x_max<1e3) x_max = 1e3;
+    if (x_min>7.0e1) x_min = 7.0e1;
 
     TH1F* frame = canvas->DrawFrame(
-        0.8*7.0e1,
+        0.8*x_min,
         1.2*y_min,
         1.2*x_max,
         1.2*y_max
@@ -1020,14 +1029,23 @@ void draw_percentages_line(std::vector<std::pair<float, float>> perc2, std::vect
         *std::max_element(clean_x6.begin(), clean_x6.end())
     });
 
+    float x_min = std::max({
+        *std::min_element(clean_x2.begin(), clean_x2.end()),
+        *std::min_element(clean_x3.begin(), clean_x3.end()),
+        *std::min_element(clean_x4.begin(), clean_x4.end()),
+        *std::min_element(clean_x5.begin(), clean_x5.end()),
+        *std::min_element(clean_x6.begin(), clean_x6.end())
+    });
+
     if (y_min > -0.1) y_min = -0.1;
     if (y_max < 25) y_max = 25; //make sure legend doesnt cover points
     if (y_min < -100) y_min = -100;
     if (y_max > 100) y_max = 100;
     if (x_max<1e3) x_max = 1e3;
+    if (x_min>7.0e1) x_min = 7.0e1;
 
     TH1F* frame = canvas->DrawFrame(
-        0.8*7.0e1,
+        0.8*x_min,
         1.2*y_min,
         1.2*x_max,
         1.2*y_max
@@ -1053,6 +1071,7 @@ void draw_percentages_line(std::vector<std::pair<float, float>> perc2, std::vect
     gr2->SetMarkerStyle(20);
     gr2->SetMarkerColor(kBlue);
     gr2->SetLineColor(kBlue);
+    gr2->SetLineWidth(5);
     gr2->Draw("L SAME");
 
 
@@ -1061,6 +1080,7 @@ void draw_percentages_line(std::vector<std::pair<float, float>> perc2, std::vect
     gr3->SetMarkerStyle(20);
     gr3->SetMarkerColor(kGreen);
     gr3->SetLineColor(kGreen);
+    gr3->SetLineWidth(5);
     gr3->Draw("L SAME");
 
 
@@ -1068,18 +1088,21 @@ void draw_percentages_line(std::vector<std::pair<float, float>> perc2, std::vect
     gr4->SetMarkerStyle(20);
     gr4->SetMarkerColor(kOrange);
     gr4->SetLineColor(kOrange);
+    gr4->SetLineWidth(5);
     gr4->Draw("L SAME");
 
     TGraphErrors* gr5 = new TGraphErrors(clean_x5.size(), clean_x5.data(), clean_y5.data(), err_x5.data(), err_y5.data());
     gr5->SetMarkerStyle(20);
     gr5->SetMarkerColor(kMagenta);
     gr5->SetLineColor(kMagenta);
+    gr5->SetLineWidth(5);
     gr5->Draw("L SAME");
 
     TGraphErrors* gr6 = new TGraphErrors(clean_x6.size(), clean_x6.data(), clean_y6.data(), err_x6.data(), err_y6.data());
     gr6->SetMarkerStyle(20);
     gr6->SetMarkerColor(kCyan-5);
     gr6->SetLineColor(kCyan-5);
+    gr6->SetLineWidth(5);
     gr6->Draw("L SAME");
 
 
@@ -1362,14 +1385,23 @@ void draw_percentagesWithFit(std::vector<std::pair<float, float>> perc2, std::ve
         *std::max_element(clean_x6.begin(), clean_x6.end())
     });
 
+    float x_min = std::max({
+        *std::min_element(clean_x2.begin(), clean_x2.end()),
+        *std::min_element(clean_x3.begin(), clean_x3.end()),
+        *std::min_element(clean_x4.begin(), clean_x4.end()),
+        *std::min_element(clean_x5.begin(), clean_x5.end()),
+        *std::min_element(clean_x6.begin(), clean_x6.end())
+    });
+
     if (y_min > -0.1) y_min = -0.1;
     if (y_max < 25) y_max = 25; //make sure legend doesnt cover points
     if (y_min < -100) y_min = -100;
     if (y_max > 100) y_max = 100;
     if (x_max<1e3) x_max = 1e3;
+    if (x_min>7.0e1) x_min = 7.0e1;
 
     TH1F* frame = canvas->DrawFrame(
-        0.8*7.0e1,
+        0.8*x_min,
         1.2*y_min,
         1.2*x_max,
         1.2*y_max
@@ -1616,14 +1648,23 @@ void draw_percentagesFit(std::vector<std::pair<float, float>> perc2, std::vector
         *std::max_element(clean_x6.begin(), clean_x6.end())
     });
 
+    float x_min = std::max({
+        *std::min_element(clean_x2.begin(), clean_x2.end()),
+        *std::min_element(clean_x3.begin(), clean_x3.end()),
+        *std::min_element(clean_x4.begin(), clean_x4.end()),
+        *std::min_element(clean_x5.begin(), clean_x5.end()),
+        *std::min_element(clean_x6.begin(), clean_x6.end())
+    });
+
     if (y_min > -0.1) y_min = -0.1;
-    //if (y_max < 40) y_max = 40;
+    if (y_max < 25) y_max = 25; //make sure legend doesnt cover points
     if (y_min < -100) y_min = -100;
     if (y_max > 100) y_max = 100;
     if (x_max<1e3) x_max = 1e3;
+    if (x_min>7.0e1) x_min = 7.0e1;
 
     TH1F* frame = canvas->DrawFrame(
-        0.8*7.0e1,
+        0.8*x_min,
         1.2*y_min,
         1.2*x_max,
         1.2*y_max
@@ -1776,6 +1817,15 @@ void draw_histogram_overlay(TH1F* h1, TH1F* h2, const std::string& name1, const 
 
 auto getHist = [](TFile* f, const char* prefix, float low, float high) -> TH1F* {
     TString name = Form("%s_p%.2f-%.2f", prefix, low, high);
+    auto* h = dynamic_cast<TH1F*>(f->Get(name));
+    if (!h) {
+        std::cerr << "Missing histogram: " << name << std::endl;
+    }
+    return h;
+};
+
+auto getHistL = [](TFile* f, const char* prefix, float low, float high) -> TH1F* {
+    TString name = Form("%s_l%.2f-%.2f", prefix, low, high);
     auto* h = dynamic_cast<TH1F*>(f->Get(name));
     if (!h) {
         std::cerr << "Missing histogram: " << name << std::endl;
@@ -1953,6 +2003,80 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
     std::vector<Float_t>* muP_6_err = nullptr;
     std::vector<Float_t>* piP_6_err = nullptr;
 
+    std::vector<Float_t>* muPi_track_1 = nullptr;
+    std::vector<Float_t>* muP_track_1 = nullptr;
+    std::vector<Float_t>* piP_track_1 = nullptr;
+    std::vector<Float_t>* track_muPi_1 = nullptr;
+    std::vector<Float_t>* track_muP_1 = nullptr;
+    std::vector<Float_t>* track_piP_1 = nullptr;
+    std::vector<Float_t>* mpi_track_err_1 = nullptr;
+    std::vector<Float_t>* mp_track_err_1 = nullptr;
+    std::vector<Float_t>* pp_track_err_1 = nullptr;
+    std::vector<Float_t>* muPi_track_1_err = nullptr;
+    std::vector<Float_t>* muP_track_1_err = nullptr;
+    std::vector<Float_t>* piP_track_1_err = nullptr;
+    std::vector<Float_t>* muPi_track_2 = nullptr;
+    std::vector<Float_t>* muP_track_2 = nullptr;
+    std::vector<Float_t>* piP_track_2 = nullptr;
+    std::vector<Float_t>* track_muPi_2 = nullptr;
+    std::vector<Float_t>* track_muP_2 = nullptr;
+    std::vector<Float_t>* track_piP_2 = nullptr;
+    std::vector<Float_t>* mpi_track_err_2 = nullptr;
+    std::vector<Float_t>* mp_track_err_2 = nullptr;
+    std::vector<Float_t>* pp_track_err_2 = nullptr;
+    std::vector<Float_t>* muPi_track_2_err = nullptr;
+    std::vector<Float_t>* muP_track_2_err = nullptr;
+    std::vector<Float_t>* piP_track_2_err = nullptr;
+    std::vector<Float_t>* muPi_track_3 = nullptr;
+    std::vector<Float_t>* muP_track_3 = nullptr;
+    std::vector<Float_t>* piP_track_3 = nullptr;
+    std::vector<Float_t>* track_muPi_3 = nullptr;
+    std::vector<Float_t>* track_muP_3 = nullptr;
+    std::vector<Float_t>* track_piP_3 = nullptr;
+    std::vector<Float_t>* mpi_track_err_3 = nullptr;
+    std::vector<Float_t>* mp_track_err_3 = nullptr;
+    std::vector<Float_t>* pp_track_err_3 = nullptr;
+    std::vector<Float_t>* muPi_track_3_err = nullptr;
+    std::vector<Float_t>* muP_track_3_err = nullptr;
+    std::vector<Float_t>* piP_track_3_err = nullptr;
+    std::vector<Float_t>* muPi_track_4 = nullptr;
+    std::vector<Float_t>* muP_track_4 = nullptr;
+    std::vector<Float_t>* piP_track_4 = nullptr;
+    std::vector<Float_t>* track_muPi_4 = nullptr;
+    std::vector<Float_t>* track_muP_4 = nullptr;
+    std::vector<Float_t>* track_piP_4 = nullptr;
+    std::vector<Float_t>* mpi_track_err_4 = nullptr;
+    std::vector<Float_t>* mp_track_err_4 = nullptr;
+    std::vector<Float_t>* pp_track_err_4 = nullptr;
+    std::vector<Float_t>* muPi_track_4_err = nullptr;
+    std::vector<Float_t>* muP_track_4_err = nullptr;
+    std::vector<Float_t>* piP_track_4_err = nullptr;
+    std::vector<Float_t>* muPi_track_5 = nullptr;
+    std::vector<Float_t>* muP_track_5 = nullptr;
+    std::vector<Float_t>* piP_track_5 = nullptr;
+    std::vector<Float_t>* track_muPi_5 = nullptr;
+    std::vector<Float_t>* track_muP_5 = nullptr;
+    std::vector<Float_t>* track_piP_5 = nullptr;
+    std::vector<Float_t>* mpi_track_err_5 = nullptr;
+    std::vector<Float_t>* mp_track_err_5 = nullptr;
+    std::vector<Float_t>* pp_track_err_5 = nullptr;
+    std::vector<Float_t>* muPi_track_5_err = nullptr;
+    std::vector<Float_t>* muP_track_5_err = nullptr;
+    std::vector<Float_t>* piP_track_5_err = nullptr;
+    std::vector<Float_t>* muPi_track_6 = nullptr;
+    std::vector<Float_t>* muP_track_6 = nullptr;
+    std::vector<Float_t>* piP_track_6 = nullptr;
+    std::vector<Float_t>* track_muPi_6 = nullptr;
+    std::vector<Float_t>* track_muP_6 = nullptr;
+    std::vector<Float_t>* track_piP_6 = nullptr;
+    std::vector<Float_t>* mpi_track_err_6 = nullptr;
+    std::vector<Float_t>* mp_track_err_6 = nullptr;
+    std::vector<Float_t>* pp_track_err_6 = nullptr;
+    std::vector<Float_t>* muPi_track_6_err = nullptr;
+    std::vector<Float_t>* muP_track_6_err = nullptr;
+    std::vector<Float_t>* piP_track_6_err = nullptr;
+    
+
     std::vector<int>*     muon_size_1 = nullptr;
     std::vector<int>*     pion_size_1 = nullptr;
     std::vector<int>*     proton_size_1 = nullptr;
@@ -2045,6 +2169,79 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
     std::vector<double>* p_res_err5 = nullptr;
     std::vector<double>* p_res_err6 = nullptr;
 
+    std::vector<double>* mu_l1 = nullptr;
+    std::vector<double>* mu_l2 = nullptr;
+    std::vector<double>* mu_l3 = nullptr;
+    std::vector<double>* mu_l4 = nullptr;
+    std::vector<double>* mu_l5 = nullptr;
+    std::vector<double>* mu_l6 = nullptr;
+    std::vector<double>* mu_l_err1 = nullptr;
+    std::vector<double>* mu_l_err2 = nullptr;
+    std::vector<double>* mu_l_err3 = nullptr;
+    std::vector<double>* mu_l_err4 = nullptr;
+    std::vector<double>* mu_l_err5 = nullptr;
+    std::vector<double>* mu_l_err6 = nullptr;
+    std::vector<double>* mu_res_track1 = nullptr;
+    std::vector<double>* mu_res_track2 = nullptr;
+    std::vector<double>* mu_res_track3 = nullptr;
+    std::vector<double>* mu_res_track4 = nullptr;
+    std::vector<double>* mu_res_track5 = nullptr;
+    std::vector<double>* mu_res_track6 = nullptr;
+    std::vector<double>* mu_res_track_err1 = nullptr;
+    std::vector<double>* mu_res_track_err2 = nullptr;
+    std::vector<double>* mu_res_track_err3 = nullptr;
+    std::vector<double>* mu_res_track_err4 = nullptr;
+    std::vector<double>* mu_res_track_err5 = nullptr;
+    std::vector<double>* mu_res_track_err6 = nullptr;
+    std::vector<double>* pi_l1 = nullptr;
+    std::vector<double>* pi_l2 = nullptr;
+    std::vector<double>* pi_l3 = nullptr;
+    std::vector<double>* pi_l4 = nullptr;
+    std::vector<double>* pi_l5 = nullptr;
+    std::vector<double>* pi_l6 = nullptr;
+    std::vector<double>* pi_l_err1 = nullptr;
+    std::vector<double>* pi_l_err2 = nullptr;
+    std::vector<double>* pi_l_err3 = nullptr;
+    std::vector<double>* pi_l_err4 = nullptr;
+    std::vector<double>* pi_l_err5 = nullptr;
+    std::vector<double>* pi_l_err6 = nullptr;
+    std::vector<double>* pi_res_track1 = nullptr;
+    std::vector<double>* pi_res_track2 = nullptr;
+    std::vector<double>* pi_res_track3 = nullptr;
+    std::vector<double>* pi_res_track4 = nullptr;
+    std::vector<double>* pi_res_track5 = nullptr;
+    std::vector<double>* pi_res_track6 = nullptr;
+    std::vector<double>* pi_res_track_err1 = nullptr;
+    std::vector<double>* pi_res_track_err2 = nullptr;
+    std::vector<double>* pi_res_track_err3 = nullptr;
+    std::vector<double>* pi_res_track_err4 = nullptr;
+    std::vector<double>* pi_res_track_err5 = nullptr;
+    std::vector<double>* pi_res_track_err6 = nullptr;
+    std::vector<double>* p_l1 = nullptr;
+    std::vector<double>* p_l2 = nullptr;
+    std::vector<double>* p_l3 = nullptr;
+    std::vector<double>* p_l4 = nullptr;
+    std::vector<double>* p_l5 = nullptr;
+    std::vector<double>* p_l6 = nullptr;
+    std::vector<double>* p_l_err1 = nullptr;
+    std::vector<double>* p_l_err2 = nullptr;
+    std::vector<double>* p_l_err3 = nullptr;
+    std::vector<double>* p_l_err4 = nullptr;
+    std::vector<double>* p_l_err5 = nullptr;
+    std::vector<double>* p_l_err6 = nullptr;
+    std::vector<double>* p_res_track1 = nullptr;
+    std::vector<double>* p_res_track2 = nullptr;
+    std::vector<double>* p_res_track3 = nullptr;
+    std::vector<double>* p_res_track4 = nullptr;
+    std::vector<double>* p_res_track5 = nullptr;
+    std::vector<double>* p_res_track6 = nullptr;
+    std::vector<double>* p_res_track_err1 = nullptr;
+    std::vector<double>* p_res_track_err2 = nullptr;
+    std::vector<double>* p_res_track_err3 = nullptr;
+    std::vector<double>* p_res_track_err4 = nullptr;
+    std::vector<double>* p_res_track_err5 = nullptr;
+    std::vector<double>* p_res_track_err6 = nullptr;
+
     //set branch address
     inputTree1->SetBranchAddress("muon_pion_sep", &muPi_1);
     inputTree1->SetBranchAddress("muon_proton_sep", &muP_1);
@@ -2074,6 +2271,32 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
     inputTree1->SetBranchAddress("pr_res", &p_res1);
     inputTree1->SetBranchAddress("pr_res_err", &p_res_err1);
 
+    inputTree1->SetBranchAddress("muon_pion_sep_l", &muPi_track_1);
+    inputTree1->SetBranchAddress("muon_proton_sep_l", &muP_track_1);
+    inputTree1->SetBranchAddress("pion_proton_sep_l", &piP_track_1);
+    inputTree1->SetBranchAddress("mpi_l", &track_muPi_1);
+    inputTree1->SetBranchAddress("mp_l", &track_muP_1);
+    inputTree1->SetBranchAddress("pp_l", &track_piP_1);
+    inputTree1->SetBranchAddress("mpi_l_err", &mpi_track_err_1);
+    inputTree1->SetBranchAddress("mp_l_err", &mp_track_err_1);
+    inputTree1->SetBranchAddress("pp_l_err", &pp_track_err_1);
+    inputTree1->SetBranchAddress("muon_pion_sep_l_err", &muPi_track_1_err);
+    inputTree1->SetBranchAddress("muon_proton_sep_l_err", &muP_track_1_err);
+    inputTree1->SetBranchAddress("pion_proton_sep_l_err", &piP_track_1_err);
+    inputTree1->SetBranchAddress("mu_l", &mu_l1);
+    inputTree1->SetBranchAddress("mu_l_err", &mu_l_err1);
+    inputTree1->SetBranchAddress("mu_res_l", &mu_res_track1);
+    inputTree1->SetBranchAddress("mu_res_l_err", &mu_res_track_err1);
+    inputTree1->SetBranchAddress("pi_l", &pi_l1);
+    inputTree1->SetBranchAddress("pi_l_err", &pi_l_err1);
+    inputTree1->SetBranchAddress("pi_res_l", &pi_res_track1);
+    inputTree1->SetBranchAddress("pi_res_l_err", &pi_res_track_err1);
+    inputTree1->SetBranchAddress("pr_l", &p_l1);
+    inputTree1->SetBranchAddress("pr_l_err", &p_l_err1);
+    inputTree1->SetBranchAddress("pr_res_l", &p_res_track1);
+    inputTree1->SetBranchAddress("pr_res_l_err", &p_res_track_err1);
+
+
     inputTree2->SetBranchAddress("muon_pion_sep", &muPi_2);
     inputTree2->SetBranchAddress("muon_proton_sep", &muP_2);
     inputTree2->SetBranchAddress("pion_proton_sep", &piP_2);
@@ -2101,6 +2324,32 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
     inputTree2->SetBranchAddress("pr_p_err", &p_p_err2);
     inputTree2->SetBranchAddress("pr_res", &p_res2);
     inputTree2->SetBranchAddress("pr_res_err", &p_res_err2);
+
+    inputTree2->SetBranchAddress("muon_pion_sep_l", &muPi_track_2);
+    inputTree2->SetBranchAddress("muon_proton_sep_l", &muP_track_2);
+    inputTree2->SetBranchAddress("pion_proton_sep_l", &piP_track_2);
+    inputTree2->SetBranchAddress("mpi_l", &track_muPi_2);
+    inputTree2->SetBranchAddress("mp_l", &track_muP_2);
+    inputTree2->SetBranchAddress("pp_l", &track_piP_2);
+    inputTree2->SetBranchAddress("mpi_l_err", &mpi_track_err_2);
+    inputTree2->SetBranchAddress("mp_l_err", &mp_track_err_2);
+    inputTree2->SetBranchAddress("pp_l_err", &pp_track_err_2);
+    inputTree2->SetBranchAddress("muon_pion_sep_l_err", &muPi_track_2_err);
+    inputTree2->SetBranchAddress("muon_proton_sep_l_err", &muP_track_2_err);
+    inputTree2->SetBranchAddress("pion_proton_sep_l_err", &piP_track_2_err);
+    inputTree2->SetBranchAddress("mu_l", &mu_l2);
+    inputTree2->SetBranchAddress("mu_l_err", &mu_l_err2);
+    inputTree2->SetBranchAddress("mu_res_l", &mu_res_track2);
+    inputTree2->SetBranchAddress("mu_res_l_err", &mu_res_track_err2);
+    inputTree2->SetBranchAddress("pi_l", &pi_l2);
+    inputTree2->SetBranchAddress("pi_l_err", &pi_l_err2);
+    inputTree2->SetBranchAddress("pi_res_l", &pi_res_track2);
+    inputTree2->SetBranchAddress("pi_res_l_err", &pi_res_track_err2);
+    inputTree2->SetBranchAddress("pr_l", &p_l2);
+    inputTree2->SetBranchAddress("pr_l_err", &p_l_err2);
+    inputTree2->SetBranchAddress("pr_res_l", &p_res_track2);
+    inputTree2->SetBranchAddress("pr_res_l_err", &p_res_track_err2);
+
 
     inputTree3->SetBranchAddress("muon_pion_sep", &muPi_3);
     inputTree3->SetBranchAddress("muon_proton_sep", &muP_3);
@@ -2130,6 +2379,32 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
     inputTree3->SetBranchAddress("pr_res", &p_res3);
     inputTree3->SetBranchAddress("pr_res_err", &p_res_err3);
 
+    inputTree3->SetBranchAddress("muon_pion_sep_l", &muPi_track_3);
+    inputTree3->SetBranchAddress("muon_proton_sep_l", &muP_track_3);
+    inputTree3->SetBranchAddress("pion_proton_sep_l", &piP_track_3);
+    inputTree3->SetBranchAddress("mpi_l", &track_muPi_3);
+    inputTree3->SetBranchAddress("mp_l", &track_muP_3);
+    inputTree3->SetBranchAddress("pp_l", &track_piP_3);
+    inputTree3->SetBranchAddress("mpi_l_err", &mpi_track_err_3);
+    inputTree3->SetBranchAddress("mp_l_err", &mp_track_err_3);
+    inputTree3->SetBranchAddress("pp_l_err", &pp_track_err_3);
+    inputTree3->SetBranchAddress("muon_pion_sep_l_err", &muPi_track_3_err);
+    inputTree3->SetBranchAddress("muon_proton_sep_l_err", &muP_track_3_err);
+    inputTree3->SetBranchAddress("pion_proton_sep_l_err", &piP_track_3_err);
+    inputTree3->SetBranchAddress("mu_l", &mu_l3);
+    inputTree3->SetBranchAddress("mu_l_err", &mu_l_err3);
+    inputTree3->SetBranchAddress("mu_res_l", &mu_res_track3);
+    inputTree3->SetBranchAddress("mu_res_l_err", &mu_res_track_err3);
+    inputTree3->SetBranchAddress("pi_l", &pi_l3);
+    inputTree3->SetBranchAddress("pi_l_err", &pi_l_err3);
+    inputTree3->SetBranchAddress("pi_res_l", &pi_res_track3);
+    inputTree3->SetBranchAddress("pi_res_l_err", &pi_res_track_err3);
+    inputTree3->SetBranchAddress("pr_l", &p_l3);
+    inputTree3->SetBranchAddress("pr_l_err", &p_l_err3);
+    inputTree3->SetBranchAddress("pr_res_l", &p_res_track3);
+    inputTree3->SetBranchAddress("pr_res_l_err", &p_res_track_err3);
+
+
     inputTree4->SetBranchAddress("muon_pion_sep", &muPi_4);
     inputTree4->SetBranchAddress("muon_proton_sep", &muP_4);
     inputTree4->SetBranchAddress("pion_proton_sep", &piP_4);
@@ -2157,6 +2432,32 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
     inputTree4->SetBranchAddress("pr_p_err", &p_p_err4);
     inputTree4->SetBranchAddress("pr_res", &p_res4);
     inputTree4->SetBranchAddress("pr_res_err", &p_res_err4);
+
+    inputTree4->SetBranchAddress("muon_pion_sep_l", &muPi_track_4);
+    inputTree4->SetBranchAddress("muon_proton_sep_l", &muP_track_4);
+    inputTree4->SetBranchAddress("pion_proton_sep_l", &piP_track_4);
+    inputTree4->SetBranchAddress("mpi_l", &track_muPi_4);
+    inputTree4->SetBranchAddress("mp_l", &track_muP_4);
+    inputTree4->SetBranchAddress("pp_l", &track_piP_4);
+    inputTree4->SetBranchAddress("mpi_l_err", &mpi_track_err_4);
+    inputTree4->SetBranchAddress("mp_l_err", &mp_track_err_4);
+    inputTree4->SetBranchAddress("pp_l_err", &pp_track_err_4);
+    inputTree4->SetBranchAddress("muon_pion_sep_l_err", &muPi_track_4_err);
+    inputTree4->SetBranchAddress("muon_proton_sep_l_err", &muP_track_4_err);
+    inputTree4->SetBranchAddress("pion_proton_sep_l_err", &piP_track_4_err);
+    inputTree4->SetBranchAddress("mu_l", &mu_l4);
+    inputTree4->SetBranchAddress("mu_l_err", &mu_l_err4);
+    inputTree4->SetBranchAddress("mu_res_l", &mu_res_track4);
+    inputTree4->SetBranchAddress("mu_res_l_err", &mu_res_track_err4);
+    inputTree4->SetBranchAddress("pi_l", &pi_l4);
+    inputTree4->SetBranchAddress("pi_l_err", &pi_l_err4);
+    inputTree4->SetBranchAddress("pi_res_l", &pi_res_track4);
+    inputTree4->SetBranchAddress("pi_res_l_err", &pi_res_track_err4);
+    inputTree4->SetBranchAddress("pr_l", &p_l4);
+    inputTree4->SetBranchAddress("pr_l_err", &p_l_err4);
+    inputTree4->SetBranchAddress("pr_res_l", &p_res_track4);
+    inputTree4->SetBranchAddress("pr_res_l_err", &p_res_track_err4);
+
 
     inputTree5->SetBranchAddress("muon_pion_sep", &muPi_5);
     inputTree5->SetBranchAddress("muon_proton_sep", &muP_5);
@@ -2186,6 +2487,32 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
     inputTree5->SetBranchAddress("pr_res", &p_res5);
     inputTree5->SetBranchAddress("pr_res_err", &p_res_err5);
 
+    inputTree5->SetBranchAddress("muon_pion_sep_l", &muPi_track_5);
+    inputTree5->SetBranchAddress("muon_proton_sep_l", &muP_track_5);
+    inputTree5->SetBranchAddress("pion_proton_sep_l", &piP_track_5);
+    inputTree5->SetBranchAddress("mpi_l", &track_muPi_5);
+    inputTree5->SetBranchAddress("mp_l", &track_muP_5);
+    inputTree5->SetBranchAddress("pp_l", &track_piP_5);
+    inputTree5->SetBranchAddress("mpi_l_err", &mpi_track_err_5);
+    inputTree5->SetBranchAddress("mp_l_err", &mp_track_err_5);
+    inputTree5->SetBranchAddress("pp_l_err", &pp_track_err_5);
+    inputTree5->SetBranchAddress("muon_pion_sep_l_err", &muPi_track_5_err);
+    inputTree5->SetBranchAddress("muon_proton_sep_l_err", &muP_track_5_err);
+    inputTree5->SetBranchAddress("pion_proton_sep_l_err", &piP_track_5_err);
+    inputTree5->SetBranchAddress("mu_l", &mu_l5);
+    inputTree5->SetBranchAddress("mu_l_err", &mu_l_err5);
+    inputTree5->SetBranchAddress("mu_res_l", &mu_res_track5);
+    inputTree5->SetBranchAddress("mu_res_l_err", &mu_res_track_err5);
+    inputTree5->SetBranchAddress("pi_l", &pi_l5);
+    inputTree5->SetBranchAddress("pi_l_err", &pi_l_err5);
+    inputTree5->SetBranchAddress("pi_res_l", &pi_res_track5);
+    inputTree5->SetBranchAddress("pi_res_l_err", &pi_res_track_err5);
+    inputTree5->SetBranchAddress("pr_l", &p_l5);
+    inputTree5->SetBranchAddress("pr_l_err", &p_l_err5);
+    inputTree5->SetBranchAddress("pr_res_l", &p_res_track5);
+    inputTree5->SetBranchAddress("pr_res_l_err", &p_res_track_err5);
+
+
     inputTree6->SetBranchAddress("muon_pion_sep", &muPi_6);
     inputTree6->SetBranchAddress("muon_proton_sep", &muP_6);
     inputTree6->SetBranchAddress("pion_proton_sep", &piP_6);
@@ -2214,6 +2541,32 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
     inputTree6->SetBranchAddress("pr_res", &p_res6);
     inputTree6->SetBranchAddress("pr_res_err", &p_res_err6);
 
+    inputTree6->SetBranchAddress("muon_pion_sep_l", &muPi_track_6);
+    inputTree6->SetBranchAddress("muon_proton_sep_l", &muP_track_6);
+    inputTree6->SetBranchAddress("pion_proton_sep_l", &piP_track_6);
+    inputTree6->SetBranchAddress("mpi_l", &track_muPi_6);
+    inputTree6->SetBranchAddress("mp_l", &track_muP_6);
+    inputTree6->SetBranchAddress("pp_l", &track_piP_6);
+    inputTree6->SetBranchAddress("mpi_l_err", &mpi_track_err_6);
+    inputTree6->SetBranchAddress("mp_l_err", &mp_track_err_6);
+    inputTree6->SetBranchAddress("pp_l_err", &pp_track_err_6);
+    inputTree6->SetBranchAddress("muon_pion_sep_l_err", &muPi_track_6_err);
+    inputTree6->SetBranchAddress("muon_proton_sep_l_err", &muP_track_6_err);
+    inputTree6->SetBranchAddress("pion_proton_sep_l_err", &piP_track_6_err);
+    inputTree6->SetBranchAddress("mu_l", &mu_l6);
+    inputTree6->SetBranchAddress("mu_l_err", &mu_l_err6);
+    inputTree6->SetBranchAddress("mu_res_l", &mu_res_track6);
+    inputTree6->SetBranchAddress("mu_res_l_err", &mu_res_track_err6);
+    inputTree6->SetBranchAddress("pi_l", &pi_l6);
+    inputTree6->SetBranchAddress("pi_l_err", &pi_l_err6);
+    inputTree6->SetBranchAddress("pi_res_l", &pi_res_track6);
+    inputTree6->SetBranchAddress("pi_res_l_err", &pi_res_track_err6);
+    inputTree6->SetBranchAddress("pr_l", &p_l6);
+    inputTree6->SetBranchAddress("pr_l_err", &p_l_err6);
+    inputTree6->SetBranchAddress("pr_res_l", &p_res_track6);
+    inputTree6->SetBranchAddress("pr_res_l_err", &p_res_track_err6);
+
+
     //get entries
     Long64_t nEntries1 = inputTree1->GetEntries();
     Long64_t nEntries2 = inputTree2->GetEntries();
@@ -2241,6 +2594,13 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
     float p_bin_min = std::log10(p_min); // MeV
     float p_bin_max = std::log10(p_max); // MeV
 
+    const float l_min = 10.0; // cm
+    const float l_max = 2000; // cm
+    const int nLBins = 100; // number of track length bins for l vs dE/dx graph
+    const float l_interval = (l_max - l_min) / nLBins; // cm
+    float l_bin_min = std::log10(l_min); // cm
+    float l_bin_max = std::log10(l_max); // cm
+
     //create histogram vectors
     std::vector<TH1F*> hMuon1(nPBins, nullptr), hPion1(nPBins, nullptr), hProton1(nPBins, nullptr);
     std::vector<TH1F*> hMuon2(nPBins, nullptr), hPion2(nPBins, nullptr), hProton2(nPBins, nullptr);
@@ -2249,7 +2609,14 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
     std::vector<TH1F*> hMuon5(nPBins, nullptr), hPion5(nPBins, nullptr), hProton5(nPBins, nullptr);
     std::vector<TH1F*> hMuon6(nPBins, nullptr), hPion6(nPBins, nullptr), hProton6(nPBins, nullptr);
 
-     //get histograms from files
+    std::vector<TH1F*> hMuonL1(nPBins, nullptr), hPionL1(nPBins, nullptr), hProtonL1(nPBins, nullptr);
+    std::vector<TH1F*> hMuonL2(nPBins, nullptr), hPionL2(nPBins, nullptr), hProtonL2(nPBins, nullptr);
+    std::vector<TH1F*> hMuonL3(nPBins, nullptr), hPionL3(nPBins, nullptr), hProtonL3(nPBins, nullptr);
+    std::vector<TH1F*> hMuonL4(nPBins, nullptr), hPionL4(nPBins, nullptr), hProtonL4(nPBins, nullptr);
+    std::vector<TH1F*> hMuonL5(nPBins, nullptr), hPionL5(nPBins, nullptr), hProtonL5(nPBins, nullptr);
+    std::vector<TH1F*> hMuonL6(nPBins, nullptr), hPionL6(nPBins, nullptr), hProtonL6(nPBins, nullptr);
+
+    //get histograms from files
     for (size_t i = 0; i < nPBins; i++){
 
         //define momentum edges for histogram names
@@ -2300,6 +2667,56 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
         hProton6[i] = dynamic_cast<TH1F*>(hPr6->Clone(Form("hProton6_p%.2f-%.2f", p_bin_low, p_bin_high)));
     }
 
+    for (size_t i = 0; i < nPBins; i++){
+
+        //define momentum edges for histogram names
+        //float p_bin_low = p_min + i * p_interval;
+        //float p_bin_high = p_min + (i + 1) * p_interval;
+        float l_bin_low = std::pow(10, l_bin_min + i * (l_bin_max - l_bin_min) / nLBins);
+        float l_bin_high = std::pow(10, l_bin_min + (i + 1) * (l_bin_max - l_bin_min) / nLBins);
+
+        //load histograms
+        TH1F* hMu1 = getHistL(inputFile1, "hMuon",   l_bin_low, l_bin_high);
+        TH1F* hMu2 = getHistL(inputFile2, "hMuon",   l_bin_low, l_bin_high);
+        TH1F* hMu3 = getHistL(inputFile3, "hMuon",   l_bin_low, l_bin_high);
+        TH1F* hMu4 = getHistL(inputFile4, "hMuon",   l_bin_low, l_bin_high);
+        TH1F* hMu5 = getHistL(inputFile5, "hMuon",   l_bin_low, l_bin_high);
+        TH1F* hMu6 = getHistL(inputFile6, "hMuon",   l_bin_low, l_bin_high);
+        TH1F* hPi1 = getHistL(inputFile1, "hPion",   l_bin_low, l_bin_high);
+        TH1F* hPi2 = getHistL(inputFile2, "hPion",   l_bin_low, l_bin_high);
+        TH1F* hPi3 = getHistL(inputFile3, "hPion",   l_bin_low, l_bin_high);
+        TH1F* hPi4 = getHistL(inputFile4, "hPion",   l_bin_low, l_bin_high);
+        TH1F* hPi5 = getHistL(inputFile5, "hPion",   l_bin_low, l_bin_high);
+        TH1F* hPi6 = getHistL(inputFile6, "hPion",   l_bin_low, l_bin_high);
+        TH1F* hPr1 =  getHistL(inputFile1, "hProton", l_bin_low, l_bin_high);
+        TH1F* hPr2 =  getHistL(inputFile2, "hProton", l_bin_low, l_bin_high);
+        TH1F* hPr3 =  getHistL(inputFile3, "hProton", l_bin_low, l_bin_high);
+        TH1F* hPr4 =  getHistL(inputFile4, "hProton", l_bin_low, l_bin_high);
+        TH1F* hPr5 =  getHistL(inputFile5, "hProton", l_bin_low, l_bin_high);
+        TH1F* hPr6 =  getHistL(inputFile6, "hProton", l_bin_low, l_bin_high);
+
+        hMuonL1[i] = dynamic_cast<TH1F*>(hMu1->Clone(Form("hMuon1_l%.2f-%.2f", l_bin_low, l_bin_high)));
+        hMuonL2[i] = dynamic_cast<TH1F*>(hMu2->Clone(Form("hMuon2_l%.2f-%.2f", l_bin_low, l_bin_high)));
+        hMuonL3[i] = dynamic_cast<TH1F*>(hMu3->Clone(Form("hMuon3_l%.2f-%.2f", l_bin_low, l_bin_high)));
+        hMuonL4[i] = dynamic_cast<TH1F*>(hMu4->Clone(Form("hMuon4_l%.2f-%.2f", l_bin_low, l_bin_high)));
+        hMuonL5[i] = dynamic_cast<TH1F*>(hMu5->Clone(Form("hMuon5_l%.2f-%.2f", l_bin_low, l_bin_high)));
+        hMuonL6[i] = dynamic_cast<TH1F*>(hMu6->Clone(Form("hMuon6_l%.2f-%.2f", l_bin_low, l_bin_high)));
+
+        hPionL1[i] = dynamic_cast<TH1F*>(hPi1->Clone(Form("hPion1_l%.2f-%.2f", l_bin_low, l_bin_high)));
+        hPionL2[i] = dynamic_cast<TH1F*>(hPi2->Clone(Form("hPion2_l%.2f-%.2f", l_bin_low, l_bin_high)));
+        hPionL3[i] = dynamic_cast<TH1F*>(hPi3->Clone(Form("hPion3_l%.2f-%.2f", l_bin_low, l_bin_high)));
+        hPionL4[i] = dynamic_cast<TH1F*>(hPi4->Clone(Form("hPion4_l%.2f-%.2f", l_bin_low, l_bin_high)));
+        hPionL5[i] = dynamic_cast<TH1F*>(hPi5->Clone(Form("hPion5_l%.2f-%.2f", l_bin_low, l_bin_high)));
+        hPionL6[i] = dynamic_cast<TH1F*>(hPi6->Clone(Form("hPion6_l%.2f-%.2f", l_bin_low, l_bin_high)));
+
+        hProtonL1[i] = dynamic_cast<TH1F*>(hPr1->Clone(Form("hProton1_l%.2f-%.2f", l_bin_low, l_bin_high)));
+        hProtonL2[i] = dynamic_cast<TH1F*>(hPr2->Clone(Form("hProton2_l%.2f-%.2f", l_bin_low, l_bin_high)));
+        hProtonL3[i] = dynamic_cast<TH1F*>(hPr3->Clone(Form("hProton3_l%.2f-%.2f", l_bin_low, l_bin_high)));
+        hProtonL4[i] = dynamic_cast<TH1F*>(hPr4->Clone(Form("hProton4_l%.2f-%.2f", l_bin_low, l_bin_high)));
+        hProtonL5[i] = dynamic_cast<TH1F*>(hPr5->Clone(Form("hProton5_l%.2f-%.2f", l_bin_low, l_bin_high)));
+        hProtonL6[i] = dynamic_cast<TH1F*>(hPr6->Clone(Form("hProton6_l%.2f-%.2f", l_bin_low, l_bin_high)));
+    }
+
     //get vectors
     std::vector<std::pair<float, float>> muPi_sep1, muP_sep1, piP_sep1;
     std::vector<std::pair<float, float>> muPi_sep2, muP_sep2, piP_sep2;
@@ -2336,6 +2753,34 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
     std::vector<std::pair<float, float>> mu_res_vec_err5, pi_res_vec_err5, p_res_vec_err5;
     std::vector<std::pair<float, float>> mu_res_vec_err6, pi_res_vec_err6, p_res_vec_err6;
 
+    std::vector<std::pair<float, float>> muPi_sep_track1, muP_sep_track1, piP_sep_track1;
+    std::vector<std::pair<float, float>> muPi_sep_track2, muP_sep_track2, piP_sep_track2;
+    std::vector<std::pair<float, float>> muPi_sep_track3, muP_sep_track3, piP_sep_track3;
+    std::vector<std::pair<float, float>> muPi_sep_track4, muP_sep_track4, piP_sep_track4;
+    std::vector<std::pair<float, float>> muPi_sep_track5, muP_sep_track5, piP_sep_track5;
+    std::vector<std::pair<float, float>> muPi_sep_track6, muP_sep_track6, piP_sep_track6;
+
+    std::vector<std::pair<float, float>> muPi_track_err1, muP_track_err1, piP_track_err1;
+    std::vector<std::pair<float, float>> muPi_track_err2, muP_track_err2, piP_track_err2;
+    std::vector<std::pair<float, float>> muPi_track_err3, muP_track_err3, piP_track_err3;
+    std::vector<std::pair<float, float>> muPi_track_err4, muP_track_err4, piP_track_err4;
+    std::vector<std::pair<float, float>> muPi_track_err5, muP_track_err5, piP_track_err5;
+    std::vector<std::pair<float, float>> muPi_track_err6, muP_track_err6, piP_track_err6;
+
+    std::vector<std::pair<float, float>> mu_res_track_vec1, pi_res_track_vec1, p_res_track_vec1;
+    std::vector<std::pair<float, float>> mu_res_track_vec2, pi_res_track_vec2, p_res_track_vec2;
+    std::vector<std::pair<float, float>> mu_res_track_vec3, pi_res_track_vec3, p_res_track_vec3;
+    std::vector<std::pair<float, float>> mu_res_track_vec4, pi_res_track_vec4, p_res_track_vec4;
+    std::vector<std::pair<float, float>> mu_res_track_vec5, pi_res_track_vec5, p_res_track_vec5;
+    std::vector<std::pair<float, float>> mu_res_track_vec6, pi_res_track_vec6, p_res_track_vec6;
+
+    std::vector<std::pair<float, float>> mu_res_track_vec_err1, pi_res_track_vec_err1, p_res_track_vec_err1;
+    std::vector<std::pair<float, float>> mu_res_track_vec_err2, pi_res_track_vec_err2, p_res_track_vec_err2;
+    std::vector<std::pair<float, float>> mu_res_track_vec_err3, pi_res_track_vec_err3, p_res_track_vec_err3;
+    std::vector<std::pair<float, float>> mu_res_track_vec_err4, pi_res_track_vec_err4, p_res_track_vec_err4;
+    std::vector<std::pair<float, float>> mu_res_track_vec_err5, pi_res_track_vec_err5, p_res_track_vec_err5;
+    std::vector<std::pair<float, float>> mu_res_track_vec_err6, pi_res_track_vec_err6, p_res_track_vec_err6;
+
 
     //get entries and fill vectors tree 1
     for (Long64_t entry = 0; entry < nEntries1; entry++){
@@ -2363,6 +2808,21 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
             p_size1.emplace_back(proton_size_1->at(i));
         }
 
+        for (size_t i = 0; i < track_muPi_1->size(); i++) {
+            muPi_sep_track1.emplace_back(track_muPi_1->at(i), muPi_track_1->at(i));
+            muPi_track_err1.emplace_back(mpi_track_err_1->at(i), muPi_track_1_err->at(i));
+        }
+        //muon proton
+        for (size_t i = 0; i < track_muP_1->size(); i++) {
+            muP_sep_track1.emplace_back(track_muP_1->at(i), muP_track_1->at(i));
+            muP_track_err1.emplace_back(mp_track_err_1->at(i), muP_track_1_err->at(i));
+        }
+        //pion proton
+        for (size_t i = 0; i < track_piP_1->size(); i++) {
+            piP_sep_track1.emplace_back(track_piP_1->at(i), piP_track_1->at(i));
+            piP_track_err1.emplace_back(pp_track_err_1->at(i), piP_track_1_err->at(i));
+        }
+
         //get resolution and fill vectors
         for (size_t i = 0; i < mu_p1->size(); i++) {
             mu_res_vec1.emplace_back(mu_p1->at(i), mu_res1->at(i));
@@ -2375,6 +2835,19 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
         for (size_t i = 0; i < p_p1->size(); i++) {
             p_res_vec1.emplace_back(p_p1->at(i), p_res1->at(i));
             p_res_vec_err1.emplace_back(p_p_err1->at(i), p_res_err1->at(i));
+        }
+
+        for (size_t i = 0; i < mu_l1->size(); i++) {
+            mu_res_track_vec1.emplace_back(mu_l1->at(i), mu_res_track1->at(i));
+            mu_res_track_vec_err1.emplace_back(mu_l_err1->at(i), mu_res_track_err1->at(i));
+        }
+        for (size_t i = 0; i < pi_l1->size(); i++) {
+            pi_res_track_vec1.emplace_back(pi_l1->at(i), pi_res_track1->at(i));
+            pi_res_track_vec_err1.emplace_back(pi_l_err1->at(i), pi_res_track_err1->at(i));
+        }
+        for (size_t i = 0; i < p_l1->size(); i++) {
+            p_res_track_vec1.emplace_back(p_l1->at(i), p_res_track1->at(i));
+            p_res_track_vec_err1.emplace_back(p_l_err1->at(i), p_res_track_err1->at(i));
         }
 
     }
@@ -2405,6 +2878,21 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
             p_size2.emplace_back(proton_size_2->at(i));
         }
 
+        for (size_t i = 0; i < track_muPi_2->size(); i++) {
+            muPi_sep_track2.emplace_back(track_muPi_2->at(i), muPi_track_2->at(i));
+            muPi_track_err2.emplace_back(mpi_track_err_2->at(i), muPi_track_2_err->at(i));
+        }
+        //muon proton
+        for (size_t i = 0; i < track_muP_2->size(); i++) {
+            muP_sep_track2.emplace_back(track_muP_2->at(i), muP_track_2->at(i));
+            muP_track_err2.emplace_back(mp_track_err_2->at(i), muP_track_2_err->at(i));
+        }
+        //pion proton
+        for (size_t i = 0; i < track_piP_2->size(); i++) {
+            piP_sep_track2.emplace_back(track_piP_2->at(i), piP_track_2->at(i));
+            piP_track_err2.emplace_back(pp_track_err_2->at(i), piP_track_2_err->at(i));
+        }
+
         //get resolution and fill vectors
         for (size_t i = 0; i < mu_p2->size(); i++) {
             mu_res_vec2.emplace_back(mu_p2->at(i), mu_res2->at(i));
@@ -2417,6 +2905,19 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
         for (size_t i = 0; i < p_p2->size(); i++) {
             p_res_vec2.emplace_back(p_p2->at(i), p_res2->at(i));
             p_res_vec_err2.emplace_back(p_p_err2->at(i), p_res_err2->at(i));
+        }
+
+        for (size_t i = 0; i < mu_l2->size(); i++) {
+            mu_res_track_vec2.emplace_back(mu_l2->at(i), mu_res_track2->at(i));
+            mu_res_track_vec_err2.emplace_back(mu_l_err2->at(i), mu_res_track_err2->at(i));
+        }
+        for (size_t i = 0; i < pi_l2->size(); i++) {
+            pi_res_track_vec2.emplace_back(pi_l2->at(i), pi_res_track2->at(i));
+            pi_res_track_vec_err2.emplace_back(pi_l_err2->at(i), pi_res_track_err2->at(i));
+        }
+        for (size_t i = 0; i < p_l2->size(); i++) {
+            p_res_track_vec2.emplace_back(p_l2->at(i), p_res_track2->at(i));
+            p_res_track_vec_err2.emplace_back(p_l_err2->at(i), p_res_track_err2->at(i));
         }
     }
 
@@ -2446,6 +2947,21 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
             p_size3.emplace_back(proton_size_3->at(i));
         }
 
+        for (size_t i = 0; i < track_muPi_3->size(); i++) {
+            muPi_sep_track3.emplace_back(track_muPi_3->at(i), muPi_track_3->at(i));
+            muPi_track_err3.emplace_back(mpi_track_err_3->at(i), muPi_track_3_err->at(i));
+        }
+        //muon proton
+        for (size_t i = 0; i < track_muP_3->size(); i++) {
+            muP_sep_track3.emplace_back(track_muP_3->at(i), muP_track_3->at(i));
+            muP_track_err3.emplace_back(mp_track_err_3->at(i), muP_track_3_err->at(i));
+        }
+        //pion proton
+        for (size_t i = 0; i < track_piP_3->size(); i++) {
+            piP_sep_track3.emplace_back(track_piP_3->at(i), piP_track_3->at(i));
+            piP_track_err3.emplace_back(pp_track_err_3->at(i), piP_track_3_err->at(i));
+        }
+
         //get resolution and fill vectors
         for (size_t i = 0; i < mu_p3->size(); i++) {
             mu_res_vec3.emplace_back(mu_p3->at(i), mu_res3->at(i));
@@ -2458,6 +2974,19 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
         for (size_t i = 0; i < p_p3->size(); i++) {
             p_res_vec3.emplace_back(p_p3->at(i), p_res3->at(i));
             p_res_vec_err3.emplace_back(p_p_err3->at(i), p_res_err3->at(i));
+        }
+
+        for (size_t i = 0; i < mu_l3->size(); i++) {
+            mu_res_track_vec3.emplace_back(mu_l3->at(i), mu_res_track3->at(i));
+            mu_res_track_vec_err3.emplace_back(mu_l_err3->at(i), mu_res_track_err3->at(i));
+        }
+        for (size_t i = 0; i < pi_l3->size(); i++) {
+            pi_res_track_vec3.emplace_back(pi_l3->at(i), pi_res_track3->at(i));
+            pi_res_track_vec_err3.emplace_back(pi_l_err3->at(i), pi_res_track_err3->at(i));
+        }
+        for (size_t i = 0; i < p_l3->size(); i++) {
+            p_res_track_vec3.emplace_back(p_l3->at(i), p_res_track3->at(i));
+            p_res_track_vec_err3.emplace_back(p_l_err3->at(i), p_res_track_err3->at(i));
         }
     }
 
@@ -2487,6 +3016,21 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
             p_size4.emplace_back(proton_size_4->at(i));
         }
 
+        for (size_t i = 0; i < track_muPi_4->size(); i++) {
+            muPi_sep_track4.emplace_back(track_muPi_4->at(i), muPi_track_4->at(i));
+            muPi_track_err4.emplace_back(mpi_track_err_4->at(i), muPi_track_4_err->at(i));
+        }
+        //muon proton
+        for (size_t i = 0; i < track_muP_4->size(); i++) {
+            muP_sep_track4.emplace_back(track_muP_4->at(i), muP_track_4->at(i));
+            muP_track_err4.emplace_back(mp_track_err_4->at(i), muP_track_4_err->at(i));
+        }
+        //pion proton
+        for (size_t i = 0; i < track_piP_4->size(); i++) {
+            piP_sep_track4.emplace_back(track_piP_4->at(i), piP_track_4->at(i));
+            piP_track_err4.emplace_back(pp_track_err_4->at(i), piP_track_4_err->at(i));
+        }
+
         //get resolution and fill vectors
         for (size_t i = 0; i < mu_p4->size(); i++) {
             mu_res_vec4.emplace_back(mu_p4->at(i), mu_res4->at(i));
@@ -2499,6 +3043,19 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
         for (size_t i = 0; i < p_p4->size(); i++) {
             p_res_vec4.emplace_back(p_p4->at(i), p_res4->at(i));
             p_res_vec_err4.emplace_back(p_p_err4->at(i), p_res_err4->at(i));
+        }
+
+        for (size_t i = 0; i < mu_l4->size(); i++) {
+            mu_res_track_vec4.emplace_back(mu_l4->at(i), mu_res_track4->at(i));
+            mu_res_track_vec_err4.emplace_back(mu_l_err4->at(i), mu_res_track_err4->at(i));
+        }
+        for (size_t i = 0; i < pi_l4->size(); i++) {
+            pi_res_track_vec4.emplace_back(pi_l4->at(i), pi_res_track4->at(i));
+            pi_res_track_vec_err4.emplace_back(pi_l_err4->at(i), pi_res_track_err4->at(i));
+        }
+        for (size_t i = 0; i < p_l4->size(); i++) {
+            p_res_track_vec4.emplace_back(p_l4->at(i), p_res_track4->at(i));
+            p_res_track_vec_err4.emplace_back(p_l_err4->at(i), p_res_track_err4->at(i));
         }
 
     }
@@ -2530,6 +3087,21 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
             p_size5.emplace_back(proton_size_5->at(i));
         }
 
+        for (size_t i = 0; i < track_muPi_5->size(); i++) {
+            muPi_sep_track5.emplace_back(track_muPi_5->at(i), muPi_track_5->at(i));
+            muPi_track_err5.emplace_back(mpi_track_err_5->at(i), muPi_track_5_err->at(i));
+        }
+        //muon proton
+        for (size_t i = 0; i < track_muP_5->size(); i++) {
+            muP_sep_track5.emplace_back(track_muP_5->at(i), muP_track_5->at(i));
+            muP_track_err5.emplace_back(mp_track_err_5->at(i), muP_track_5_err->at(i));
+        }
+        //pion proton
+        for (size_t i = 0; i < track_piP_5->size(); i++) {
+            piP_sep_track5.emplace_back(track_piP_5->at(i), piP_track_5->at(i));
+            piP_track_err5.emplace_back(pp_track_err_5->at(i), piP_track_5_err->at(i));
+        }
+
         //get resolution and fill vectors
         for (size_t i = 0; i < mu_p5->size(); i++) {
             mu_res_vec5.emplace_back(mu_p5->at(i), mu_res5->at(i));
@@ -2542,6 +3114,19 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
         for (size_t i = 0; i < p_p5->size(); i++) {
             p_res_vec5.emplace_back(p_p5->at(i), p_res5->at(i));
             p_res_vec_err5.emplace_back(p_p_err5->at(i), p_res_err5->at(i));
+        }
+
+        for (size_t i = 0; i < mu_l5->size(); i++) {
+            mu_res_track_vec5.emplace_back(mu_l5->at(i), mu_res_track5->at(i));
+            mu_res_track_vec_err5.emplace_back(mu_l_err5->at(i), mu_res_track_err5->at(i));
+        }
+        for (size_t i = 0; i < pi_l5->size(); i++) {
+            pi_res_track_vec5.emplace_back(pi_l5->at(i), pi_res_track5->at(i));
+            pi_res_track_vec_err5.emplace_back(pi_l_err5->at(i), pi_res_track_err5->at(i));
+        }
+        for (size_t i = 0; i < p_l5->size(); i++) {
+            p_res_track_vec5.emplace_back(p_l5->at(i), p_res_track5->at(i));
+            p_res_track_vec_err5.emplace_back(p_l_err5->at(i), p_res_track_err5->at(i));
         }
     }
 
@@ -2571,6 +3156,21 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
             p_size6.emplace_back(proton_size_6->at(i));
         }
 
+        for (size_t i = 0; i < track_muPi_6->size(); i++) {
+            muPi_sep_track6.emplace_back(track_muPi_6->at(i), muPi_track_6->at(i));
+            muPi_track_err6.emplace_back(mpi_track_err_6->at(i), muPi_track_6_err->at(i));
+        }
+        //muon proton
+        for (size_t i = 0; i < track_muP_6->size(); i++) {
+            muP_sep_track6.emplace_back(track_muP_6->at(i), muP_track_6->at(i));
+            muP_track_err6.emplace_back(mp_track_err_6->at(i), muP_track_6_err->at(i));
+        }
+        //pion proton
+        for (size_t i = 0; i < track_piP_6->size(); i++) {
+            piP_sep_track6.emplace_back(track_piP_6->at(i), piP_track_6->at(i));
+            piP_track_err6.emplace_back(pp_track_err_6->at(i), piP_track_6_err->at(i));
+        }
+
         //get resolution and fill vectors
         for (size_t i = 0; i < mu_p6->size(); i++) {
             mu_res_vec6.emplace_back(mu_p6->at(i), mu_res6->at(i));
@@ -2583,6 +3183,19 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
         for (size_t i = 0; i < p_p6->size(); i++) {
             p_res_vec6.emplace_back(p_p6->at(i), p_res6->at(i));
             p_res_vec_err6.emplace_back(p_p_err6->at(i), p_res_err6->at(i));
+        }
+
+        for (size_t i = 0; i < mu_l6->size(); i++) {
+            mu_res_track_vec6.emplace_back(mu_l6->at(i), mu_res_track6->at(i));
+            mu_res_track_vec_err6.emplace_back(mu_l_err6->at(i), mu_res_track_err6->at(i));
+        }
+        for (size_t i = 0; i < pi_l6->size(); i++) {
+            pi_res_track_vec6.emplace_back(pi_l6->at(i), pi_res_track6->at(i));
+            pi_res_track_vec_err6.emplace_back(pi_l_err6->at(i), pi_res_track_err6->at(i));
+        }
+        for (size_t i = 0; i < p_l6->size(); i++) {
+            p_res_track_vec6.emplace_back(p_l6->at(i), p_res_track6->at(i));
+            p_res_track_vec_err6.emplace_back(p_l_err6->at(i), p_res_track_err6->at(i));
         }
 
     }
@@ -2607,6 +3220,25 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
     std::sort(p_res_vec1.begin(), p_res_vec1.end());
     std::sort(p_res_vec_err1.begin(), p_res_vec_err1.end());
 
+    //tree 1 muon pion
+    std::sort(muPi_sep_track1.begin(), muPi_sep_track1.end());
+    std::sort(muPi_track_err1.begin(), muPi_track_err1.end());
+    //tree 1 muon proton
+    std::sort(muP_sep_track1.begin(), muP_sep_track1.end());
+    std::sort(muP_track_err1.begin(), muP_track_err1.end());
+    //tree 1 pion proton
+    std::sort(piP_sep_track1.begin(), piP_sep_track1.end());
+    std::sort(piP_track_err1.begin(), piP_track_err1.end());
+    //tree 1 muon resolution
+    std::sort(mu_res_track_vec1.begin(), mu_res_track_vec1.end());
+    std::sort(mu_res_track_vec_err1.begin(), mu_res_track_vec_err1.end());
+    //tree 1 pion resolution
+    std::sort(pi_res_track_vec1.begin(), pi_res_track_vec1.end());
+    std::sort(pi_res_track_vec_err1.begin(), pi_res_track_vec_err1.end());
+    //tree 1 proton resolution
+    std::sort(p_res_track_vec1.begin(), p_res_track_vec1.end());
+    std::sort(p_res_track_vec_err1.begin(), p_res_track_vec_err1.end());
+
     //tree 2 muon pion
     std::sort(muPi_sep2.begin(), muPi_sep2.end());
     std::sort(muPi_err2.begin(), muPi_err2.end());
@@ -2625,6 +3257,26 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
     //tree 2 proton resolution
     std::sort(p_res_vec2.begin(), p_res_vec2.end());
     std::sort(p_res_vec_err2.begin(), p_res_vec_err2.end());
+
+    //tree 2 muon pion
+    std::sort(muPi_sep_track2.begin(), muPi_sep_track2.end());
+    std::sort(muPi_track_err2.begin(), muPi_track_err2.end());
+    //tree 2 muon proton
+    std::sort(muP_sep_track2.begin(), muP_sep_track2.end());
+    std::sort(muP_track_err2.begin(), muP_track_err2.end());
+    //tree 2 pion proton
+    std::sort(piP_sep_track2.begin(), piP_sep_track2.end());
+    std::sort(piP_track_err2.begin(), piP_track_err2.end());
+    //tree 2 muon resolution
+    std::sort(mu_res_track_vec2.begin(), mu_res_track_vec2.end());
+    std::sort(mu_res_track_vec_err2.begin(), mu_res_track_vec_err2.end());
+    //tree 2 pion resolution
+    std::sort(pi_res_track_vec2.begin(), pi_res_track_vec2.end());
+    std::sort(pi_res_track_vec_err2.begin(), pi_res_track_vec_err2.end());
+    //tree 2 proton resolution
+    std::sort(p_res_track_vec2.begin(), p_res_track_vec2.end());
+    std::sort(p_res_track_vec_err2.begin(), p_res_track_vec_err2.end());
+
 
     //tree 3 muon pion
     std::sort(muPi_sep3.begin(), muPi_sep3.end());
@@ -2645,6 +3297,26 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
     std::sort(p_res_vec3.begin(), p_res_vec3.end());
     std::sort(p_res_vec_err3.begin(), p_res_vec_err3.end());
 
+    //tree 3 muon pion
+    std::sort(muPi_sep_track3.begin(), muPi_sep_track3.end());
+    std::sort(muPi_track_err3.begin(), muPi_track_err3.end());
+    //tree 3 muon proton
+    std::sort(muP_sep_track3.begin(), muP_sep_track3.end());
+    std::sort(muP_track_err3.begin(), muP_track_err3.end());
+    //tree 3 pion proton
+    std::sort(piP_sep_track3.begin(), piP_sep_track3.end());
+    std::sort(piP_track_err3.begin(), piP_track_err3.end());
+    //tree 3 muon resolution
+    std::sort(mu_res_track_vec3.begin(), mu_res_track_vec3.end());
+    std::sort(mu_res_track_vec_err3.begin(), mu_res_track_vec_err3.end());
+    //tree 3 pion resolution
+    std::sort(pi_res_track_vec3.begin(), pi_res_track_vec3.end());
+    std::sort(pi_res_track_vec_err3.begin(), pi_res_track_vec_err3.end());
+    //tree 3 proton resolution
+    std::sort(p_res_track_vec3.begin(), p_res_track_vec3.end());
+    std::sort(p_res_track_vec_err3.begin(), p_res_track_vec_err3.end());
+
+
     //tree 4 muon pion
     std::sort(muPi_sep4.begin(), muPi_sep4.end());
     std::sort(muPi_err4.begin(), muPi_err4.end());
@@ -2663,6 +3335,26 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
     //tree 4 proton resolution
     std::sort(p_res_vec4.begin(), p_res_vec4.end());
     std::sort(p_res_vec_err4.begin(), p_res_vec_err4.end());
+
+    //tree 4 muon pion
+    std::sort(muPi_sep_track4.begin(), muPi_sep_track4.end());
+    std::sort(muPi_track_err4.begin(), muPi_track_err4.end());
+    //tree 4 muon proton
+    std::sort(muP_sep_track4.begin(), muP_sep_track4.end());
+    std::sort(muP_track_err4.begin(), muP_track_err4.end());
+    //tree 4 pion proton
+    std::sort(piP_sep_track4.begin(), piP_sep_track4.end());
+    std::sort(piP_track_err4.begin(), piP_track_err4.end());
+    //tree 4 muon resolution
+    std::sort(mu_res_track_vec4.begin(), mu_res_track_vec4.end());
+    std::sort(mu_res_track_vec_err4.begin(), mu_res_track_vec_err4.end());
+    //tree 4 pion resolution
+    std::sort(pi_res_track_vec4.begin(), pi_res_track_vec4.end());
+    std::sort(pi_res_track_vec_err4.begin(), pi_res_track_vec_err4.end());
+    //tree 4 proton resolution
+    std::sort(p_res_track_vec4.begin(), p_res_track_vec4.end());
+    std::sort(p_res_track_vec_err4.begin(), p_res_track_vec_err4.end());
+
 
     //tree 5 muon pion
     std::sort(muPi_sep5.begin(), muPi_sep5.end());
@@ -2683,6 +3375,26 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
     std::sort(p_res_vec5.begin(), p_res_vec5.end());
     std::sort(p_res_vec_err5.begin(), p_res_vec_err5.end());
 
+    //tree 5 muon pion
+    std::sort(muPi_sep_track5.begin(), muPi_sep_track5.end());
+    std::sort(muPi_track_err5.begin(), muPi_track_err5.end());
+    //tree 5 muon proton
+    std::sort(muP_sep_track5.begin(), muP_sep_track5.end());
+    std::sort(muP_track_err5.begin(), muP_track_err5.end());
+    //tree 5 pion proton
+    std::sort(piP_sep_track5.begin(), piP_sep_track5.end());
+    std::sort(piP_track_err5.begin(), piP_track_err5.end());
+    //tree 5 muon resolution
+    std::sort(mu_res_track_vec5.begin(), mu_res_track_vec5.end());
+    std::sort(mu_res_track_vec_err5.begin(), mu_res_track_vec_err5.end());
+    //tree 5 pion resolution
+    std::sort(pi_res_track_vec5.begin(), pi_res_track_vec5.end());
+    std::sort(pi_res_track_vec_err5.begin(), pi_res_track_vec_err5.end());
+    //tree 5 proton resolution
+    std::sort(p_res_track_vec5.begin(), p_res_track_vec5.end());
+    std::sort(p_res_track_vec_err5.begin(), p_res_track_vec_err5.end());
+
+
     //tree 6 muon pion
     std::sort(muPi_sep6.begin(), muPi_sep6.end());
     std::sort(muPi_err6.begin(), muPi_err6.end());
@@ -2701,6 +3413,26 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
     //tree 6 proton resolution
     std::sort(p_res_vec6.begin(), p_res_vec6.end());
     std::sort(p_res_vec_err6.begin(), p_res_vec_err6.end());
+
+    //tree 1 muon pion
+    std::sort(muPi_sep_track6.begin(), muPi_sep_track6.end());
+    std::sort(muPi_track_err6.begin(), muPi_track_err6.end());
+    //tree 6 muon proton
+    std::sort(muP_sep_track6.begin(), muP_sep_track6.end());
+    std::sort(muP_track_err6.begin(), muP_track_err6.end());
+    //tree 6 pion proton
+    std::sort(piP_sep_track6.begin(), piP_sep_track6.end());
+    std::sort(piP_track_err6.begin(), piP_track_err6.end());
+    //tree 6 muon resolution
+    std::sort(mu_res_track_vec6.begin(), mu_res_track_vec6.end());
+    std::sort(mu_res_track_vec_err6.begin(), mu_res_track_vec_err6.end());
+    //tree 6 pion resolution
+    std::sort(pi_res_track_vec6.begin(), pi_res_track_vec6.end());
+    std::sort(pi_res_track_vec_err6.begin(), pi_res_track_vec_err6.end());
+    //tree 6 proton resolution
+    std::sort(p_res_track_vec6.begin(), p_res_track_vec6.end());
+    std::sort(p_res_track_vec_err6.begin(), p_res_track_vec_err6.end());
+
 
     //calculate difference in separation power to CDR per momentum
     std::vector<std::pair<float, float>> muPi_diff2, muPi_diff3, muPi_diff4, muP_diff2, muP_diff3, muP_diff4, piP_diff2, piP_diff3, piP_diff4, muPi_diff5, muP_diff5, piP_diff5, muPi_diff6, muP_diff6, piP_diff6;
@@ -3433,6 +4165,716 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
         }
     }
 
+    //calculate difference in separation power to CDR per track length
+    std::vector<std::pair<float, float>> muPi_diff_track2, muPi_diff_track3, muPi_diff_track4, muP_diff_track2, muP_diff_track3, muP_diff_track4, piP_diff_track2, piP_diff_track3, piP_diff_track4, muPi_diff_track5, muP_diff_track5, piP_diff_track5, muPi_diff_track6, muP_diff_track6, piP_diff_track6;
+    std::vector<std::pair<float, float>> muPi_perc_track2, muPi_perc_track3, muPi_perc_track4, muP_perc_track2, muP_perc_track3, muP_perc_track4, piP_perc_track2, piP_perc_track3, piP_perc_track4, muPi_perc_track5, muP_perc_track5, piP_perc_track5, muPi_perc_track6, muP_perc_track6, piP_perc_track6;
+
+    std::vector<std::pair<float, float>> muPi_diff_track_err2, muPi_diff_track_err3, muPi_diff_track_err4, muP_diff_track_err2, muP_diff_track_err3, muP_diff_track_err4, piP_diff_track_err2, piP_diff_track_err3, piP_diff_track_err4, muPi_diff_track_err5, muP_diff_track_err5, piP_diff_track_err5, muPi_diff_track_err6, muP_diff_track_err6, piP_diff_track_err6;
+    std::vector<std::pair<float, float>> muPi_perc_track_err2, muPi_perc_track_err3, muPi_perc_track_err4, muP_perc_track_err2, muP_perc_track_err3, muP_perc_track_err4, piP_perc_track_err2, piP_perc_track_err3, piP_perc_track_err4, muPi_perc_track_err5, muP_perc_track_err5, piP_perc_track_err5, muPi_perc_track_err6, muP_perc_track_err6, piP_perc_track_err6;
+
+    //calculate difference in resolution to CDR per track length
+    std::vector<std::pair<float, float>> mu_res_diff_track2, mu_res_diff_track3, mu_res_diff_track4, mu_res_diff_track5, mu_res_diff_track6;
+    std::vector<std::pair<float, float>> pi_res_diff_track2, pi_res_diff_track3, pi_res_diff_track4, pi_res_diff_track5, pi_res_diff_track6;
+    std::vector<std::pair<float, float>> p_res_diff_track2, p_res_diff_track3, p_res_diff_track4, p_res_diff_track5, p_res_diff_track6;
+
+    std::vector<std::pair<float, float>> mu_res_perc_track2, mu_res_perc_track3, mu_res_perc_track4, mu_res_perc_track5, mu_res_perc_track6;
+    std::vector<std::pair<float, float>> pi_res_perc_track2, pi_res_perc_track3, pi_res_perc_track4, pi_res_perc_track5, pi_res_perc_track6;
+    std::vector<std::pair<float, float>> p_res_perc_track2, p_res_perc_track3, p_res_perc_track4, p_res_perc_track5, p_res_perc_track6;
+
+    std::vector<std::pair<float, float>> mu_res_diff_track_err2, mu_res_diff_track_err3, mu_res_diff_track_err4, mu_res_diff_track_err5, mu_res_diff_track_err6;
+    std::vector<std::pair<float, float>> pi_res_diff_track_err2, pi_res_diff_track_err3, pi_res_diff_track_err4, pi_res_diff_track_err5, pi_res_diff_track_err6;
+    std::vector<std::pair<float, float>> p_res_diff_track_err2, p_res_diff_track_err3, p_res_diff_track_err4, p_res_diff_track_err5, p_res_diff_track_err6;
+
+    std::vector<std::pair<float, float>> mu_res_perc_track_err2, mu_res_perc_track_err3, mu_res_perc_track_err4, mu_res_perc_track_err5, mu_res_perc_track_err6;
+    std::vector<std::pair<float, float>> pi_res_perc_track_err2, pi_res_perc_track_err3, pi_res_perc_track_err4, pi_res_perc_track_err5, pi_res_perc_track_err6;
+    std::vector<std::pair<float, float>> p_res_perc_track_err2, p_res_perc_track_err3, p_res_perc_track_err4, p_res_perc_track_err5, p_res_perc_track_err6;
+
+    for (size_t i = 0; i < nLBins; i++){
+
+        float l_bin_center = std::pow(10, l_bin_min + (i + 0.5) * (l_bin_max - l_bin_min) / nLBins);
+        float l_bin_low = std::pow(10, l_bin_min + i * (l_bin_max - l_bin_min) / nLBins);
+        float l_bin_high = std::pow(10, l_bin_min + (i + 1) * (l_bin_max - l_bin_min) / nLBins);
+        float l_bin_err = (l_bin_high - l_bin_low) / 2.0;
+
+        float this_muPi_CDR = 0;
+        float this_muP_CDR = 0;
+        float this_piP_CDR = 0;
+        float this_muPi_2 = 0;
+        float this_muP_2 = 0;
+        float this_piP_2 = 0;
+        float this_muPi_3 = 0;
+        float this_muP_3 = 0;
+        float this_piP_3 = 0;
+        float this_muPi_4 = 0;
+        float this_muP_4 = 0;
+        float this_piP_4 = 0;
+        float this_muPi_5 = 0;
+        float this_muP_5 = 0;
+        float this_piP_5 = 0;
+        float this_muPi_6 = 0;
+        float this_muP_6 = 0;
+        float this_piP_6 = 0;
+
+        float this_muPi_err_CDR = 0;
+        float this_muP_err_CDR = 0;
+        float this_piP_err_CDR = 0;
+        float this_muPi_err_2 = 0;
+        float this_muP_err_2 = 0;
+        float this_piP_err_2 = 0;
+        float this_muPi_err_3 = 0;
+        float this_muP_err_3 = 0;
+        float this_piP_err_3 = 0;
+        float this_muPi_err_4 = 0;
+        float this_muP_err_4 = 0;
+        float this_piP_err_4 = 0;
+        float this_muPi_err_5 = 0;
+        float this_muP_err_5 = 0;
+        float this_piP_err_5 = 0;
+        float this_muPi_err_6 = 0;
+        float this_muP_err_6 = 0;
+        float this_piP_err_6 = 0;
+
+        float this_mu_res_CDR = 0;
+        float this_pi_res_CDR = 0;
+        float this_p_res_CDR = 0;
+        float this_mu_res_2 = 0;
+        float this_pi_res_2 = 0;
+        float this_p_res_2 = 0;
+        float this_mu_res_3 = 0;
+        float this_pi_res_3 = 0;
+        float this_p_res_3 = 0;
+        float this_mu_res_4 = 0;
+        float this_pi_res_4 = 0;
+        float this_p_res_4 = 0;
+        float this_mu_res_5 = 0;
+        float this_pi_res_5 = 0;
+        float this_p_res_5 = 0;
+        float this_mu_res_6 = 0;
+        float this_pi_res_6 = 0;
+        float this_p_res_6 = 0;
+
+        float this_mu_res_err_CDR = 0;
+        float this_pi_res_err_CDR = 0;
+        float this_p_res_err_CDR = 0;
+        float this_mu_res_err_2 = 0;
+        float this_pi_res_err_2 = 0;
+        float this_p_res_err_2 = 0;
+        float this_mu_res_err_3 = 0;
+        float this_pi_res_err_3 = 0;
+        float this_p_res_err_3 = 0;
+        float this_mu_res_err_4 = 0;
+        float this_pi_res_err_4 = 0;
+        float this_p_res_err_4 = 0;
+        float this_mu_res_err_5 = 0;
+        float this_pi_res_err_5 = 0;
+        float this_p_res_err_5 = 0;
+        float this_mu_res_err_6 = 0;
+        float this_pi_res_err_6 = 0;
+        float this_p_res_err_6 = 0;
+        
+
+        //get separation power for this momentum 
+        for(size_t l = 0; l < muPi_sep_track1.size(); l++){
+            if (muPi_sep_track1[l].first == l_bin_center) this_muPi_CDR = muPi_sep_track1[l].second;
+            if (muPi_sep_track1[l].first == l_bin_center) this_muPi_err_CDR = muPi_track_err1[l].second;
+        }
+        for(size_t l = 0; l < muP_sep_track1.size(); l++){
+            if (muP_sep_track1[l].first == l_bin_center) this_muP_CDR = muP_sep_track1[l].second;
+            if (muP_sep_track1[l].first == l_bin_center) this_muP_err_CDR = muP_track_err1[l].second;
+        }
+        for(size_t l = 0; l < piP_sep_track1.size(); l++){
+            if (piP_sep_track1[l].first == l_bin_center) this_piP_CDR = piP_sep_track1[l].second;
+            if (piP_sep_track1[l].first == l_bin_center) this_piP_err_CDR = piP_track_err1[l].second;
+        }
+
+        for(size_t l = 0; l < muPi_sep_track2.size(); l++){
+            if (muPi_sep_track2[l].first == l_bin_center) this_muPi_2 = muPi_sep_track2[l].second;
+            if (muPi_sep_track2[l].first == l_bin_center) this_muPi_err_2 = muPi_track_err2[l].second;
+        }
+        for(size_t l = 0; l < muP_sep_track2.size(); l++){
+            if (muP_sep_track2[l].first == l_bin_center) this_muP_2 = muP_sep_track2[l].second;
+            if (muP_sep_track2[l].first == l_bin_center) this_muP_err_2 = muP_track_err2[l].second;
+        }
+        for(size_t l = 0; l < piP_sep_track2.size(); l++){
+            if (piP_sep_track2[l].first == l_bin_center) this_piP_2 = piP_sep_track2[l].second;
+            if (piP_sep_track2[l].first == l_bin_center) this_piP_err_2 = piP_track_err2[l].second;
+        }
+
+        for(size_t l = 0; l < muPi_sep_track3.size(); l++){
+            if (muPi_sep_track3[l].first == l_bin_center) this_muPi_3 = muPi_sep_track3[l].second;
+            if (muPi_sep_track3[l].first == l_bin_center) this_muPi_err_3 = muPi_track_err3[l].second;
+        }
+        for(size_t l = 0; l < muP_sep_track3.size(); l++){
+            if (muP_sep_track3[l].first == l_bin_center) this_muP_3 = muP_sep_track3[l].second;
+            if (muP_sep_track3[l].first == l_bin_center) this_muP_err_3 = muP_track_err3[l].second;
+        }
+        for(size_t l = 0; l < piP_sep_track3.size(); l++){
+            if (piP_sep_track3[l].first == l_bin_center) this_piP_3 = piP_sep_track3[l].second;
+            if (piP_sep_track3[l].first == l_bin_center) this_piP_err_3 = piP_track_err3[l].second;
+        }
+
+        for(size_t l = 0; l < muPi_sep_track4.size(); l++){
+            if (muPi_sep_track4[l].first == l_bin_center) this_muPi_4 = muPi_sep_track4[l].second;
+            if (muPi_sep_track4[l].first == l_bin_center) this_muPi_err_4 = muPi_track_err4[l].second;
+        }
+        for(size_t l = 0; l < muP_sep_track4.size(); l++){
+            if (muP_sep_track4[l].first == l_bin_center) this_muP_4 = muP_sep_track4[l].second;
+            if (muP_sep_track4[l].first == l_bin_center) this_muP_err_4 = muP_track_err4[l].second;
+        }
+        for(size_t l = 0; l < piP_sep_track4.size(); l++){
+            if (piP_sep_track4[l].first == l_bin_center) this_piP_4 = piP_sep_track4[l].second;
+            if (piP_sep_track4[l].first == l_bin_center) this_piP_err_4 = piP_track_err4[l].second;
+        }
+        for(size_t l = 0; l < muPi_sep_track5.size(); l++){
+            if (muPi_sep_track5[l].first == l_bin_center) this_muPi_5 = muPi_sep_track5[l].second;
+            if (muPi_sep_track5[l].first == l_bin_center) this_muPi_err_5 = muPi_track_err5[l].second;
+        }
+        for(size_t l = 0; l < muP_sep_track5.size(); l++){
+            if (muP_sep_track5[l].first == l_bin_center) this_muP_5 = muP_sep_track5[l].second;
+            if (muP_sep_track5[l].first == l_bin_center) this_muP_err_5 = muP_track_err5[l].second;
+        }
+        for(size_t l = 0; l < piP_sep_track5.size(); l++){
+            if (piP_sep_track5[l].first == l_bin_center) this_piP_5 = piP_sep_track5[l].second;
+            if (piP_sep_track5[l].first == l_bin_center) this_piP_err_5 = piP_track_err5[l].second;
+        }
+
+        for(size_t l = 0; l < muPi_sep_track6.size(); l++){
+            if (muPi_sep_track6[l].first == l_bin_center) this_muPi_6 = muPi_sep_track6[l].second;
+            if (muPi_sep_track6[l].first == l_bin_center) this_muPi_err_6 = muPi_track_err6[l].second;
+        }
+        for(size_t l = 0; l < muP_sep_track6.size(); l++){
+            if (muP_sep_track6[l].first == l_bin_center) this_muP_6 = muP_sep_track6[l].second;
+            if (muP_sep_track6[l].first == l_bin_center) this_muP_err_6 = muP_track_err6[l].second;
+        }
+        for(size_t l = 0; l < piP_sep_track6.size(); l++){
+            if (piP_sep_track6[l].first == l_bin_center) this_piP_6 = piP_sep_track6[l].second;
+            if (piP_sep_track6[l].first == l_bin_center) this_piP_err_6 = piP_track_err6[l].second;
+        }
+
+        //get resolution for this momentum
+        for(size_t l = 0; l < mu_res_track_vec1.size(); l++){
+            if (mu_res_track_vec1[l].first == l_bin_center) this_mu_res_CDR = mu_res_track_vec1[l].second;
+            if (mu_res_track_vec1[l].first == l_bin_center) this_mu_res_err_CDR = mu_res_track_vec_err1[l].second;
+        }
+        for(size_t l = 0; l < pi_res_track_vec1.size(); l++){
+            if (pi_res_track_vec1[l].first == l_bin_center) this_pi_res_CDR = pi_res_track_vec1[l].second;
+            if (pi_res_track_vec1[l].first == l_bin_center) this_pi_res_err_CDR = pi_res_track_vec_err1[l].second;
+        }
+        for(size_t l = 0; l < p_res_track_vec1.size(); l++){
+            if (p_res_track_vec1[l].first == l_bin_center) this_p_res_CDR = p_res_track_vec1[l].second;
+            if (p_res_track_vec1[l].first == l_bin_center) this_p_res_err_CDR = p_res_track_vec_err1[l].second;
+        }
+
+        for(size_t l = 0; l < mu_res_track_vec2.size(); l++){
+            if (mu_res_track_vec2[l].first == l_bin_center) this_mu_res_2 = mu_res_track_vec2[l].second;
+            if (mu_res_track_vec2[l].first == l_bin_center) this_mu_res_err_2 = mu_res_track_vec_err2[l].second;
+        }
+        for(size_t l = 0; l < pi_res_track_vec2.size(); l++){
+            if (pi_res_track_vec2[l].first == l_bin_center) this_pi_res_2 = pi_res_track_vec2[l].second;
+            if (pi_res_track_vec2[l].first == l_bin_center) this_pi_res_err_2 = pi_res_track_vec_err2[l].second;
+        }
+        for(size_t l = 0; l < p_res_track_vec2.size(); l++){
+            if (p_res_track_vec2[l].first == l_bin_center) this_p_res_2 = p_res_track_vec2[l].second;
+            if (p_res_track_vec2[l].first == l_bin_center) this_p_res_err_2 = p_res_track_vec_err2[l].second;
+        }
+
+        for(size_t l = 0; l < mu_res_track_vec3.size(); l++){
+            if (mu_res_track_vec3[l].first == l_bin_center) this_mu_res_3 = mu_res_track_vec3[l].second;
+            if (mu_res_track_vec3[l].first == l_bin_center) this_mu_res_err_3 = mu_res_track_vec_err3[l].second;
+        }
+        for(size_t l = 0; l < pi_res_track_vec3.size(); l++){
+            if (pi_res_track_vec3[l].first == l_bin_center) this_pi_res_3 = pi_res_track_vec3[l].second;
+            if (pi_res_track_vec3[l].first == l_bin_center) this_pi_res_err_3 = pi_res_track_vec_err3[l].second;
+        }
+        for(size_t l = 0; l < p_res_track_vec3.size(); l++){
+            if (p_res_track_vec3[l].first == l_bin_center) this_p_res_3 = p_res_track_vec3[l].second;
+            if (p_res_track_vec3[l].first == l_bin_center) this_p_res_err_3 = p_res_track_vec_err3[l].second;
+        }
+
+        for(size_t l = 0; l < mu_res_track_vec4.size(); l++){
+            if (mu_res_track_vec4[l].first == l_bin_center) this_mu_res_4 = mu_res_track_vec4[l].second;
+            if (mu_res_track_vec4[l].first == l_bin_center) this_mu_res_err_4 = mu_res_track_vec_err4[l].second;
+        }
+        for(size_t l = 0; l < pi_res_track_vec4.size(); l++){
+            if (pi_res_track_vec4[l].first == l_bin_center) this_pi_res_4 = pi_res_track_vec4[l].second;
+            if (pi_res_track_vec4[l].first == l_bin_center) this_pi_res_err_4 = pi_res_track_vec_err4[l].second;
+        }
+        for(size_t l = 0; l < p_res_track_vec4.size(); l++){
+            if (p_res_track_vec4[l].first == l_bin_center) this_p_res_4 = p_res_track_vec4[l].second;
+            if (p_res_track_vec4[l].first == l_bin_center) this_p_res_err_4 = p_res_track_vec_err4[l].second;
+        }
+
+        for(size_t l = 0; l < mu_res_track_vec5.size(); l++){
+            if (mu_res_track_vec5[l].first == l_bin_center) this_mu_res_5 = mu_res_track_vec5[l].second;
+            if (mu_res_track_vec5[l].first == l_bin_center) this_mu_res_err_5 = mu_res_track_vec_err5[l].second;
+        }
+        for(size_t l = 0; l < pi_res_track_vec5.size(); l++){
+            if (pi_res_track_vec5[l].first == l_bin_center) this_pi_res_5 = pi_res_track_vec5[l].second;
+            if (pi_res_track_vec5[l].first == l_bin_center) this_pi_res_err_5 = pi_res_track_vec_err5[l].second;
+        }
+        for(size_t l = 0; l < p_res_track_vec5.size(); l++){
+            if (p_res_track_vec5[l].first == l_bin_center) this_p_res_5 = p_res_track_vec5[l].second;
+            if (p_res_track_vec5[l].first == l_bin_center) this_p_res_err_5 = p_res_track_vec_err5[l].second;
+        }
+
+        for(size_t l = 0; l < mu_res_track_vec6.size(); l++){
+            if (mu_res_track_vec6[l].first == l_bin_center) this_mu_res_6 = mu_res_track_vec6[l].second;
+            if (mu_res_track_vec6[l].first == l_bin_center) this_mu_res_err_6 = mu_res_track_vec_err6[l].second;
+        }
+        for(size_t l = 0; l < pi_res_track_vec6.size(); l++){
+            if (pi_res_track_vec6[l].first == l_bin_center) this_pi_res_6 = pi_res_track_vec6[l].second;
+            if (pi_res_track_vec6[l].first == l_bin_center) this_pi_res_err_6 = pi_res_track_vec_err6[l].second;
+        }
+        for(size_t l = 0; l < p_res_track_vec6.size(); l++){
+            if (p_res_track_vec6[l].first == l_bin_center) this_p_res_6 = p_res_track_vec6[l].second;
+            if (p_res_track_vec6[l].first == l_bin_center) this_p_res_err_6 = p_res_track_vec_err6[l].second;
+        }
+
+        //calculate difference to CDR if one is non-zero
+        if ((this_muPi_2 > 0 || this_muPi_CDR > 0)){
+            float this_muPi_diff2 = this_muPi_2 - this_muPi_CDR;
+            float this_muPi_diff_err2 = std::sqrt(this_muPi_err_2*this_muPi_err_2 + this_muPi_err_CDR*this_muPi_err_CDR);
+            float this_muPi_perc2 = 0;
+            float this_muPi_perc_err2 = 0;
+            if (this_muPi_CDR != 0){
+                this_muPi_perc2 = 100* this_muPi_diff2 / (this_muPi_CDR);
+                this_muPi_perc_err2 = (100 / this_muPi_CDR) * std::sqrt(this_muPi_err_2*this_muPi_err_2 + (this_muPi_2*this_muPi_err_CDR/this_muPi_CDR)*(this_muPi_2*this_muPi_err_CDR/this_muPi_CDR));
+                
+            }
+            muPi_diff_track2.emplace_back(l_bin_center, this_muPi_diff2);
+            muPi_perc_track2.emplace_back(l_bin_center, this_muPi_perc2);
+            muPi_diff_track_err2.emplace_back(l_bin_err, this_muPi_diff_err2);
+            muPi_perc_track_err2.emplace_back(l_bin_err, this_muPi_perc_err2);
+        }
+        if((this_muP_2 > 0 || this_muP_CDR > 0)){
+            float this_muP_diff2 = this_muP_2 - this_muP_CDR;
+            float this_muP_diff_err2 = std::sqrt(this_muP_err_2*this_muP_err_2 + this_muP_err_CDR*this_muP_err_CDR);
+            float this_muP_perc2 = 0;
+            float this_muP_perc_err2 = 0;
+            if (this_muP_CDR != 0){
+                this_muP_perc2 = 100* this_muP_diff2 / (this_muP_CDR);
+                this_muP_perc_err2 = (100 / this_muP_CDR) * std::sqrt(this_muP_err_2*this_muP_err_2 + (this_muP_2*this_muP_err_CDR/this_muP_CDR)*(this_muP_2*this_muP_err_CDR/this_muP_CDR));
+            }
+            muP_diff_track2.emplace_back(l_bin_center, this_muP_diff2);
+            muP_perc_track2.emplace_back(l_bin_center, this_muP_perc2);
+            muP_diff_track_err2.emplace_back(l_bin_err, this_muP_diff_err2);
+            muP_perc_track_err2.emplace_back(l_bin_err, this_muP_perc_err2);
+        }
+        if((this_piP_2 > 0 || this_piP_CDR > 0)){
+            float this_piP_diff2 = this_piP_2 - this_piP_CDR;
+            float this_piP_diff_err2 = std::sqrt(this_piP_err_2*this_piP_err_2 + this_piP_err_CDR*this_piP_err_CDR);
+            float this_piP_perc2 = 0;
+            float this_piP_perc_err2 = 0;
+            if (this_piP_CDR != 0){
+                this_piP_perc2 = 100 * this_piP_diff2 / (this_piP_CDR);
+                this_piP_perc_err2 = (100 / this_piP_CDR) * std::sqrt(this_piP_err_2*this_piP_err_2 + (this_piP_2*this_piP_err_CDR/this_piP_CDR)*(this_piP_2*this_piP_err_CDR/this_piP_CDR));
+            }
+            piP_diff_track2.emplace_back(l_bin_center, this_piP_diff2);
+            piP_perc_track2.emplace_back(l_bin_center, this_piP_perc2);
+            piP_diff_track_err2.emplace_back(l_bin_err, this_piP_diff_err2);
+            piP_perc_track_err2.emplace_back(l_bin_err, this_piP_perc_err2);
+        }
+
+        if ((this_muPi_3 > 0 || this_muPi_CDR > 0)){
+            float this_muPi_diff3 = this_muPi_3 - this_muPi_CDR;
+            float this_muPi_diff_err3 = std::sqrt(this_muPi_err_3*this_muPi_err_3 + this_muPi_err_CDR*this_muPi_err_CDR);
+            float this_muPi_perc3 = 0;
+            float this_muPi_perc_err3 = 0;
+            if (this_muPi_CDR != 0){
+                this_muPi_perc3 = 100 * this_muPi_diff3 / (this_muPi_CDR);
+                this_muPi_perc_err3 = (100 / this_muPi_CDR) * std::sqrt(this_muPi_err_3*this_muPi_err_3 + (this_muPi_3*this_muPi_err_CDR/this_muPi_CDR)*(this_muPi_3*this_muPi_err_CDR/this_muPi_CDR));
+            }
+            muPi_diff_track3.emplace_back(l_bin_center, this_muPi_diff3);
+            muPi_perc_track3.emplace_back(l_bin_center, this_muPi_perc3);
+            muPi_diff_track_err3.emplace_back(l_bin_err, this_muPi_diff_err3);
+            muPi_perc_track_err3.emplace_back(l_bin_err, this_muPi_perc_err3);
+        }
+        if((this_muP_3 > 0 || this_muP_CDR > 0)){
+            float this_muP_diff3 = this_muP_3 - this_muP_CDR;
+            float this_muP_diff_err3 = std::sqrt(this_muP_err_3*this_muP_err_3 + this_muP_err_CDR*this_muP_err_CDR);
+            float this_muP_perc3 = 0;
+            float this_muP_perc_err3 = 0;
+            if (this_muP_CDR != 0){
+                this_muP_perc3 = 100 * this_muP_diff3 / (this_muP_CDR);
+                this_muP_perc_err3 = (100 / this_muP_CDR) * std::sqrt(this_muP_err_3*this_muP_err_3 + (this_muP_3*this_muP_err_CDR/this_muP_CDR)*(this_muP_3*this_muP_err_CDR/this_muP_CDR));
+            }
+            muP_diff_track3.emplace_back(l_bin_center, this_muP_diff3);
+            muP_perc_track3.emplace_back(l_bin_center, this_muP_perc3);
+            muP_diff_track_err3.emplace_back(l_bin_err, this_muP_diff_err3);
+            muP_perc_track_err3.emplace_back(l_bin_err, this_muP_perc_err3);
+        }
+        if((this_piP_3 > 0 || this_piP_CDR > 0)){
+            float this_piP_diff3 = this_piP_3 - this_piP_CDR;
+            float this_piP_diff_err3 = std::sqrt(this_piP_err_3*this_piP_err_3 + this_piP_err_CDR*this_piP_err_CDR);
+            float this_piP_perc3 = 0;
+            float this_piP_perc_err3 = 0;
+            if (this_piP_CDR != 0){
+                this_piP_perc3 = 100 * this_piP_diff3 / (this_piP_CDR);
+                this_piP_perc_err3 = (100 / this_piP_CDR) * std::sqrt(this_piP_err_3*this_piP_err_3 + (this_piP_3*this_piP_err_CDR/this_piP_CDR)*(this_piP_3*this_piP_err_CDR/this_piP_CDR));
+            }
+            piP_diff_track3.emplace_back(l_bin_center, this_piP_diff3);
+            piP_perc_track3.emplace_back(l_bin_center, this_piP_perc3);
+            piP_diff_track_err3.emplace_back(l_bin_err, this_piP_diff_err3);
+            piP_perc_track_err3.emplace_back(l_bin_err, this_piP_perc_err3);
+        }
+
+        if ((this_muPi_4 > 0 || this_muPi_CDR > 0)){
+            float this_muPi_diff4 = this_muPi_4 - this_muPi_CDR;
+            float this_muPi_diff_err4 = std::sqrt(this_muPi_err_4*this_muPi_err_4 + this_muPi_err_CDR*this_muPi_err_CDR);
+            float this_muPi_perc4 = 0;
+            float this_muPi_perc_err4 = 0;
+            if (this_muPi_CDR != 0){
+                this_muPi_perc4 = 100 * this_muPi_diff4 / (this_muPi_CDR);
+                this_muPi_perc_err4 = (100 / this_muPi_CDR) * std::sqrt(this_muPi_err_4*this_muPi_err_4 + (this_muPi_4*this_muPi_err_CDR/this_muPi_CDR)*(this_muPi_4*this_muPi_err_CDR/this_muPi_CDR));
+            }
+            muPi_diff_track4.emplace_back(l_bin_center, this_muPi_diff4);
+            muPi_perc_track4.emplace_back(l_bin_center, this_muPi_perc4);
+            muPi_diff_track_err4.emplace_back(l_bin_err, this_muPi_diff_err4);
+            muPi_perc_track_err4.emplace_back(l_bin_err, this_muPi_perc_err4);
+        }
+        if((this_muP_4 > 0 || this_muP_CDR > 0)){
+            float this_muP_diff4 = this_muP_4 - this_muP_CDR;
+            float this_muP_diff_err4 = std::sqrt(this_muP_err_4*this_muP_err_4 + this_muP_err_CDR*this_muP_err_CDR);
+            float this_muP_perc4 = 0;
+            float this_muP_perc_err4 = 0;
+            if (this_muP_CDR != 0){
+                this_muP_perc4 = 100 * this_muP_diff4 / (this_muP_CDR);
+                this_muP_perc_err4 = (100 / this_muP_CDR) * std::sqrt(this_muP_err_4*this_muP_err_4 + (this_muP_4*this_muP_err_CDR/this_muP_CDR)*(this_muP_4*this_muP_err_CDR/this_muP_CDR));
+            }
+            muP_diff_track4.emplace_back(l_bin_center, this_muP_diff4);
+            muP_perc_track4.emplace_back(l_bin_center, this_muP_perc4);
+            muP_diff_track_err4.emplace_back(l_bin_err, this_muP_diff_err4);
+            muP_perc_track_err4.emplace_back(l_bin_err, this_muP_perc_err4);
+        }
+        if((this_piP_4 > 0 || this_piP_CDR > 0)){
+            float this_piP_diff4 = this_piP_4 - this_piP_CDR;
+            float this_piP_diff_err4 = std::sqrt(this_piP_err_4*this_piP_err_4 + this_piP_err_CDR*this_piP_err_CDR);
+            float this_piP_perc4 = 0;
+            float this_piP_perc_err4 = 0;
+            if (this_piP_CDR != 0){
+                this_piP_perc4 = 100 * this_piP_diff4 / (this_piP_CDR);
+                this_piP_perc_err4 = (100 / this_piP_CDR) * std::sqrt(this_piP_err_4*this_piP_err_4 + (this_piP_4*this_piP_err_CDR/this_piP_CDR)*(this_piP_4*this_piP_err_CDR/this_piP_CDR));
+            }
+            piP_diff_track4.emplace_back(l_bin_center, this_piP_diff4);
+            piP_perc_track4.emplace_back(l_bin_center, this_piP_perc4);
+            piP_diff_track_err4.emplace_back(l_bin_err, this_piP_diff_err4);
+            piP_perc_track_err4.emplace_back(l_bin_err, this_piP_perc_err4);
+        }
+
+        if ((this_muPi_5 > 0 || this_muPi_CDR > 0)){
+            float this_muPi_diff5 = this_muPi_5 - this_muPi_CDR;
+            float this_muPi_diff_err5 = std::sqrt(this_muPi_err_5*this_muPi_err_5 + this_muPi_err_CDR*this_muPi_err_CDR);
+            float this_muPi_perc5 = 0;
+            float this_muPi_perc_err5 = 0;
+            if (this_muPi_CDR != 0){
+                this_muPi_perc5 = 100 * this_muPi_diff5 / (this_muPi_CDR);
+                this_muPi_perc_err5 = (100 / this_muPi_CDR) * std::sqrt(this_muPi_err_5*this_muPi_err_5 + (this_muPi_5*this_muPi_err_CDR/this_muPi_CDR)*(this_muPi_5*this_muPi_err_CDR/this_muPi_CDR));
+            }
+            muPi_diff_track5.emplace_back(l_bin_center, this_muPi_diff5);
+            muPi_perc_track5.emplace_back(l_bin_center, this_muPi_perc5);
+            muPi_diff_track_err5.emplace_back(l_bin_err, this_muPi_diff_err5);
+            muPi_perc_track_err5.emplace_back(l_bin_err, this_muPi_perc_err5);
+        }
+
+        if((this_muP_5 > 0 || this_muP_CDR > 0)){
+            float this_muP_diff5 = this_muP_5 - this_muP_CDR;
+            float this_muP_diff_err5 = std::sqrt(this_muP_err_5*this_muP_err_5 + this_muP_err_CDR*this_muP_err_CDR);
+            float this_muP_perc5 = 0;
+            float this_muP_perc_err5 = 0;
+            if (this_muP_CDR != 0){
+                this_muP_perc5 = 100 * this_muP_diff5 / (this_muP_CDR);
+                this_muP_perc_err5 = (100 / this_muP_CDR) * std::sqrt(this_muP_err_5*this_muP_err_5 + (this_muP_5*this_muP_err_CDR/this_muP_CDR)*(this_muP_5*this_muP_err_CDR/this_muP_CDR));
+            }
+            muP_diff_track5.emplace_back(l_bin_center, this_muP_diff5);
+            muP_perc_track5.emplace_back(l_bin_center, this_muP_perc5);
+            muP_diff_track_err5.emplace_back(l_bin_err, this_muP_diff_err5);
+            muP_perc_track_err5.emplace_back(l_bin_err, this_muP_perc_err5);
+        }
+        if((this_piP_5 > 0 || this_piP_CDR > 0)){
+            float this_piP_diff5 = this_piP_5 - this_piP_CDR;
+            float this_piP_diff_err5 = std::sqrt(this_piP_err_5*this_piP_err_5 + this_piP_err_CDR*this_piP_err_CDR);
+            float this_piP_perc5 = 0;
+            float this_piP_perc_err5 = 0;
+            if (this_piP_CDR != 0){
+                this_piP_perc5 = 100 * this_piP_diff5 / (this_piP_CDR);
+                this_piP_perc_err5 = (100 / this_piP_CDR) * std::sqrt(this_piP_err_5*this_piP_err_5 + (this_piP_5*this_piP_err_CDR/this_piP_CDR)*(this_piP_5*this_piP_err_CDR/this_piP_CDR));
+            }
+            piP_diff_track5.emplace_back(l_bin_center, this_piP_diff5);
+            piP_perc_track5.emplace_back(l_bin_center, this_piP_perc5);
+            piP_diff_track_err5.emplace_back(l_bin_err, this_piP_diff_err5);
+            piP_perc_track_err5.emplace_back(l_bin_err, this_piP_perc_err5);
+        }
+
+        if ((this_muPi_6 > 0 || this_muPi_CDR > 0)){
+            float this_muPi_diff6 = this_muPi_6 - this_muPi_CDR;
+            float this_muPi_diff_err6 = std::sqrt(this_muPi_err_6*this_muPi_err_6 + this_muPi_err_CDR*this_muPi_err_CDR);
+            float this_muPi_perc6 = 0;
+            float this_muPi_perc_err6 = 0;
+            if (this_muPi_CDR != 0){
+                this_muPi_perc6 = 100 * this_muPi_diff6 / (this_muPi_CDR);
+                this_muPi_perc_err6 = (100 / this_muPi_CDR) * std::sqrt(this_muPi_err_6*this_muPi_err_6 + (this_muPi_6*this_muPi_err_CDR/this_muPi_CDR)*(this_muPi_6*this_muPi_err_CDR/this_muPi_CDR));
+            }
+            muPi_diff_track6.emplace_back(l_bin_center, this_muPi_diff6);
+            muPi_perc_track6.emplace_back(l_bin_center, this_muPi_perc6);
+            muPi_diff_track_err6.emplace_back(l_bin_err, this_muPi_diff_err6);
+            muPi_perc_track_err6.emplace_back(l_bin_err, this_muPi_perc_err6);
+        }
+        if((this_muP_6 > 0 || this_muP_CDR > 0)){
+            float this_muP_diff6 = this_muP_6 - this_muP_CDR;
+            float this_muP_diff_err6 = std::sqrt(this_muP_err_6*this_muP_err_6 + this_muP_err_CDR*this_muP_err_CDR);
+            float this_muP_perc6 = 0;
+            float this_muP_perc_err6 = 0;
+            if (this_muP_CDR != 0){
+                this_muP_perc6 = 100 * this_muP_diff6 / (this_muP_CDR);
+                this_muP_perc_err6 = (100 / this_muP_CDR) * std::sqrt(this_muP_err_6*this_muP_err_6 + (this_muP_6*this_muP_err_CDR/this_muP_CDR)*(this_muP_6*this_muP_err_CDR/this_muP_CDR));
+            }
+            muP_diff_track6.emplace_back(l_bin_center, this_muP_diff6);
+            muP_perc_track6.emplace_back(l_bin_center, this_muP_perc6);
+            muP_perc_track_err6.emplace_back(l_bin_err, this_muP_perc_err6);
+            muP_diff_track_err6.emplace_back(l_bin_err, this_muP_diff_err6);
+        }
+        if((this_piP_6 > 0 || this_piP_CDR > 0)){
+            float this_piP_diff6 = this_piP_6 - this_piP_CDR;
+            float this_piP_diff_err6 = std::sqrt(this_piP_err_6*this_piP_err_6 + this_piP_err_CDR*this_piP_err_CDR);
+            float this_piP_perc6 = 0;
+            float this_piP_perc_err6 = 0;
+            if (this_piP_CDR != 0){
+                this_piP_perc6 = 100 * this_piP_diff6 / (this_piP_CDR);
+                this_piP_perc_err6 = (100 / this_piP_CDR) * std::sqrt(this_piP_err_6*this_piP_err_6 + (this_piP_6*this_piP_err_CDR/this_piP_CDR)*(this_piP_6*this_piP_err_CDR/this_piP_CDR));
+            }
+            piP_diff_track6.emplace_back(l_bin_center, this_piP_diff6);
+            piP_perc_track6.emplace_back(l_bin_center, this_piP_perc6);
+            piP_perc_track_err6.emplace_back(l_bin_err, this_piP_perc_err6);
+            piP_diff_track_err6.emplace_back(l_bin_err, this_piP_diff_err6);
+        }
+
+        //calculate difference in resolution to CDR if one is non-zero
+        if ((this_mu_res_2 > 0 || this_mu_res_CDR > 0)){
+            float this_mu_res_diff2 = this_mu_res_2 - this_mu_res_CDR;
+            float this_mu_res_diff_err2 = std::sqrt(this_mu_res_err_2*this_mu_res_err_2 + this_mu_res_err_CDR*this_mu_res_err_CDR);
+            float this_mu_res_perc2 = 0;
+            float this_mu_res_perc_err2 = 0;
+            if (this_mu_res_CDR != 0){
+                this_mu_res_perc2 = 100 * this_mu_res_diff2 / (this_mu_res_CDR);
+                this_mu_res_perc_err2 = (100 / this_mu_res_CDR) * std::sqrt(this_mu_res_err_2*this_mu_res_err_2 + (this_mu_res_2*this_mu_res_err_CDR/this_mu_res_CDR)*(this_mu_res_2*this_mu_res_err_CDR/this_mu_res_CDR));
+            }
+            mu_res_diff_track2.emplace_back(l_bin_center, this_mu_res_diff2);
+            mu_res_diff_track_err2.emplace_back(l_bin_err, this_mu_res_diff_err2);
+            mu_res_perc_track2.emplace_back(l_bin_center, this_mu_res_perc2);
+            mu_res_perc_track_err2.emplace_back(l_bin_err, this_mu_res_perc_err2);
+        }
+
+        if ((this_pi_res_2 > 0 || this_pi_res_CDR > 0)){
+            float this_pi_res_diff2 = this_pi_res_2 - this_pi_res_CDR;
+            float this_pi_res_diff_err2 = std::sqrt(this_pi_res_err_2*this_pi_res_err_2 + this_pi_res_err_CDR*this_pi_res_err_CDR);
+            float this_pi_res_perc2 = 0;
+            float this_pi_res_perc_err2 = 0;
+            if (this_pi_res_CDR != 0){
+                this_pi_res_perc2 = 100 * this_pi_res_diff2 / (this_pi_res_CDR);
+                this_pi_res_perc_err2 = (100 / this_pi_res_CDR) * std::sqrt(this_pi_res_err_2*this_pi_res_err_2 + (this_pi_res_2*this_pi_res_err_CDR/this_pi_res_CDR)*(this_pi_res_2*this_pi_res_err_CDR/this_pi_res_CDR));
+            }
+            pi_res_diff_track2.emplace_back(l_bin_center, this_pi_res_diff2);
+            pi_res_diff_track_err2.emplace_back(l_bin_err, this_pi_res_diff_err2);
+            pi_res_perc_track2.emplace_back(l_bin_center, this_pi_res_perc2);
+            pi_res_perc_track_err2.emplace_back(l_bin_err, this_pi_res_perc_err2);
+        }
+
+        if ((this_p_res_2 > 0 || this_p_res_CDR > 0)){
+            float this_p_res_diff2 = this_p_res_2 - this_p_res_CDR;
+            float this_p_res_diff_err2 = std::sqrt(this_p_res_err_2*this_p_res_err_2 + this_p_res_err_CDR*this_p_res_err_CDR);
+            float this_p_res_perc2 = 0;
+            float this_p_res_perc_err2 = 0;
+            if (this_p_res_CDR != 0){
+                this_p_res_perc2 = 100 * this_p_res_diff2 / (this_p_res_CDR);
+                this_p_res_perc_err2 = (100 / this_p_res_CDR) * std::sqrt(this_p_res_err_2*this_p_res_err_2 + (this_p_res_2*this_p_res_err_CDR/this_p_res_CDR)*(this_p_res_2*this_p_res_err_CDR/this_p_res_CDR));
+            }
+            p_res_diff_track2.emplace_back(l_bin_center, this_p_res_diff2);
+            p_res_diff_track_err2.emplace_back(l_bin_err, this_p_res_diff_err2);
+            p_res_perc_track2.emplace_back(l_bin_center, this_p_res_perc2);
+            p_res_perc_track_err2.emplace_back(l_bin_err, this_p_res_perc_err2);
+        }
+
+        if ((this_mu_res_3 > 0 || this_mu_res_CDR > 0)){
+            float this_mu_res_diff3 = this_mu_res_3 - this_mu_res_CDR;
+            float this_mu_res_diff_err3 = std::sqrt(this_mu_res_err_3*this_mu_res_err_3 + this_mu_res_err_CDR*this_mu_res_err_CDR);
+            float this_mu_res_perc3 = 0;
+            float this_mu_res_perc_err3 = 0;
+            if (this_mu_res_CDR != 0){
+                this_mu_res_perc3 = 100 * this_mu_res_diff3 / (this_mu_res_CDR);
+                this_mu_res_perc_err3 = (100 / this_mu_res_CDR) * std::sqrt(this_mu_res_err_3*this_mu_res_err_3 + (this_mu_res_3*this_mu_res_err_CDR/this_mu_res_CDR)*(this_mu_res_3*this_mu_res_err_CDR/this_mu_res_CDR));
+            }
+            mu_res_diff_track3.emplace_back(l_bin_center, this_mu_res_diff3);
+            mu_res_diff_track_err3.emplace_back(l_bin_err, this_mu_res_diff_err3);
+            mu_res_perc_track3.emplace_back(l_bin_center, this_mu_res_perc3);
+            mu_res_perc_track_err3.emplace_back(l_bin_err, this_mu_res_perc_err3);
+        }
+
+        if ((this_pi_res_3 > 0 || this_pi_res_CDR > 0)){
+            float this_pi_res_diff3 = this_pi_res_3 - this_pi_res_CDR;
+            float this_pi_res_diff_err3 = std::sqrt(this_pi_res_err_3*this_pi_res_err_3 + this_pi_res_err_CDR*this_pi_res_err_CDR);
+            float this_pi_res_perc3 = 0;
+            float this_pi_res_perc_err3 = 0;
+            if (this_pi_res_CDR != 0){
+                this_pi_res_perc3 = 100 * this_pi_res_diff3 / (this_pi_res_CDR);
+                this_pi_res_perc_err3 = (100 / this_pi_res_CDR) * std::sqrt(this_pi_res_err_3*this_pi_res_err_3 + (this_pi_res_3*this_pi_res_err_CDR/this_pi_res_CDR)*(this_pi_res_3*this_pi_res_err_CDR/this_pi_res_CDR));
+            }
+            pi_res_diff_track3.emplace_back(l_bin_center, this_pi_res_diff3);
+            pi_res_diff_track_err3.emplace_back(l_bin_err, this_pi_res_diff_err3);
+            pi_res_perc_track3.emplace_back(l_bin_center, this_pi_res_perc3);
+            pi_res_perc_track_err3.emplace_back(l_bin_err, this_pi_res_perc_err3);
+        }
+
+        if ((this_p_res_3 > 0 || this_p_res_CDR > 0)){
+            float this_p_res_diff3 = this_p_res_3 - this_p_res_CDR;
+            float this_p_res_diff_err3 = std::sqrt(this_p_res_err_3*this_p_res_err_3 + this_p_res_err_CDR*this_p_res_err_CDR);
+            float this_p_res_perc3 = 0;
+            float this_p_res_perc_err3 = 0;
+            if (this_p_res_CDR != 0){
+                this_p_res_perc3 = 100 * this_p_res_diff3 / (this_p_res_CDR);
+                this_p_res_perc_err3 = (100 / this_p_res_CDR) * std::sqrt(this_p_res_err_3*this_p_res_err_3 + (this_p_res_3*this_p_res_err_CDR/this_p_res_CDR)*(this_p_res_3*this_p_res_err_CDR/this_p_res_CDR));
+            }
+            p_res_diff_track3.emplace_back(l_bin_center, this_p_res_diff3);
+            p_res_diff_track_err3.emplace_back(l_bin_err, this_p_res_diff_err3);
+            p_res_perc_track3.emplace_back(l_bin_center, this_p_res_perc3);
+            p_res_perc_track_err3.emplace_back(l_bin_err, this_p_res_perc_err3);
+        }
+
+        if ((this_mu_res_4 > 0 || this_mu_res_CDR > 0)){
+            float this_mu_res_diff4 = this_mu_res_4 - this_mu_res_CDR;
+            float this_mu_res_diff_err4 = std::sqrt(this_mu_res_err_4*this_mu_res_err_4 + this_mu_res_err_CDR*this_mu_res_err_CDR);
+            float this_mu_res_perc4 = 0;
+            float this_mu_res_perc_err4 = 0;
+            if (this_mu_res_CDR != 0){
+                this_mu_res_perc4 = 100 * this_mu_res_diff4 / (this_mu_res_CDR);
+                this_mu_res_perc_err4 = (100 / this_mu_res_CDR) * std::sqrt(this_mu_res_err_4*this_mu_res_err_4 + (this_mu_res_4*this_mu_res_err_CDR/this_mu_res_CDR)*(this_mu_res_4*this_mu_res_err_CDR/this_mu_res_CDR));
+            }
+            mu_res_diff_track4.emplace_back(l_bin_center, this_mu_res_diff4);
+            mu_res_diff_track_err4.emplace_back(l_bin_err, this_mu_res_diff_err4);
+            mu_res_perc_track4.emplace_back(l_bin_center, this_mu_res_perc4);
+            mu_res_perc_track_err4.emplace_back(l_bin_err, this_mu_res_perc_err4);
+        }
+
+        if ((this_pi_res_4 > 0 || this_pi_res_CDR > 0)){
+            float this_pi_res_diff4 = this_pi_res_4 - this_pi_res_CDR;
+            float this_pi_res_diff_err4 = std::sqrt(this_pi_res_err_4*this_pi_res_err_4 + this_pi_res_err_CDR*this_pi_res_err_CDR);
+            float this_pi_res_perc4 = 0;
+            float this_pi_res_perc_err4 = 0;
+            if (this_pi_res_CDR != 0){
+                this_pi_res_perc4 = 100 * this_pi_res_diff4 / (this_pi_res_CDR);
+                this_pi_res_perc_err4 = (100 / this_pi_res_CDR) * std::sqrt(this_pi_res_err_4*this_pi_res_err_4 + (this_pi_res_4*this_pi_res_err_CDR/this_pi_res_CDR)*(this_pi_res_4*this_pi_res_err_CDR/this_pi_res_CDR));
+            }
+            pi_res_diff_track4.emplace_back(l_bin_center, this_pi_res_diff4);
+            pi_res_diff_track_err4.emplace_back(l_bin_err, this_pi_res_diff_err4);
+            pi_res_perc_track4.emplace_back(l_bin_center, this_pi_res_perc4);
+            pi_res_perc_track_err4.emplace_back(l_bin_err, this_pi_res_perc_err4);
+        }
+
+        if ((this_p_res_4 > 0 || this_p_res_CDR > 0)){
+            float this_p_res_diff4 = this_p_res_4 - this_p_res_CDR;
+            float this_p_res_diff_err4 = std::sqrt(this_p_res_err_4*this_p_res_err_4 + this_p_res_err_CDR*this_p_res_err_CDR);
+            float this_p_res_perc4 = 0;
+            float this_p_res_perc_err4 = 0;
+            if (this_p_res_CDR != 0){
+                this_p_res_perc4 = 100 * this_p_res_diff4 / (this_p_res_CDR);
+                this_p_res_perc_err4 = (100 / this_p_res_CDR) * std::sqrt(this_p_res_err_4*this_p_res_err_4 + (this_p_res_4*this_p_res_err_CDR/this_p_res_CDR)*(this_p_res_4*this_p_res_err_CDR/this_p_res_CDR));
+            }
+            p_res_diff_track4.emplace_back(l_bin_center, this_p_res_diff4);
+            p_res_diff_track_err4.emplace_back(l_bin_err, this_p_res_diff_err4);
+            p_res_perc_track4.emplace_back(l_bin_center, this_p_res_perc4);
+            p_res_perc_track_err4.emplace_back(l_bin_err, this_p_res_perc_err4);
+        }
+
+        if ((this_mu_res_5 > 0 || this_mu_res_CDR > 0)){
+            float this_mu_res_diff5 = this_mu_res_5 - this_mu_res_CDR;
+            float this_mu_res_diff_err5 = std::sqrt(this_mu_res_err_5*this_mu_res_err_5 + this_mu_res_err_CDR*this_mu_res_err_CDR);
+            float this_mu_res_perc5 = 0;
+            float this_mu_res_perc_err5 = 0;
+            if (this_mu_res_CDR != 0){
+                this_mu_res_perc5 = 100 * this_mu_res_diff5 / (this_mu_res_CDR);
+                this_mu_res_perc_err5 = (100 / this_mu_res_CDR) * std::sqrt(this_mu_res_err_5*this_mu_res_err_5 + (this_mu_res_5*this_mu_res_err_CDR/this_mu_res_CDR)*(this_mu_res_5*this_mu_res_err_CDR/this_mu_res_CDR));
+            }
+            mu_res_diff_track5.emplace_back(l_bin_center, this_mu_res_diff5);
+            mu_res_diff_track_err5.emplace_back(l_bin_err, this_mu_res_diff_err5);
+            mu_res_perc_track5.emplace_back(l_bin_center, this_mu_res_perc5);
+            mu_res_perc_track_err5.emplace_back(l_bin_err, this_mu_res_perc_err5);
+        }
+
+        if ((this_pi_res_5 > 0 || this_pi_res_CDR > 0)){
+            float this_pi_res_diff5 = this_pi_res_5 - this_pi_res_CDR;
+            float this_pi_res_diff_err5 = std::sqrt(this_pi_res_err_5*this_pi_res_err_5 + this_pi_res_err_CDR*this_pi_res_err_CDR);
+            float this_pi_res_perc5 = 0;
+            float this_pi_res_perc_err5 = 0;
+            if (this_pi_res_CDR != 0){
+                this_pi_res_perc5 = 100 * this_pi_res_diff5 / (this_pi_res_CDR);
+                this_pi_res_perc_err5 = (100 / this_pi_res_CDR) * std::sqrt(this_pi_res_err_5*this_pi_res_err_5 + (this_pi_res_5*this_pi_res_err_CDR/this_pi_res_CDR)*(this_pi_res_5*this_pi_res_err_CDR/this_pi_res_CDR));
+            }
+            pi_res_diff_track5.emplace_back(l_bin_center, this_pi_res_diff5);
+            pi_res_diff_track_err5.emplace_back(l_bin_err, this_pi_res_diff_err5);
+            pi_res_perc_track5.emplace_back(l_bin_center, this_pi_res_perc5);
+            pi_res_perc_track_err5.emplace_back(l_bin_err, this_pi_res_perc_err5);
+        }
+
+        if ((this_p_res_5 > 0 || this_p_res_CDR > 0)){
+            float this_p_res_diff5 = this_p_res_5 - this_p_res_CDR;
+            float this_p_res_diff_err5 = std::sqrt(this_p_res_err_5*this_p_res_err_5 + this_p_res_err_CDR*this_p_res_err_CDR);
+            float this_p_res_perc5 = 0;
+            float this_p_res_perc_err5 = 0;
+            if (this_p_res_CDR != 0){
+                this_p_res_perc5 = 100 * this_p_res_diff5 / (this_p_res_CDR);
+                this_p_res_perc_err5 = (100 / this_p_res_CDR) * std::sqrt(this_p_res_err_5*this_p_res_err_5 + (this_p_res_5*this_p_res_err_CDR/this_p_res_CDR)*(this_p_res_5*this_p_res_err_CDR/this_p_res_CDR));
+            }
+            p_res_diff_track5.emplace_back(l_bin_center, this_p_res_diff5);
+            p_res_diff_track_err5.emplace_back(l_bin_err, this_p_res_diff_err5);
+            p_res_perc_track5.emplace_back(l_bin_center, this_p_res_perc5);
+            p_res_perc_track_err5.emplace_back(l_bin_err, this_p_res_perc_err5);
+        }
+
+        if ((this_mu_res_6 > 0 || this_mu_res_CDR > 0)){
+            float this_mu_res_diff6 = this_mu_res_6 - this_mu_res_CDR;
+            float this_mu_res_diff_err6 = std::sqrt(this_mu_res_err_6*this_mu_res_err_6 + this_mu_res_err_CDR*this_mu_res_err_CDR);
+            float this_mu_res_perc6 = 0;
+            float this_mu_res_perc_err6 = 0;
+            if (this_mu_res_CDR != 0){
+                this_mu_res_perc6 = 100 * this_mu_res_diff6 / (this_mu_res_CDR);
+                this_mu_res_perc_err6 = (100 / this_mu_res_CDR) * std::sqrt(this_mu_res_err_6*this_mu_res_err_6 + (this_mu_res_6*this_mu_res_err_CDR/this_mu_res_CDR)*(this_mu_res_6*this_mu_res_err_CDR/this_mu_res_CDR));
+            }
+            mu_res_diff_track6.emplace_back(l_bin_center, this_mu_res_diff6);
+            mu_res_diff_track_err6.emplace_back(l_bin_err, this_mu_res_diff_err6);
+            mu_res_perc_track6.emplace_back(l_bin_center, this_mu_res_perc6);
+            mu_res_perc_track_err6.emplace_back(l_bin_err, this_mu_res_perc_err6);
+        }
+
+        if ((this_pi_res_6 > 0 || this_pi_res_CDR > 0)){
+            float this_pi_res_diff6 = this_pi_res_6 - this_pi_res_CDR;
+            float this_pi_res_diff_err6 = std::sqrt(this_pi_res_err_6*this_pi_res_err_6 + this_pi_res_err_CDR*this_pi_res_err_CDR);
+            float this_pi_res_perc6 = 0;
+            float this_pi_res_perc_err6 = 0;
+            if (this_pi_res_CDR != 0){
+                this_pi_res_perc6 = 100 * this_pi_res_diff6 / (this_pi_res_CDR);
+                this_pi_res_perc_err6 = (100 / this_pi_res_CDR) * std::sqrt(this_pi_res_err_6*this_pi_res_err_6 + (this_pi_res_6*this_pi_res_err_CDR/this_pi_res_CDR)*(this_pi_res_6*this_pi_res_err_CDR/this_pi_res_CDR));
+            }
+            pi_res_diff_track6.emplace_back(l_bin_center, this_pi_res_diff6);
+            pi_res_diff_track_err6.emplace_back(l_bin_err, this_pi_res_diff_err6);
+            pi_res_perc_track6.emplace_back(l_bin_center, this_pi_res_perc6);
+            pi_res_perc_track_err6.emplace_back(l_bin_err, this_pi_res_perc_err6);
+        }
+
+        if ((this_p_res_6 > 0 || this_p_res_CDR > 0)){
+            float this_p_res_diff6 = this_p_res_6 - this_p_res_CDR;
+            float this_p_res_diff_err6 = std::sqrt(this_p_res_err_6*this_p_res_err_6 + this_p_res_err_CDR*this_p_res_err_CDR);
+            float this_p_res_perc6 = 0;
+            float this_p_res_perc_err6 = 0;
+            if (this_p_res_CDR != 0){
+                this_p_res_perc6 = 100 * this_p_res_diff6 / (this_p_res_CDR);
+                this_p_res_perc_err6 = (100 / this_p_res_CDR) * std::sqrt(this_p_res_err_6*this_p_res_err_6 + (this_p_res_6*this_p_res_err_CDR/this_p_res_CDR)*(this_p_res_6*this_p_res_err_CDR/this_p_res_CDR));
+            }
+            p_res_diff_track6.emplace_back(l_bin_center, this_p_res_diff6);
+            p_res_diff_track_err6.emplace_back(l_bin_err, this_p_res_diff_err6);
+            p_res_perc_track6.emplace_back(l_bin_center, this_p_res_perc6);
+            p_res_perc_track_err6.emplace_back(l_bin_err, this_p_res_perc_err6);
+        }
+    }
+
 
     //draw results
     draw_graphs(muPi_sep1, muPi_sep2, muPi_sep3, muPi_sep4, muPi_sep5, muPi_sep6, muPi_err1, muPi_err2, muPi_err3, muPi_err4, muPi_err5, muPi_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonPionSepPowComp.png" ).c_str(), "Muon Pion Separation Power", "Momentum [MeV]", "Separation Power",5e4);
@@ -3482,6 +4924,55 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
     draw_percentagesFit(mu_res_perc2, mu_res_perc3, mu_res_perc4, mu_res_perc5, mu_res_perc6, mu_res_perc_err2, mu_res_perc_err3, mu_res_perc_err4, mu_res_perc_err5, mu_res_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonResDiffPercFit.png" ).c_str(), "Difference in Muon Resolution", "Momentum [MeV]", "(R-R_{Pilot})/R_{Pilot} *100", 5e4, true);
     draw_percentagesFit(pi_res_perc2, pi_res_perc3, pi_res_perc4, pi_res_perc5, pi_res_perc6, pi_res_perc_err2, pi_res_perc_err3, pi_res_perc_err4, pi_res_perc_err5, pi_res_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionResDiffPercFit.png" ).c_str(), "Difference in Pion Resolution", "Momentum [MeV]", "(R-R_{Pilot})/R_{Pilot} *100", 5e4, true);
     draw_percentagesFit(p_res_perc2, p_res_perc3, p_res_perc4, p_res_perc5, p_res_perc6, p_res_perc_err2, p_res_perc_err3, p_res_perc_err4, p_res_perc_err5, p_res_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_ProtonResDiffPercFit.png" ).c_str(), "Difference in Proton Resolution", "Momentum [MeV]", "(R-R_{Pilot})/R_{Pilot} *100", 5e4, false);
+
+
+    draw_graphs(muPi_sep_track1, muPi_sep_track2, muPi_sep_track3, muPi_sep_track4, muPi_sep_track5, muPi_sep_track6, muPi_track_err1, muPi_track_err2, muPi_track_err3, muPi_track_err4, muPi_track_err5, muPi_track_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_track_MuonPionSepPowComp.png" ).c_str(), "Muon Pion Separation Power", "Track Length [cm]", "Separation Power",5e3);
+    draw_graphs(muP_sep_track1, muP_sep_track2, muP_sep_track3, muP_sep_track4, muP_sep_track5, muP_sep_track6, muP_track_err1, muP_track_err2, muP_track_err3, muP_track_err4, muP_track_err5, muP_track_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_track_MuonProtonSepPowComp.png" ).c_str(), "Muon Proton Separation Power", "Track Length [cm]", "Separation Power",5e3);
+    draw_graphs(piP_sep_track1, piP_sep_track2, piP_sep_track3, piP_sep_track4, piP_sep_track5, piP_sep_track6, piP_track_err1, piP_track_err2, piP_track_err3, piP_track_err4, piP_track_err5, piP_track_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_track_PionProtonSepPowComp.png" ).c_str(), "Pion Proton Separation Power", "Track Length [cm]", "Separation Power",5e3);
+
+    draw_differences(muPi_diff_track2, muPi_diff_track3, muPi_diff_track4, muPi_diff_track5, muPi_diff_track6, muPi_diff_track_err2, muPi_diff_track_err3, muPi_diff_track_err4, muPi_diff_track_err5, muPi_diff_track_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_track_MuonPionSepPowDiff.png" ).c_str(), "Difference in Muon Pion Separation", "Track Length [cm]", "S-S_{Pilot}", 5e3);
+    draw_differences(muP_diff_track2, muP_diff_track3, muP_diff_track4, muP_diff_track5, muP_diff_track6, muP_diff_track_err2, muP_diff_track_err3, muP_diff_track_err4, muP_diff_track_err5, muP_diff_track_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_track_MuonProtonSepPowDiff.png" ).c_str(), "Difference in Muon Proton Separation", "Track Length [cm]", "S-S_{Pilot}", 5e3);
+    draw_differences(piP_diff_track2, piP_diff_track3, piP_diff_track4, piP_diff_track5, piP_diff_track6, piP_diff_track_err2, piP_diff_track_err3, piP_diff_track_err4, piP_diff_track_err5, piP_diff_track_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_track_PionProtonSepPowDiff.png" ).c_str(), "Difference in Pion Proton Separation", "Track Length [cm]", "S-S_{Pilot}", 5e3);
+
+    draw_percentages(muPi_perc_track2, muPi_perc_track3, muPi_perc_track4, muPi_perc_track5, muPi_perc_track6, muPi_perc_track_err2, muPi_perc_track_err3, muPi_perc_track_err4, muPi_perc_track_err5, muPi_perc_track_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_track_MuonPionSepPowDiffPerc.png" ).c_str(), "Difference in Muon Pion Separation", "Track Length [cm]", "(S-S_{Pilot})/S_{Pilot} *100", 5e3);
+    draw_percentages(muP_perc_track2, muP_perc_track3, muP_perc_track4, muP_perc_track5, muP_perc_track6, muP_perc_track_err2, muP_perc_track_err3, muP_perc_track_err4, muP_perc_track_err5, muP_perc_track_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_track_MuonProtonSepPowDiffPerc.png" ).c_str(), "Difference in Muon Proton Separation", "Track Length [cm]", "(S-S_{Pilot})/S_{Pilot} *100", 5e3);
+    draw_percentages(piP_perc_track2, piP_perc_track3, piP_perc_track4, piP_perc_track5, piP_perc_track6, piP_perc_track_err2, piP_perc_track_err3, piP_perc_track_err4, piP_perc_track_err5, piP_perc_track_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_track_PionProtonSepPowDiffPerc.png" ).c_str(), "Difference in Pion Proton Separation", "Track Length [cm]", "(S-S_{Pilot})/S_{Pilot} *100", 5e3);
+
+    draw_percentages_line(muPi_perc_track2, muPi_perc_track3, muPi_perc_track4, muPi_perc_track5, muPi_perc_track6, muPi_perc_track_err2, muPi_perc_track_err3, muPi_perc_track_err4, muPi_perc_track_err5, muPi_perc_track_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_track_MuonPionSepPowDiffPercLine.png" ).c_str(), "Difference in Muon Pion Separation", "Track Length [cm]", "(S-S_{Pilot})/S_{Pilot} *100", 5e3);
+    draw_percentages_line(muP_perc_track2, muP_perc_track3, muP_perc_track4, muP_perc_track5, muP_perc_track6, muP_perc_track_err2, muP_perc_track_err3, muP_perc_track_err4, muP_perc_track_err5, muP_perc_track_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_track_MuonProtonSepPowDiffPercLine.png" ).c_str(), "Difference in Muon Proton Separation", "Track Length [cm]", "(S-S_{Pilot})/S_{Pilot} *100", 5e3);
+    draw_percentages_line(piP_perc_track2, piP_perc_track3, piP_perc_track4, piP_perc_track5, piP_perc_track6, piP_perc_track_err2, piP_perc_track_err3, piP_perc_track_err4, piP_perc_track_err5, piP_perc_track_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_track_PionProtonSepPowDiffPercLine.png" ).c_str(), "Difference in Pion Proton Separation", "Track Length [cm]", "(S-S_{Pilot})/S_{Pilot} *100", 5e3);
+
+    draw_graphs(mu_res_track_vec1, mu_res_track_vec2, mu_res_track_vec3, mu_res_track_vec4, mu_res_track_vec5, mu_res_track_vec6, mu_res_track_vec_err1, mu_res_track_vec_err2, mu_res_track_vec_err3, mu_res_track_vec_err4, mu_res_track_vec_err5, mu_res_track_vec_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_track_MuonResComp.png" ).c_str(), "Muon Resolution", "Track Length [cm]", "Resolution [MeV]", 5e3);
+    draw_graphs(pi_res_track_vec1, pi_res_track_vec2, pi_res_track_vec3, pi_res_track_vec4, pi_res_track_vec5, pi_res_track_vec6, pi_res_track_vec_err1, pi_res_track_vec_err2, pi_res_track_vec_err3, pi_res_track_vec_err4, pi_res_track_vec_err5, pi_res_track_vec_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_track_PionResComp.png" ).c_str(), "Pion Resolution", "Track Length [cm]", "Resolution [MeV]", 5e3);
+    draw_graphs(p_res_track_vec1, p_res_track_vec2, p_res_track_vec3, p_res_track_vec4, p_res_track_vec5, p_res_track_vec6, p_res_track_vec_err1, p_res_track_vec_err2, p_res_track_vec_err3, p_res_track_vec_err4, p_res_track_vec_err5, p_res_track_vec_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_track_ProtonResComp.png" ).c_str(), "Proton Resolution", "Track Length [cm]", "Resolution [MeV]", 5e3);
+    
+    draw_differences(mu_res_diff_track2, mu_res_diff_track3, mu_res_diff_track4, mu_res_diff_track5, mu_res_diff_track6, mu_res_diff_track_err2, mu_res_diff_track_err3, mu_res_diff_track_err4, mu_res_diff_track_err5, mu_res_diff_track_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_track_MuonResDiff.png" ).c_str(), "Difference in Muon Resolution", "Track Length [cm]", "R-R_{Pilot}", 5e3);
+    draw_differences(pi_res_diff_track2, pi_res_diff_track3, pi_res_diff_track4, pi_res_diff_track5, pi_res_diff_track6, pi_res_diff_track_err2, pi_res_diff_track_err3, pi_res_diff_track_err4, pi_res_diff_track_err5, pi_res_diff_track_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_track_PionResDiff.png" ).c_str(), "Difference in Pion Resolution", "Track Length [cm]", "R-R_{Pilot}", 5e3);
+    draw_differences(p_res_diff_track2, p_res_diff_track3, p_res_diff_track4, p_res_diff_track5, p_res_diff_track6, p_res_diff_track_err2, p_res_diff_track_err3, p_res_diff_track_err4, p_res_diff_track_err5, p_res_diff_track_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_track_ProtonResDiff.png" ).c_str(), "Difference in Proton Resolution", "Track Length [cm]", "R-R_{Pilot}", 5e3);
+    
+    draw_percentages(mu_res_perc_track2, mu_res_perc_track3, mu_res_perc_track4, mu_res_perc_track5, mu_res_perc_track6, mu_res_perc_track_err2, mu_res_perc_track_err3, mu_res_perc_track_err4, mu_res_perc_track_err5, mu_res_perc_track_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_track_MuonResDiffPerc.png" ).c_str(), "Difference in Muon Resolution", "Track Length [cm]", "(R-R_{Pilot})/R_{Pilot} *100", 5e3);
+    draw_percentages(pi_res_perc_track2, pi_res_perc_track3, pi_res_perc_track4, pi_res_perc_track5, pi_res_perc_track6, pi_res_perc_track_err2, pi_res_perc_track_err3, pi_res_perc_track_err4, pi_res_perc_track_err5, pi_res_perc_track_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_track_PionResDiffPerc.png" ).c_str(), "Difference in Pion Resolution", "Track Length [cm]", "(R-R_{Pilot})/R_{Pilot} *100", 5e3);
+    draw_percentages(p_res_perc_track2, p_res_perc_track3, p_res_perc_track4, p_res_perc_track5, p_res_perc_track6, p_res_perc_track_err2, p_res_perc_track_err3, p_res_perc_track_err4, p_res_perc_track_err5, p_res_perc_track_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_track_ProtonResDiffPerc.png" ).c_str(), "Difference in Proton Resolution", "Track Length [cm]", "(R-R_{Pilot})/R_{Pilot} *100", 5e3);
+
+    draw_percentages_line(mu_res_perc_track2, mu_res_perc_track3, mu_res_perc_track4, mu_res_perc_track5, mu_res_perc_track6, mu_res_perc_track_err2, mu_res_perc_track_err3, mu_res_perc_track_err4, mu_res_perc_track_err5, mu_res_perc_track_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_track_MuonResDiffPercLine.png" ).c_str(), "Difference in Muon Resolution", "Track Length [cm]", "(R-R_{Pilot})/R_{Pilot} *100", 5e3);
+    draw_percentages_line(pi_res_perc_track2, pi_res_perc_track3, pi_res_perc_track4, pi_res_perc_track5, pi_res_perc_track6, pi_res_perc_track_err2, pi_res_perc_track_err3, pi_res_perc_track_err4, pi_res_perc_track_err5, pi_res_perc_track_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_track_PionResDiffPercLine.png" ).c_str(), "Difference in Pion Resolution", "Track Length [cm]", "(R-R_{Pilot})/R_{Pilot} *100", 5e3);
+    draw_percentages_line(p_res_perc_track2, p_res_perc_track3, p_res_perc_track4, p_res_perc_track5, p_res_perc_track6, p_res_perc_track_err2, p_res_perc_track_err3, p_res_perc_track_err4, p_res_perc_track_err5, p_res_perc_track_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_track_ProtonResDiffPercLine.png" ).c_str(), "Difference in Proton Resolution", "Track Length [cm]", "(R-R_{Pilot})/R_{Pilot} *100", 5e3);
+
+    draw_percentagesWithFit(muPi_perc_track2, muPi_perc_track3, muPi_perc_track4, muPi_perc_track5, muPi_perc_track6, muPi_perc_track_err2, muPi_perc_track_err3, muPi_perc_track_err4, muPi_perc_track_err5, muPi_perc_track_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_track_MuonPionSepPowDiffPercWithFit.png" ).c_str(), "Difference in Muon Pion Separation", "Track Length [cm]", "(S-S_{Pilot})/S_{Pilot} *100", 5e3, true);
+    draw_percentagesWithFit(muP_perc_track2, muP_perc_track3, muP_perc_track4, muP_perc_track5, muP_perc_track6, muP_perc_track_err2, muP_perc_track_err3, muP_perc_track_err4, muP_perc_track_err5, muP_perc_track_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_track_MuonProtonSepPowDiffPercWithFit.png" ).c_str(), "Difference in Muon Proton Separation", "Track Length [cm]", "(S-S_{Pilot})/S_{Pilot} *100", 5e3, false);
+    draw_percentagesWithFit(piP_perc_track2, piP_perc_track3, piP_perc_track4, piP_perc_track5, piP_perc_track6, piP_perc_track_err2, piP_perc_track_err3, piP_perc_track_err4, piP_perc_track_err5, piP_perc_track_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_track_PionProtonSepPowDiffPercWithFit.png" ).c_str(), "Difference in Pion Proton Separation", "Track Length [cm]", "(S-S_{Pilot})/S_{Pilot} *100", 5e3, false);
+
+    draw_percentagesWithFit(mu_res_perc_track2, mu_res_perc_track3, mu_res_perc_track4, mu_res_perc_track5, mu_res_perc_track6, mu_res_perc_track_err2, mu_res_perc_track_err3, mu_res_perc_track_err4, mu_res_perc_track_err5, mu_res_perc_track_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_track_MuonResDiffPercWithFit.png" ).c_str(), "Difference in Muon Resolution", "Track Length [cm]", "(R-R_{Pilot})/R_{Pilot} *100", 5e3, true);
+    draw_percentagesWithFit(pi_res_perc_track2, pi_res_perc_track3, pi_res_perc_track4, pi_res_perc_track5, pi_res_perc_track6, pi_res_perc_track_err2, pi_res_perc_track_err3, pi_res_perc_track_err4, pi_res_perc_track_err5, pi_res_perc_track_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_track_PionResDiffPercWithFit.png" ).c_str(), "Difference in Pion Resolution", "Track Length [cm]", "(R-R_{Pilot})/R_{Pilot} *100", 5e3, true);
+    draw_percentagesWithFit(p_res_perc_track2, p_res_perc_track3, p_res_perc_track4, p_res_perc_track5, p_res_perc_track6, p_res_perc_track_err2, p_res_perc_track_err3, p_res_perc_track_err4, p_res_perc_track_err5, p_res_perc_track_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_track_ProtonResDiffPercWithFit.png" ).c_str(), "Difference in Proton Resolution", "Track Length [cm]", "(R-R_{Pilot})/R_{Pilot} *100", 5e3, false);
+
+    draw_percentagesFit(muPi_perc_track2, muPi_perc_track3, muPi_perc_track4, muPi_perc_track5, muPi_perc_track6, muPi_perc_track_err2, muPi_perc_track_err3, muPi_perc_track_err4, muPi_perc_track_err5, muPi_perc_track_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_track_MuonPionSepPowDiffPercFit.png" ).c_str(), "Difference in Muon Pion Separation", "Track Length [cm]", "(S-S_{Pilot})/S_{Pilot} *100", 5e3, true);
+    draw_percentagesFit(muP_perc_track2, muP_perc_track3, muP_perc_track4, muP_perc_track5, muP_perc_track6, muP_perc_track_err2, muP_perc_track_err3, muP_perc_track_err4, muP_perc_track_err5, muP_perc_track_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_track_MuonProtonSepPowDiffPercFit.png" ).c_str(), "Difference in Muon Proton Separation", "Track Length [cm]", "(S-S_{Pilot})/S_{Pilot} *100", 5e3, false);
+    draw_percentagesFit(piP_perc_track2, piP_perc_track3, piP_perc_track4, piP_perc_track5, piP_perc_track6, piP_perc_track_err2, piP_perc_track_err3, piP_perc_track_err4, piP_perc_track_err5, piP_perc_track_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_track_PionProtonSepPowDiffPercFit.png" ).c_str(), "Difference in Pion Proton Separation", "Momentum [cm]", "(S-S_{Pilot})/S_{Pilot} *100", 5e3, false);
+
+    draw_percentagesFit(mu_res_perc_track2, mu_res_perc_track3, mu_res_perc_track4, mu_res_perc_track5, mu_res_perc_track6, mu_res_perc_track_err2, mu_res_perc_track_err3, mu_res_perc_track_err4, mu_res_perc_track_err5, mu_res_perc_track_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_track_MuonResDiffPercFit.png" ).c_str(), "Difference in Muon Resolution", "Track Length [cm]", "(R-R_{Pilot})/R_{Pilot} *100", 5e3, true);
+    draw_percentagesFit(pi_res_perc_track2, pi_res_perc_track3, pi_res_perc_track4, pi_res_perc_track5, pi_res_perc_track6, pi_res_perc_track_err2, pi_res_perc_track_err3, pi_res_perc_track_err4, pi_res_perc_track_err5, pi_res_perc_track_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_track_PionResDiffPercFit.png" ).c_str(), "Difference in Pion Resolution", "Track Length [cm]", "(R-R_{Pilot})/R_{Pilot} *100", 5e3, true);
+    draw_percentagesFit(p_res_perc_track2, p_res_perc_track3, p_res_perc_track4, p_res_perc_track5, p_res_perc_track6, p_res_perc_track_err2, p_res_perc_track_err3, p_res_perc_track_err4, p_res_perc_track_err5, p_res_perc_track_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_track_ProtonResDiffPercFit.png" ).c_str(), "Difference in Proton Resolution", "Track Length [cm]", "(R-R_{Pilot})/R_{Pilot} *100", 5e3, false);
 
     /*
     for (size_t i = 0; i < nPBins; i++){

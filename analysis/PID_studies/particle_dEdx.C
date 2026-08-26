@@ -604,6 +604,13 @@ fit_results calc_res(TH1F* hist){
     double sigma     = fr->Parameter(2);
     double sigma_err = fr->ParError(2);
 
+    double sigma_frac = sigma_err/sigma;
+    double mean_frac = mean_err/mean;
+
+    if(sigma_frac > 0.25 || mean_frac > 0.25){
+        return {0, 0, 0, 0, 0, 0, 0};
+    }
+
     TMatrixDSym cov = fr->GetCovarianceMatrix();
     double cov_mean_sigma = cov(1, 2);
 
@@ -804,23 +811,39 @@ void particle_dEdx(const std::string& inputFileNameMuon, const std::string& inpu
     std::map<int, std::vector<double>> pdg_to_p, pdg_to_sigma, pdg_to_mean, pdg_to_res;
     std::map<int, std::vector<double>> pdg_to_p_err, pdg_to_sigma_err, pdg_to_mean_err, pdg_to_res_err;
 
+    //create vectors for track length, resolution, mean, sigma
+    std::map<int, std::vector<double>> pdg_to_l, pdg_to_sigma_l, pdg_to_mean_l, pdg_to_res_l;
+    std::map<int, std::vector<double>> pdg_to_l_err, pdg_to_sigma_l_err, pdg_to_mean_l_err, pdg_to_res_l_err;
+
     //create vectors for separation power
     std::vector<Float_t> mom_vec1, mom_vec2, mom_vec3;
     std::vector<Float_t> muon_pion_sp, muon_proton_sp, pion_proton_sp;
     std::vector<Float_t> mom_vec1_err, mom_vec2_err, mom_vec3_err;
     std::vector<Float_t> muon_pion_sp_err, muon_proton_sp_err, pion_proton_sp_err;
 
+    //create vector for separation power by track length
+    std::vector<Float_t> l_vec1, l_vec2, l_vec3;
+    std::vector<Float_t> muon_pion_sp_l, muon_proton_sp_l, pion_proton_sp_l;
+    std::vector<Float_t> l_vec1_err, l_vec2_err, l_vec3_err;
+    std::vector<Float_t> muon_pion_sp_l_err, muon_proton_sp_l_err, pion_proton_sp_l_err;
+
     // Muon
     std::vector<double> mu_p, mu_sigma, mu_mean, mu_res;
     std::vector<double> mu_p_err, mu_sigma_err, mu_mean_err, mu_res_err;
+    std::vector<double> mu_l, mu_sigma_l, mu_mean_l, mu_res_l;
+    std::vector<double> mu_l_err, mu_sigma_l_err, mu_mean_l_err, mu_res_l_err;
 
     // Pion
     std::vector<double> pi_p, pi_sigma, pi_mean, pi_res;
     std::vector<double> pi_p_err, pi_sigma_err, pi_mean_err, pi_res_err;
+    std::vector<double> pi_l, pi_sigma_l, pi_mean_l, pi_res_l;
+    std::vector<double> pi_l_err, pi_sigma_l_err, pi_mean_l_err, pi_res_l_err;
 
     // Proton
     std::vector<double> pr_p, pr_sigma, pr_mean, pr_res;
     std::vector<double> pr_p_err, pr_sigma_err, pr_mean_err, pr_res_err;
+    std::vector<double> pr_l, pr_sigma_l, pr_mean_l, pr_res_l;
+    std::vector<double> pr_l_err, pr_sigma_l_err, pr_mean_l_err, pr_res_l_err;
 
     //constants
     const float p_min = 70.0; // MeV
@@ -829,6 +852,12 @@ void particle_dEdx(const std::string& inputFileNameMuon, const std::string& inpu
     const float p_interval = (p_max - p_min) / nPBins; // MeV
     float p_bin_min = std::log10(p_min); // MeV
     float p_bin_max = std::log10(p_max); // MeV
+    const float l_min = 10.0; // cm
+    const float l_max = 2000; // cm
+    const int nLBins = 100; // number of track length bins for l vs dE/dx graph
+    const float l_interval = (l_max - l_min) / nLBins; // cm
+    float l_bin_min = std::log10(l_min); // cm
+    float l_bin_max = std::log10(l_max); // cm
 
     std::vector<int> muon_size(nPBins, 0), pion_size(nPBins, 0), proton_size(nPBins, 0);
 
@@ -872,6 +901,43 @@ void particle_dEdx(const std::string& inputFileNameMuon, const std::string& inpu
     outputTree->Branch("pr_mean_err", &pr_mean_err);
     outputTree->Branch("pr_res_err", &pr_res_err);
 
+    outputTree->Branch("muon_pion_sep_l", &muon_pion_sp_l);
+    outputTree->Branch("muon_proton_sep_l", &muon_proton_sp_l);
+    outputTree->Branch("pion_proton_sep_l", &pion_proton_sp_l);
+    outputTree->Branch("mpi_l", &l_vec1);
+    outputTree->Branch("mp_l", &l_vec2);
+    outputTree->Branch("pp_l", &l_vec3);
+    outputTree->Branch("mpi_l_err", &l_vec1_err);
+    outputTree->Branch("mp_l_err", &l_vec2_err);
+    outputTree->Branch("pp_l_err", &l_vec3_err);
+    outputTree->Branch("muon_pion_sep_l_err", &muon_pion_sp_l_err);
+    outputTree->Branch("muon_proton_sep_l_err", &muon_proton_sp_l_err);
+    outputTree->Branch("pion_proton_sep_l_err", &pion_proton_sp_l_err);
+    outputTree->Branch("mu_l", &mu_l);
+    outputTree->Branch("mu_sigma_l", &mu_sigma_l);
+    outputTree->Branch("mu_mean_l", &mu_mean_l);
+    outputTree->Branch("mu_res_l", &mu_res_l);
+    outputTree->Branch("mu_l_err", &mu_l_err);
+    outputTree->Branch("mu_sigma_l_err", &mu_sigma_l_err);
+    outputTree->Branch("mu_mean_l_err", &mu_mean_l_err);
+    outputTree->Branch("mu_res_l_err", &mu_res_l_err);
+    outputTree->Branch("pi_l", &pi_l);
+    outputTree->Branch("pi_sigma_l", &pi_sigma_l);
+    outputTree->Branch("pi_mean_l", &pi_mean_l);
+    outputTree->Branch("pi_res_l", &pi_res_l);
+    outputTree->Branch("pi_l_err", &pi_l_err);
+    outputTree->Branch("pi_sigma_l_err", &pi_sigma_l_err);
+    outputTree->Branch("pi_mean_l_err", &pi_mean_l_err);
+    outputTree->Branch("pi_res_l_err", &pi_res_l_err);
+    outputTree->Branch("pr_l", &pr_l);
+    outputTree->Branch("pr_sigma_l", &pr_sigma_l);
+    outputTree->Branch("pr_mean_l", &pr_mean_l);
+    outputTree->Branch("pr_res_l", &pr_res_l);
+    outputTree->Branch("pr_l_err", &pr_l_err);
+    outputTree->Branch("pr_sigma_l_err", &pr_sigma_l_err);
+    outputTree->Branch("pr_mean_l_err", &pr_mean_l_err);
+    outputTree->Branch("pr_res_l_err", &pr_res_l_err);
+
 
     //bool isContained = false;
 
@@ -883,15 +949,24 @@ void particle_dEdx(const std::string& inputFileNameMuon, const std::string& inpu
     //create histograms
     std::vector<TH1F*> hMuon(nPBins, nullptr), hPion(nPBins, nullptr), hProton(nPBins, nullptr);
     std::vector<int> ent(nPBins, 0); //count number of entries in bins
+    std::vector<TH1F*> hMuonL(nLBins, nullptr), hPionL(nLBins, nullptr), hProtonL(nLBins, nullptr);
 
     for (int i = 0; i < nPBins; i++) {
         //float p_bin_low = p_min + i * p_interval;
         //float p_bin_high = p_min + (i + 1) * p_interval;
         float p_bin_low = std::pow(10, p_bin_min + i * (p_bin_max - p_bin_min) / nPBins);
         float p_bin_high = std::pow(10, p_bin_min + (i + 1) * (p_bin_max - p_bin_min) / nPBins);
-        hMuon[i] = new TH1F(Form("hMuon_p%0.2f-%0.2f", p_bin_low, p_bin_high), Form("Muon dE/dx for p=%0.2f-%0.2f MeV/c; dE/dx [keV/cm]; Counts", p_bin_low, p_bin_high), 100, 0, 200);
-        hPion[i] = new TH1F(Form("hPion_p%0.2f-%0.2f", p_bin_low, p_bin_high), Form("Pion dE/dx for p=%0.2f-%0.2f MeV/c; dE/dx [keV/cm]; Counts", p_bin_low, p_bin_high), 100, 0, 200);
-        hProton[i] = new TH1F(Form("hProton_p%0.2f-%0.2f", p_bin_low, p_bin_high), Form("Proton dE/dx for p=%0.2f-%0.2f MeV/c; dE/dx [keV/cm]; Counts", p_bin_low, p_bin_high), 250, 0, 500);
+        hMuon[i] = new TH1F(Form("hMuon_p%0.2f-%0.2f", p_bin_low, p_bin_high), Form("Muon dE/dx for p=%0.2f-%0.2f cm; dE/dx [keV/cm]; Counts", p_bin_low, p_bin_high), 100, 0, 200);
+        hPion[i] = new TH1F(Form("hPion_p%0.2f-%0.2f", p_bin_low, p_bin_high), Form("Pion dE/dx for p=%0.2f-%0.2f cm; dE/dx [keV/cm]; Counts", p_bin_low, p_bin_high), 100, 0, 200);
+        hProton[i] = new TH1F(Form("hProton_p%0.2f-%0.2f", p_bin_low, p_bin_high), Form("Proton dE/dx for p=%0.2f-%0.2f cm; dE/dx [keV/cm]; Counts", p_bin_low, p_bin_high), 250, 0, 500);
+    }
+
+    for (int i = 0; i < nLBins; i++) {
+        float l_bin_low = std::pow(10, l_bin_min + i * (l_bin_max - l_bin_min) / nLBins);
+        float l_bin_high = std::pow(10, l_bin_min + (i + 1) * (l_bin_max - l_bin_min) / nLBins);
+        hMuonL[i] = new TH1F(Form("hMuon_l%0.2f-%0.2f", l_bin_low, l_bin_high), Form("Muon dE/dx for l=%0.2f-%0.2f MeV/c; dE/dx [keV/cm]; Counts", l_bin_low, l_bin_high), 100, 0, 200);
+        hPionL[i] = new TH1F(Form("hPion_l%0.2f-%0.2f", l_bin_low, l_bin_high), Form("Pion dE/dx for l=%0.2f-%0.2f MeV/c; dE/dx [keV/cm]; Counts", l_bin_low, l_bin_high), 100, 0, 200);
+        hProtonL[i] = new TH1F(Form("hProton_l%0.2f-%0.2f", l_bin_low, l_bin_high), Form("Proton dE/dx for l=%0.2f-%0.2f MeV/c; dE/dx [keV/cm]; Counts", l_bin_low, l_bin_high), 250, 0, 500);
     }
 
     //histogram to find momentum of 1m tracks
@@ -997,9 +1072,6 @@ void particle_dEdx(const std::string& inputFileNameMuon, const std::string& inpu
             int this_trackID = trackID->at(i);
 
             for (size_t j = 0; j < nTpcHits; j++) {
-                if(tpcHitTrackID->at(j) == this_trackID){
-                    track_length += tpcHitStepSize->at(j); //calculate track length from hits
-                }
                 if (tpcHitTrackID->at(j) == this_trackID && creatorProcess->at(i) == "primary") {
                     if (tpcHitIsSec->at(j)) continue; // skip secondary hits
                     if (tpcHitEdep->at(j) <= 0) continue; // skip hits with no energy deposit
@@ -1009,9 +1081,14 @@ void particle_dEdx(const std::string& inputFileNameMuon, const std::string& inpu
                     float stepSize = tpcHitStepSize->at(j);
                     if (stepSize > 0) {
                         dEdx_values.push_back((edep / stepSize)*1000); // convert to keV/cm
+                        track_length += tpcHitStepSize->at(j); //calculate track length from hits
                     }
                 }
             }//end loop over TPC hits
+
+            //find bin for track length
+            float log_l = std::log10(track_length);
+            int bin_l = (log_l - l_bin_min) / (l_bin_max - l_bin_min) * nLBins;
 
             if (track_length > 95 && track_length < 105) {
                 hP_1m->Fill(p);
@@ -1037,6 +1114,13 @@ void particle_dEdx(const std::string& inputFileNameMuon, const std::string& inpu
                     case 13: hMuon[bin]->Fill(truncated_mean); break;
                     case 211: hPion[bin]->Fill(truncated_mean); break;
                     case 2212: hProton[bin]->Fill(truncated_mean); break;
+                }
+            }
+            if (bin_l >= 0 && bin_l < nLBins) {
+                switch (pdg) {
+                    case 13: hMuonL[bin_l]->Fill(truncated_mean); break;
+                    case 211: hPionL[bin_l]->Fill(truncated_mean); break;
+                    case 2212: hProtonL[bin_l]->Fill(truncated_mean); break;
                 }
             }
 
@@ -1253,6 +1337,215 @@ void particle_dEdx(const std::string& inputFileNameMuon, const std::string& inpu
         
     }
 
+    //loop over track length bins to get gaussian fit, variables and separation power
+    for (size_t i = 0; i < nLBins; ++i){
+
+        float l_bin_center = std::pow(10, l_bin_min + (i + 0.5) * (l_bin_max - l_bin_min) / nLBins);
+        float l_bin_low = std::pow(10, l_bin_min + i * (l_bin_max - l_bin_min) / nLBins);
+        float l_bin_high = std::pow(10, l_bin_min + (i + 1) * (l_bin_max - l_bin_min) / nLBins);
+        float l_bin_err = (l_bin_high - l_bin_low) / 2.0;
+
+        if (hMuonL[i]->GetEntries() > 300){
+            //float m = hMuon[i]->GetMean();
+            //float s = hMuon[i]->GetRMS();
+            //hMuon[i]->Fit("gaus", "Q", "", m - 2*s, m + 2*s);
+            fit_results mu_fit = calc_res(hMuonL[i]); //get fit parameters
+            if (mu_fit.sigma > 0 && mu_fit.mean > 0){ //skip if fit failed
+                pdg_to_l[13].push_back(l_bin_center);
+                pdg_to_mean_l[13].push_back(mu_fit.mean);
+                pdg_to_sigma_l[13].push_back(mu_fit.sigma);
+                pdg_to_res_l[13].push_back(mu_fit.res);
+                pdg_to_l_err[13].push_back(l_bin_err);
+                pdg_to_mean_l_err[13].push_back(mu_fit.mean_err);
+                pdg_to_sigma_l_err[13].push_back(mu_fit.sigma_err);
+                pdg_to_res_l_err[13].push_back(mu_fit.res_err);
+                mu_l.push_back(l_bin_center);
+                mu_mean_l.push_back(mu_fit.mean);
+                mu_sigma_l.push_back(mu_fit.sigma);
+                mu_res_l.push_back(mu_fit.res);
+                mu_l_err.push_back(l_bin_err);
+                mu_mean_l_err.push_back(mu_fit.mean_err);
+                mu_sigma_l_err.push_back(mu_fit.sigma_err);
+                mu_res_l_err.push_back(mu_fit.res_err);
+            }
+        }
+        if (hPionL[i]->GetEntries() > 300){
+            //float m = hPion[i]->GetMean();
+            //float s = hPion[i]->GetRMS();
+            //hPion[i]->Fit("gaus", "Q", "", m - 2*s, m + 2*s);
+            fit_results pi_fit = calc_res(hPionL[i]); //get fit parameters
+            if (pi_fit.sigma > 0 && pi_fit.mean > 0){//skip if fit failed
+                pdg_to_l[211].push_back(l_bin_center);
+                pdg_to_mean_l[211].push_back(pi_fit.mean);
+                pdg_to_sigma_l[211].push_back(pi_fit.sigma);
+                pdg_to_res_l[211].push_back(pi_fit.res);
+                pdg_to_l_err[211].push_back(l_bin_err);
+                pdg_to_mean_l_err[211].push_back(pi_fit.mean_err);
+                pdg_to_sigma_l_err[211].push_back(pi_fit.sigma_err);
+                pdg_to_res_l_err[211].push_back(pi_fit.res_err);
+                pi_l.push_back(l_bin_center);
+                pi_mean_l.push_back(pi_fit.mean);
+                pi_sigma_l.push_back(pi_fit.sigma);
+                pi_res_l.push_back(pi_fit.res);
+                pi_l_err.push_back(l_bin_err);
+                pi_mean_l_err.push_back(pi_fit.mean_err);
+                pi_sigma_l_err.push_back(pi_fit.sigma_err);
+                pi_res_l_err.push_back(pi_fit.res_err);
+            }
+        }
+        if (hProtonL[i]->GetEntries() > 300){
+            //float m = hProton[i]->GetMean();
+            //float s = hProton[i]->GetRMS();
+            //hProton[i]->Fit("gaus", "Q", "", m - 2*s, m + 2*s);
+            fit_results p_fit = calc_res(hProtonL[i]); //get fit parameters
+            if (p_fit.sigma > 0 && p_fit.mean > 0) { //skip if fit failed
+                pdg_to_l[2212].push_back(l_bin_center);
+                pdg_to_mean_l[2212].push_back(p_fit.mean);
+                pdg_to_sigma_l[2212].push_back(p_fit.sigma);
+                pdg_to_res_l[2212].push_back(p_fit.res);
+                pdg_to_l_err[2212].push_back(l_bin_err);
+                pdg_to_mean_l_err[2212].push_back(p_fit.mean_err);
+                pdg_to_sigma_l_err[2212].push_back(p_fit.sigma_err);
+                pdg_to_res_l_err[2212].push_back(p_fit.res_err);
+                pr_l.push_back(l_bin_center);
+                pr_mean_l.push_back(p_fit.mean);
+                pr_sigma_l.push_back(p_fit.sigma);
+                pr_res_l.push_back(p_fit.res);
+                pr_l_err.push_back(l_bin_err);
+                pr_mean_l_err.push_back(p_fit.mean_err);
+                pr_sigma_l_err.push_back(p_fit.sigma_err);
+                pr_res_l_err.push_back(p_fit.res_err);
+            }
+        }
+
+        //muon pion separation power
+        if (hMuonL[i]->GetEntries() > 300 && hPionL[i]->GetEntries() > 300){ //only do this if onw of the particles has enough stats
+            //float m_mu = hMuon[i]->GetMean();
+            //float s_mu = hMuon[i]->GetRMS();
+            //hMuon[i]->Fit("gaus", "Q", "", m_mu - 2*s_mu, m_mu + 2*s_mu);
+            fit_results mu_fit = calc_res(hMuonL[i]); //get fit parameters
+            //float m_pi = hPion[i]->GetMean();
+            //float s_pi = hPion[i]->GetRMS();
+            //hPion[i]->Fit("gaus", "Q", "", m_pi - 2*s_pi, m_pi + 2*s_pi);
+            fit_results pi_fit = calc_res(hPionL[i]); //get fit parameters
+            /*
+            float frac_err_mu = mu_fit.mean_err / mu_fit.mean;
+            float frac_err_pi = pi_fit.mean_err / pi_fit.mean;
+            float frac_err_sigma_mu = mu_fit.sigma_err / mu_fit.sigma;
+            float frac_err_sigma_pi = pi_fit.sigma_err / pi_fit.sigma;
+            */
+            if((mu_fit.sigma > 0 && mu_fit.mean > 0) && (pi_fit.sigma > 0 && pi_fit.mean > 0)){// && (frac_err_mu < 0.5) && (frac_err_pi < 0.5) && (frac_err_sigma_mu < 0.5) && (frac_err_sigma_pi < 0.5)){ //skip if either fail
+                float denominator = std::sqrt(mu_fit.sigma * mu_fit.sigma + pi_fit.sigma * pi_fit.sigma);
+                float numerator = std::abs(mu_fit.mean - pi_fit.mean);
+                if (denominator != 0){ //avoid division by 0
+                    float sep_pow = numerator / denominator;
+                    
+                    float dS_dmu1 = 1/denominator;
+                    float dS_dmu2 = -1/denominator;
+                    float dS_dsigma1 = -numerator * mu_fit.sigma / (denominator*denominator*denominator);
+                    float dS_dsigma2 = -numerator * pi_fit.sigma / (denominator*denominator*denominator);
+                    float sep_pow_err = std::sqrt(dS_dmu1*dS_dmu1 * mu_fit.mean_err*mu_fit.mean_err 
+                        + dS_dmu2*dS_dmu2 * pi_fit.mean_err*pi_fit.mean_err 
+                        + dS_dsigma1*dS_dsigma1 * mu_fit.sigma_err*mu_fit.sigma_err 
+                        + dS_dsigma2*dS_dsigma2 * pi_fit.sigma_err*pi_fit.sigma_err
+                        + 2 * dS_dmu1 * dS_dsigma1 * mu_fit.cov_mean_sigma
+                        + 2 * dS_dmu2 * dS_dsigma2 * pi_fit.cov_mean_sigma);
+                        
+                    //float sep_pow_err = 0;
+                    muon_pion_sp_l.push_back(sep_pow);
+                    l_vec1.push_back(l_bin_center);
+                    l_vec1_err.push_back(l_bin_err);
+                    muon_pion_sp_l_err.push_back(sep_pow_err);
+                }
+            }
+        }
+
+        //muon proton separation power
+        if (hMuonL[i]->GetEntries() > 300 && hProtonL[i]->GetEntries() > 300){ //only do this if onw of the particles has enough stats
+            //float m_mu = hMuon[i]->GetMean();
+            //float s_mu = hMuon[i]->GetRMS();
+            //hMuon[i]->Fit("gaus", "Q", "", m_mu - 2*s_mu, m_mu + 2*s_mu);
+            fit_results mu_fit = calc_res(hMuonL[i]); //get fit parameters
+            //float m_p = hProton[i]->GetMean();
+            //float s_p = hProton[i]->GetRMS();
+            //hProton[i]->Fit("gaus", "Q", "", m_p - 2*s_p, m_p + 2*s_p);
+            fit_results p_fit = calc_res(hProtonL[i]); //get fit parameters
+            /*
+            float frac_err_mu = mu_fit.mean_err / mu_fit.mean;
+            float frac_err_p = p_fit.mean_err / p_fit.mean;
+            float frac_err_sigma_mu = mu_fit.sigma_err / mu_fit.sigma;
+            float frac_err_sigma_p = p_fit.sigma_err / p_fit.sigma;
+            */
+            if((mu_fit.sigma > 0 && mu_fit.mean > 0) && (p_fit.sigma > 0 && p_fit.mean > 0)){// && (frac_err_mu < 0.5) && (frac_err_p < 0.5) && (frac_err_sigma_mu < 0.5) && (frac_err_sigma_p < 0.5)){ //skip if either fail
+                float denominator = std::sqrt(mu_fit.sigma * mu_fit.sigma + p_fit.sigma * p_fit.sigma);
+                float numerator = std::abs(mu_fit.mean - p_fit.mean);
+                if (denominator != 0) { //avoid division by 0
+                    float sep_pow = numerator / denominator;
+                    
+                    float dS_dmu1 = 1/denominator;
+                    float dS_dmu2 = -1/denominator;
+                    float dS_dsigma1 = -numerator * mu_fit.sigma / (denominator*denominator*denominator);
+                    float dS_dsigma2 = -numerator * p_fit.sigma / (denominator*denominator*denominator);
+                    float sep_pow_err = std::sqrt(dS_dmu1*dS_dmu1 * mu_fit.mean_err*mu_fit.mean_err 
+                        + dS_dmu2*dS_dmu2 * p_fit.mean_err*p_fit.mean_err 
+                        + dS_dsigma1*dS_dsigma1 * mu_fit.sigma_err*mu_fit.sigma_err 
+                        + dS_dsigma2*dS_dsigma2 * p_fit.sigma_err*p_fit.sigma_err
+                        + 2 * dS_dmu1 * dS_dsigma1 * mu_fit.cov_mean_sigma
+                        + 2 * dS_dmu2 * dS_dsigma2 * p_fit.cov_mean_sigma);
+                        
+                    //float sep_pow_err = 0;
+                    muon_proton_sp_l.push_back(sep_pow);
+                    l_vec2.push_back(l_bin_center);
+                    l_vec2_err.push_back(l_bin_err);
+                    muon_proton_sp_l_err.push_back(sep_pow_err);
+                }
+            }
+        }
+
+        //pion proton separation power
+        if (hPionL[i]->GetEntries() > 300 && hProtonL[i]->GetEntries() > 300){ //only do this if onw of the particles has enough stats
+            //float m_pi = hPion[i]->GetMean();
+            //float s_pi = hPion[i]->GetRMS();
+            //hPion[i]->Fit("gaus", "Q", "", m_pi - 2*s_pi, m_pi + 2*s_pi);
+            fit_results pi_fit = calc_res(hPion[i]); //get fit parameters
+            //float m_p = hProton[i]->GetMean();
+            //float s_p = hProton[i]->GetRMS();
+            //hProton[i]->Fit("gaus", "Q", "", m_p - 2*s_p, m_p + 2*s_p);
+            fit_results p_fit = calc_res(hProton[i]); //get fit parameters
+            /*
+            float frac_err_pi = pi_fit.mean_err / pi_fit.mean;
+            float frac_err_p = p_fit.mean_err / p_fit.mean;
+            float frac_err_sigma_pi = pi_fit.sigma_err / pi_fit.sigma;
+            float frac_err_sigma_p = p_fit.sigma_err / p_fit.sigma;
+            */
+            if((pi_fit.sigma > 0 && pi_fit.mean > 0) && (p_fit.sigma > 0 && p_fit.mean > 0)){// && (frac_err_pi < 0.5) && (frac_err_p < 0.5) && (frac_err_sigma_pi < 0.5) && (frac_err_sigma_p < 0.5)){ //skip if either fail
+                float denominator = std::sqrt(pi_fit.sigma * pi_fit.sigma + p_fit.sigma * p_fit.sigma);
+                float numerator = std::abs(pi_fit.mean - p_fit.mean);
+                if (denominator != 0){ //avoid division by 0
+                    float sep_pow = numerator / denominator;
+                    
+                    float dS_dmu1 = 1/denominator;
+                    float dS_dmu2 = -1/denominator;
+                    float dS_dsigma1 = -numerator * p_fit.sigma / (denominator*denominator*denominator);
+                    float dS_dsigma2 = -numerator * pi_fit.sigma / (denominator*denominator*denominator);
+                    float sep_pow_err = std::sqrt(dS_dmu1*dS_dmu1 * p_fit.mean_err*p_fit.mean_err 
+                        + dS_dmu2*dS_dmu2 * pi_fit.mean_err*pi_fit.mean_err 
+                        + dS_dsigma1*dS_dsigma1 * p_fit.sigma_err*p_fit.sigma_err 
+                        + dS_dsigma2*dS_dsigma2 * pi_fit.sigma_err*pi_fit.sigma_err
+                        + 2 * dS_dmu1 * dS_dsigma1 * p_fit.cov_mean_sigma
+                        + 2 * dS_dmu2 * dS_dsigma2 * pi_fit.cov_mean_sigma);
+                        
+                    //float sep_pow_err = 0;
+                    pion_proton_sp_l.push_back(sep_pow);
+                    l_vec3.push_back(l_bin_center);
+                    l_vec3_err.push_back(l_bin_err);
+                    pion_proton_sp_l_err.push_back(sep_pow_err);
+                }
+            }
+        }
+        
+    }
+
     //draw example histograms
     for(size_t i = 0; i < nPBins; i++){
         if (sampleName.find("CDR") == std::string::npos) continue; //only draw example histograms for CDR samples
@@ -1260,6 +1553,13 @@ void particle_dEdx(const std::string& inputFileNameMuon, const std::string& inpu
         if (hMuon[i]->GetEntries() > 300 && hMuon[i]->Integral() > 0) draw_gaussian_fit(hMuon[i], "Muon dE/dx", ("gaussiandEdx/" + sampleName + "_muon_dEdx_" + p_bin_range + "_GaussianFit.png").c_str());
         if (hPion[i]->GetEntries() > 300 && hPion[i]->Integral() > 0) draw_gaussian_fit(hPion[i], "Pion dE/dx", ("gaussiandEdx/" + sampleName + "_pion_dEdx_" + p_bin_range + "_GaussianFit.png").c_str());
         if (hProton[i]->GetEntries() > 300 && hProton[i]->Integral() > 0) draw_gaussian_fit(hProton[i], "Proton dE/dx", ("gaussiandEdx/" + sampleName + "_proton_dEdx_" + p_bin_range + "_GaussianFit.png").c_str());
+    }
+    for(size_t i = 0; i < nLBins; i++){
+        if (sampleName.find("CDR") == std::string::npos) continue; //only draw example histograms for CDR samples
+        std::string l_bin_range = std::to_string(i);
+        if (hMuonL[i]->GetEntries() > 300 && hMuonL[i]->Integral() > 0) draw_gaussian_fit(hMuonL[i], "Muon dE/dx", ("gaussiandEdx/" + sampleName + "_track_muon_dEdx_" + l_bin_range + "_GaussianFit.png").c_str());
+        if (hPionL[i]->GetEntries() > 300 && hPionL[i]->Integral() > 0) draw_gaussian_fit(hPionL[i], "Pion dE/dx", ("gaussiandEdx/" + sampleName + "_track_pion_dEdx_" + l_bin_range + "_GaussianFit.png").c_str());
+        if (hProtonL[i]->GetEntries() > 300 && hProtonL[i]->Integral() > 0) draw_gaussian_fit(hProtonL[i], "Proton dE/dx", ("gaussiandEdx/" + sampleName + "_track_proton_dEdx_" + l_bin_range + "_GaussianFit.png").c_str());
     }
 
 
@@ -1283,6 +1583,10 @@ void particle_dEdx(const std::string& inputFileNameMuon, const std::string& inpu
     draw_graphs(pdg_to_p, pdg_to_sigma, pdg_to_p_err, pdg_to_sigma_err, ("outputs_sepPow/" + sampleName + "_sigma_dEdx_fit.png").c_str(), "p vs sigma of dE/dx fit", "Momentum [MeV]", "Sigma of dE/dx [keV/cm]", 6e3, 10);
     draw_graphs(pdg_to_p, pdg_to_res, pdg_to_p_err, pdg_to_res_err, ("outputs_sepPow/" + sampleName + "_res_dEdx_fit.png").c_str(), "p vs resolution of dE/dx fit", "Momentum [MeV]", "Resolution of dE/dx", 6e3, 0.5);
     
+    draw_graphs(pdg_to_l, pdg_to_mean_l, pdg_to_l_err, pdg_to_mean_l_err, ("outputs_sepPow/" + sampleName + "_track_mean_dEdx_fit.png").c_str(), "l vs dE/dx", "Track Length [cm]", "dE/dx [keV/cm]", 6e3, 35);
+    draw_graphs(pdg_to_l, pdg_to_sigma_l, pdg_to_l_err, pdg_to_sigma_l_err, ("outputs_sepPow/" + sampleName + "_track_sigma_dEdx_fit.png").c_str(), "l vs sigma of dE/dx fit", "Track Length [cm]", "Sigma of dE/dx [keV/cm]", 6e3, 10);
+    draw_graphs(pdg_to_l, pdg_to_res_l, pdg_to_l_err, pdg_to_res_l_err, ("outputs_sepPow/" + sampleName + "_track_res_dEdx_fit.png").c_str(), "l vs resolution of dE/dx fit", "Track Length [cm]", "Resolution of dE/dx", 6e3, 0.5);
+    
 
     //draw separation power graphs
     if (muon_pion_sp.size() > 0) {
@@ -1300,6 +1604,23 @@ void particle_dEdx(const std::string& inputFileNameMuon, const std::string& inpu
 
     if (muon_pion_sp.size() > 0 || muon_proton_sp.size() > 0 || pion_proton_sp.size() > 0){
         draw_all_sepPow(mom_vec1, muon_pion_sp, muon_pion_sp_err, mom_vec1_err, mom_vec2, muon_proton_sp, muon_proton_sp_err, mom_vec2_err, mom_vec3, pion_proton_sp, pion_proton_sp_err, mom_vec3_err, ("outputs_sepPow/" + sampleName + "_sep_pow_all.png").c_str(), "dE/dx Separation Power", "Momentum [MeV]", "Separation Power");
+    }
+
+    if (muon_pion_sp_l.size() > 0) {
+        draw_sepPow(l_vec1, muon_pion_sp_l, muon_pion_sp_l_err, l_vec1_err, ("outputs_sepPow/" + sampleName + "_track_sep_pow_muon_pion.png").c_str(), "Muon-Pion Separation Power", "Track Length [cm]", "Separation Power", 6e3, 5, false);
+        //draw_sepPow(mom_vec1, muon_pion_sp, muon_pion_sp_err, mom_vec1_err, ("outputs_sepPow/" + sampleName + "_sep_pow_muon_pion_zoomed.png").c_str(), "Muon-Pion Separation Power", "Momentum [MeV]", "Separation Power", 6e3, 5, true);
+    }
+    if (muon_proton_sp_l.size() > 0) {
+        draw_sepPow(l_vec2, muon_proton_sp_l, muon_proton_sp_l_err, l_vec2_err, ("outputs_sepPow/" + sampleName + "_track_sep_pow_muon_proton.png").c_str(), "Muon-Proton Separation Power", "Track Length [cm]", "Separation Power", 6e3, 5, false);
+        //draw_sepPow(mom_vec2, muon_proton_sp, muon_proton_sp_err, mom_vec2_err, ("outputs_sepPow/" + sampleName + "_sep_pow_muon_proton_zoomed.png").c_str(), "Muon-Proton Separation Power", "Momentum [MeV]", "Separation Power", 6e3, 10, true);
+    }
+    if (pion_proton_sp_l.size() > 0) {
+        draw_sepPow(l_vec3, pion_proton_sp_l, pion_proton_sp_l_err, l_vec3_err, ("outputs_sepPow/" + sampleName + "_track_sep_pow_pion_proton.png").c_str(), "Pion-Proton Separation Power", "Track Length [cm]", "Separation Power", 6e3, 5, false);
+        //draw_sepPow(mom_vec3, pion_proton_sp, pion_proton_sp_err, mom_vec3_err, ("outputs_sepPow/" + sampleName + "_sep_pow_pion_proton_zoomed.png").c_str(), "Pion-Proton Separation Power", "Momentum [MeV]", "Separation Power", 6e3, 10, true);
+    }
+
+    if (muon_pion_sp_l.size() > 0 || muon_proton_sp_l.size() > 0 || pion_proton_sp_l.size() > 0){
+        draw_all_sepPow(l_vec1, muon_pion_sp_l, muon_pion_sp_l_err, l_vec1_err, l_vec2, muon_proton_sp_l, muon_proton_sp_l_err, l_vec2_err, l_vec3, pion_proton_sp_l, pion_proton_sp_l_err, l_vec3_err, ("outputs_sepPow/" + sampleName + "_track_sep_pow_all.png").c_str(), "dE/dx Separation Power", "Track Length [cm]", "Separation Power");
     }
 
     //write separation power to text file
@@ -1346,6 +1667,11 @@ void particle_dEdx(const std::string& inputFileNameMuon, const std::string& inpu
         hMuon[i]->Write();
         hPion[i]->Write();
         hProton[i]->Write();
+    }
+    for (int i = 0; i < nLBins; ++i){
+        hMuonL[i]->Write();
+        hPionL[i]->Write();
+        hProtonL[i]->Write();
     }
     //hMuon->Write();
     //hPion->Write();
