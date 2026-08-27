@@ -48,65 +48,7 @@
 #include "geometry.h"
 using namespace geometry;
 
-void draw_gaussian_fit(TH1F* hist, const char* title, const std::string& outName){
 
-    TCanvas* canvas = new TCanvas("canvas", title, 800, 600);
-    
-    // Set style options for statistics box and fit parameters
-    gStyle->SetOptStat(1111);
-    gStyle->SetOptFit(1111);
-
-    TLatex dune;
-    dune.SetNDC();
-    dune.SetTextFont(62);     // Bold Helvetica
-    dune.SetTextSize(0.045);
-    dune.DrawLatex(0.12, 0.93, "DUNE");
-
-    TLatex prelim;
-    prelim.SetNDC();
-    prelim.SetTextFont(42);   // Regular Helvetica
-    prelim.SetTextSize(0.040);
-    prelim.DrawLatex(0.215, 0.93, "Simulation Preliminary");
-
-    hist->SetStats(kTRUE);
-
-    // Draw histogram
-    hist->SetLineWidth(2);
-    hist->SetLineColor(kBlack);
-    hist->SetFillStyle(0);
-    hist->Draw();
-
-    // Fit gaussian to histogram
-    hist->Fit("gaus");
-
-    // Force pad update so stats box appears
-    gPad->Modified();
-    gPad->Update();
-
-    /*
-    TPaveStats* stats = (TPaveStats*)hist->FindObject("stats");
-    if (stats) {
-        stats->SetX1NDC(0.15); // left edge
-        stats->SetX2NDC(0.40); // right edge
-        stats->SetY1NDC(0.65); // bottom edge
-        stats->SetY2NDC(0.88); // top edge
-    }
-    gStyle->SetStatW(0.2);
-    gStyle->SetStatH(0.15);
-
-    gPad->Modified();
-    gPad->Update();
-    */
-
-    //add legend
-    //TLegend* legend = new TLegend(0.65, 0.7, 0.9, 0.88);
-    //legend->AddEntry(hist, particle, "f");
-    //legend->Draw();
-
-    // Save canvas to file
-    canvas->SaveAs(outName.c_str());
-    delete canvas;
-}
 
 //create graphs for p vs dE/dx
 void draw_graphs(std::map<int, std::vector<double>>& pdg_to_p, std::map<int, std::vector<double>>& pdg_to_dEdx, std::map<int, std::vector<double>>& pdg_to_p_err, std::map<int, std::vector<double>>& pdg_to_dEdx_err, const std::string& outName, const char* title, const char* Xtitle, const char* Ytitle, float x_max, float y_max){
@@ -621,6 +563,70 @@ fit_results calc_res(TH1F* hist){
     return {sigma, mean, res, sigma_err, mean_err, res_err, cov_mean_sigma};
 }
 
+fit_results calc_res_land(TH1F* hist){
+    //TF1* fit = hist->Fit("gaus");
+
+    if (!hist || hist->GetEntries() == 0 || hist->Integral() <= 0){
+        return {0, 0, 0, 0, 0, 0, 0};
+    }
+
+    //IQR_results iqr_results = calc_IQR(hist);
+    //if (iqr_results.sigma == 0 || iqr_results.mean == 0){
+    //    return {0, 0, 0, 0, 0, 0, 0};
+    //}
+
+    float m = hist->GetMean();
+    float s = hist->GetRMS();  
+
+    //fit window based on sigma/mean results
+    double NSigma = 2.5;
+    double xmin = m - NSigma * s;
+    double xmax = m + NSigma * s;
+
+    //keep the fit within the histogram range
+    xmin = std::max(xmin, hist->GetXaxis()->GetXmin());
+    xmax = std::min(xmax, hist->GetXaxis()->GetXmax());
+
+    TF1 fit ("fit", "landau", xmin, xmax);
+
+    //initial parameters for the fit
+    fit.SetParameters(hist->GetMaximum(), m, s);
+
+    //constrain the mean and sigma to be within range
+    fit.SetParLimits(1, m - 2 * s, m + 2 * s);
+    fit.SetParLimits(2, 0, 5 * s);
+
+    TFitResultPtr r = hist->Fit(&fit, "QRS"); // Q: quiet, R: use range, S: return fit result
+    TFitResult* fr = r.Get();
+
+    if (!fr || fr->Status() != 0) {
+        std::cerr << "Fit failed for histogram " << hist->GetName() << std::endl;
+        return {0, 0, 0, 0, 0, 0, 0};
+    }
+
+    double mean      = fr->Parameter(1);
+    double mean_err  = fr->ParError(1);
+    double sigma     = fr->Parameter(2);
+    double sigma_err = fr->ParError(2);
+
+    double sigma_frac = sigma_err/sigma;
+    double mean_frac = mean_err/mean;
+
+    if(sigma_frac > 0.25 || mean_frac > 0.25){
+        return {0, 0, 0, 0, 0, 0, 0};
+    }
+
+    TMatrixDSym cov = fr->GetCovarianceMatrix();
+    double cov_mean_sigma = cov(1, 2);
+
+    double res = sigma / mean;
+    double del_sig = 1 / mean;
+    double del_mu = -sigma / (mean * mean);
+    double res_err = std::sqrt(del_sig * del_sig * sigma_err * sigma_err + del_mu * del_mu * mean_err * mean_err + 2 * del_sig * del_mu * cov_mean_sigma);
+    return {sigma, mean, res, sigma_err, mean_err, res_err, cov_mean_sigma};
+}
+
+
 fit_results calc_res_iqr(TH1F* hist){
     //TF1* fit = hist->Fit("gaus");
 
@@ -643,6 +649,165 @@ fit_results calc_res_iqr(TH1F* hist){
     double res = sigma / mean;
     double res_err = 0;
     return {sigma, mean, res, sigma_err, mean_err, res_err, cov_mean_sigma};
+}
+
+void draw_gaussian_fit(TH1F* hist, const char* title, const std::string& outName){
+
+    TCanvas* canvas = new TCanvas("canvas", title, 800, 600);
+    
+    // Set style options for statistics box and fit parameters
+    gStyle->SetOptStat(1111);
+    gStyle->SetOptFit(1111);
+
+    TLatex dune;
+    dune.SetNDC();
+    dune.SetTextFont(62);     // Bold Helvetica
+    dune.SetTextSize(0.045);
+    dune.DrawLatex(0.12, 0.93, "DUNE");
+
+    TLatex prelim;
+    prelim.SetNDC();
+    prelim.SetTextFont(42);   // Regular Helvetica
+    prelim.SetTextSize(0.040);
+    prelim.DrawLatex(0.215, 0.93, "Simulation Preliminary");
+
+    hist->SetStats(kTRUE);
+
+    // Draw histogram
+    hist->SetLineWidth(2);
+    hist->SetLineColor(kBlack);
+    hist->SetFillStyle(0);
+    hist->Draw();
+
+    // Fit gaussian to histogram
+    IQR_results iqr_results = calc_IQR(hist);
+    //fit window based on IQR results
+    double NSigma = 2.5;
+    double xmin = iqr_results.mean - NSigma * iqr_results.sigma;
+    double xmax = iqr_results.mean + NSigma * iqr_results.sigma;
+
+    //keep the fit within the histogram range
+    xmin = std::max(xmin, hist->GetXaxis()->GetXmin());
+    xmax = std::min(xmax, hist->GetXaxis()->GetXmax());
+
+    TF1 fit ("fit", "gaus", xmin, xmax);
+
+    //initial parameters for the fit
+    fit.SetParameters(hist->GetMaximum(), iqr_results.mean, iqr_results.sigma);
+
+    //constrain the mean and sigma to be within the IQR range
+    fit.SetParLimits(1, iqr_results.mean - 2 * iqr_results.sigma, iqr_results.mean + 2 * iqr_results.sigma);
+    fit.SetParLimits(2, 0, 5 * iqr_results.sigma);
+
+    hist->Fit(&fit);
+
+    // Force pad update so stats box appears
+    gPad->Modified();
+    gPad->Update();
+
+    /*
+    TPaveStats* stats = (TPaveStats*)hist->FindObject("stats");
+    if (stats) {
+        stats->SetX1NDC(0.15); // left edge
+        stats->SetX2NDC(0.40); // right edge
+        stats->SetY1NDC(0.65); // bottom edge
+        stats->SetY2NDC(0.88); // top edge
+    }
+    gStyle->SetStatW(0.2);
+    gStyle->SetStatH(0.15);
+
+    gPad->Modified();
+    gPad->Update();
+    */
+
+    //add legend
+    //TLegend* legend = new TLegend(0.65, 0.7, 0.9, 0.88);
+    //legend->AddEntry(hist, particle, "f");
+    //legend->Draw();
+
+    // Save canvas to file
+    canvas->SaveAs(outName.c_str());
+    delete canvas;
+}
+
+void draw_landau_fit(TH1F* hist, const char* title, const std::string& outName){
+
+    TCanvas* canvas = new TCanvas("canvas", title, 800, 600);
+    
+    // Set style options for statistics box and fit parameters
+    gStyle->SetOptStat(1111);
+    gStyle->SetOptFit(1111);
+
+    TLatex dune;
+    dune.SetNDC();
+    dune.SetTextFont(62);     // Bold Helvetica
+    dune.SetTextSize(0.045);
+    dune.DrawLatex(0.12, 0.93, "DUNE");
+
+    TLatex prelim;
+    prelim.SetNDC();
+    prelim.SetTextFont(42);   // Regular Helvetica
+    prelim.SetTextSize(0.040);
+    prelim.DrawLatex(0.215, 0.93, "Simulation Preliminary");
+
+    hist->SetStats(kTRUE);
+
+    // Draw histogram
+    hist->SetLineWidth(2);
+    hist->SetLineColor(kBlack);
+    hist->SetFillStyle(0);
+    hist->Draw();
+
+    // Fit landau to histogram
+    float m = hist->GetMean();
+    float s = hist->GetRMS();  
+
+    //fit window based on sigma/mean results
+    double NSigma = 2.5;
+    double xmin = m - NSigma * s;
+    double xmax = m + NSigma * s;
+
+    //keep the fit within the histogram range
+    xmin = std::max(xmin, hist->GetXaxis()->GetXmin());
+    xmax = std::min(xmax, hist->GetXaxis()->GetXmax());
+
+    TF1 fit ("fit", "landau", xmin, xmax);
+
+    //initial parameters for the fit
+    fit.SetParameters(hist->GetMaximum(), m, s);
+
+    //constrain the mean and sigma to be within range
+    fit.SetParLimits(1, m - 2 * s, m + 2 * s);
+    fit.SetParLimits(2, 0, 5 * s);
+    hist->Fit(&fit);
+
+    // Force pad update so stats box appears
+    gPad->Modified();
+    gPad->Update();
+
+    /*
+    TPaveStats* stats = (TPaveStats*)hist->FindObject("stats");
+    if (stats) {
+        stats->SetX1NDC(0.15); // left edge
+        stats->SetX2NDC(0.40); // right edge
+        stats->SetY1NDC(0.65); // bottom edge
+        stats->SetY2NDC(0.88); // top edge
+    }
+    gStyle->SetStatW(0.2);
+    gStyle->SetStatH(0.15);
+
+    gPad->Modified();
+    gPad->Update();
+    */
+
+    //add legend
+    //TLegend* legend = new TLegend(0.65, 0.7, 0.9, 0.88);
+    //legend->AddEntry(hist, particle, "f");
+    //legend->Draw();
+
+    // Save canvas to file
+    canvas->SaveAs(outName.c_str());
+    delete canvas;
 }
 
 
@@ -860,7 +1025,7 @@ void particle_dEdx(const std::string& inputFileNameMuon, const std::string& inpu
     float l_bin_max = std::log10(l_max); // cm
 
     std::vector<int> muon_size(nPBins, 0), pion_size(nPBins, 0), proton_size(nPBins, 0);
-
+ 
     outputTree->Branch("muon_pion_sep", &muon_pion_sp);
     outputTree->Branch("muon_proton_sep", &muon_proton_sp);
     outputTree->Branch("pion_proton_sep", &pion_proton_sp);
@@ -956,17 +1121,19 @@ void particle_dEdx(const std::string& inputFileNameMuon, const std::string& inpu
         //float p_bin_high = p_min + (i + 1) * p_interval;
         float p_bin_low = std::pow(10, p_bin_min + i * (p_bin_max - p_bin_min) / nPBins);
         float p_bin_high = std::pow(10, p_bin_min + (i + 1) * (p_bin_max - p_bin_min) / nPBins);
-        hMuon[i] = new TH1F(Form("hMuon_p%0.2f-%0.2f", p_bin_low, p_bin_high), Form("Muon dE/dx for p=%0.2f-%0.2f cm; dE/dx [keV/cm]; Counts", p_bin_low, p_bin_high), 100, 0, 200);
-        hPion[i] = new TH1F(Form("hPion_p%0.2f-%0.2f", p_bin_low, p_bin_high), Form("Pion dE/dx for p=%0.2f-%0.2f cm; dE/dx [keV/cm]; Counts", p_bin_low, p_bin_high), 100, 0, 200);
-        hProton[i] = new TH1F(Form("hProton_p%0.2f-%0.2f", p_bin_low, p_bin_high), Form("Proton dE/dx for p=%0.2f-%0.2f cm; dE/dx [keV/cm]; Counts", p_bin_low, p_bin_high), 250, 0, 500);
+        hMuon[i] = new TH1F(Form("hMuon_p%0.2f-%0.2f", p_bin_low, p_bin_high), Form("Muon dE/dx for p=%0.2f-%0.2f cm; dE/dx [keV/cm]; Counts", p_bin_low, p_bin_high), 90, 0, 200);
+        hPion[i] = new TH1F(Form("hPion_p%0.2f-%0.2f", p_bin_low, p_bin_high), Form("Pion dE/dx for p=%0.2f-%0.2f cm; dE/dx [keV/cm]; Counts", p_bin_low, p_bin_high), 90, 0, 200);
+        hProton[i] = new TH1F(Form("hProton_p%0.2f-%0.2f", p_bin_low, p_bin_high), Form("Proton dE/dx for p=%0.2f-%0.2f cm; dE/dx [keV/cm]; Counts", p_bin_low, p_bin_high), 190, 0, 500);
     }
 
     for (int i = 0; i < nLBins; i++) {
+        //float l_bin_low = l_min + i * l_interval;
+        //float l_bin_high = l_min + (i + 1) * l_interval;
         float l_bin_low = std::pow(10, l_bin_min + i * (l_bin_max - l_bin_min) / nLBins);
         float l_bin_high = std::pow(10, l_bin_min + (i + 1) * (l_bin_max - l_bin_min) / nLBins);
-        hMuonL[i] = new TH1F(Form("hMuon_l%0.2f-%0.2f", l_bin_low, l_bin_high), Form("Muon dE/dx for l=%0.2f-%0.2f MeV/c; dE/dx [keV/cm]; Counts", l_bin_low, l_bin_high), 100, 0, 200);
-        hPionL[i] = new TH1F(Form("hPion_l%0.2f-%0.2f", l_bin_low, l_bin_high), Form("Pion dE/dx for l=%0.2f-%0.2f MeV/c; dE/dx [keV/cm]; Counts", l_bin_low, l_bin_high), 100, 0, 200);
-        hProtonL[i] = new TH1F(Form("hProton_l%0.2f-%0.2f", l_bin_low, l_bin_high), Form("Proton dE/dx for l=%0.2f-%0.2f MeV/c; dE/dx [keV/cm]; Counts", l_bin_low, l_bin_high), 250, 0, 500);
+        hMuonL[i] = new TH1F(Form("hMuon_l%0.2f-%0.2f", l_bin_low, l_bin_high), Form("Muon dE/dx for l=%0.2f-%0.2f MeV/c; dE/dx [keV/cm]; Counts", l_bin_low, l_bin_high), 90, 0, 200);
+        hPionL[i] = new TH1F(Form("hPion_l%0.2f-%0.2f", l_bin_low, l_bin_high), Form("Pion dE/dx for l=%0.2f-%0.2f MeV/c; dE/dx [keV/cm]; Counts", l_bin_low, l_bin_high), 90, 0, 200);
+        hProtonL[i] = new TH1F(Form("hProton_l%0.2f-%0.2f", l_bin_low, l_bin_high), Form("Proton dE/dx for l=%0.2f-%0.2f MeV/c; dE/dx [keV/cm]; Counts", l_bin_low, l_bin_high), 190, 0, 500);
     }
 
     //histogram to find momentum of 1m tracks
@@ -1043,6 +1210,7 @@ void particle_dEdx(const std::string& inputFileNameMuon, const std::string& inpu
             //find bin for momentum
             float log_p = std::log10(p);
             int bin = (log_p - p_bin_min) / (p_bin_max - p_bin_min) * nPBins;
+            //int bin = (p-p_min) / (p_max - p_min) * nPBins;
 
             //compute track length
             float start_x = startX->at(i);
@@ -1089,6 +1257,7 @@ void particle_dEdx(const std::string& inputFileNameMuon, const std::string& inpu
             //find bin for track length
             float log_l = std::log10(track_length);
             int bin_l = (log_l - l_bin_min) / (l_bin_max - l_bin_min) * nLBins;
+            //int bin_l = (track_length-l_min) / (l_max - l_min) * nLBins;
 
             if (track_length > 95 && track_length < 105) {
                 hP_1m->Fill(p);
@@ -1130,11 +1299,12 @@ void particle_dEdx(const std::string& inputFileNameMuon, const std::string& inpu
     //loop over momentum bins to get gaussian fit, variables and separation power
     for (size_t i = 0; i < nPBins; ++i){
 
-        //float p_bin_center = p_min + (i + 0.5) * p_interval;
         float p_bin_center = std::pow(10, p_bin_min + (i + 0.5) * (p_bin_max - p_bin_min) / nPBins);
         float p_bin_low = std::pow(10, p_bin_min + i * (p_bin_max - p_bin_min) / nPBins);
         float p_bin_high = std::pow(10, p_bin_min + (i + 1) * (p_bin_max - p_bin_min) / nPBins);
         float p_bin_err = (p_bin_high - p_bin_low) / 2.0;
+        //float p_bin_center = p_min + (i + 0.5) * p_interval;
+        //float p_bin_err = p_interval;
 
         if (hMuon[i]->GetEntries() > 300){
             //float m = hMuon[i]->GetMean();
@@ -1344,12 +1514,14 @@ void particle_dEdx(const std::string& inputFileNameMuon, const std::string& inpu
         float l_bin_low = std::pow(10, l_bin_min + i * (l_bin_max - l_bin_min) / nLBins);
         float l_bin_high = std::pow(10, l_bin_min + (i + 1) * (l_bin_max - l_bin_min) / nLBins);
         float l_bin_err = (l_bin_high - l_bin_low) / 2.0;
+        //float l_bin_center = l_min + (i + 0.5) * l_interval;
+        //float l_bin_err = l_interval;
 
         if (hMuonL[i]->GetEntries() > 300){
             //float m = hMuon[i]->GetMean();
             //float s = hMuon[i]->GetRMS();
             //hMuon[i]->Fit("gaus", "Q", "", m - 2*s, m + 2*s);
-            fit_results mu_fit = calc_res(hMuonL[i]); //get fit parameters
+            fit_results mu_fit = calc_res_land(hMuonL[i]); //get fit parameters
             if (mu_fit.sigma > 0 && mu_fit.mean > 0){ //skip if fit failed
                 pdg_to_l[13].push_back(l_bin_center);
                 pdg_to_mean_l[13].push_back(mu_fit.mean);
@@ -1373,7 +1545,7 @@ void particle_dEdx(const std::string& inputFileNameMuon, const std::string& inpu
             //float m = hPion[i]->GetMean();
             //float s = hPion[i]->GetRMS();
             //hPion[i]->Fit("gaus", "Q", "", m - 2*s, m + 2*s);
-            fit_results pi_fit = calc_res(hPionL[i]); //get fit parameters
+            fit_results pi_fit = calc_res_land(hPionL[i]); //get fit parameters
             if (pi_fit.sigma > 0 && pi_fit.mean > 0){//skip if fit failed
                 pdg_to_l[211].push_back(l_bin_center);
                 pdg_to_mean_l[211].push_back(pi_fit.mean);
@@ -1397,7 +1569,7 @@ void particle_dEdx(const std::string& inputFileNameMuon, const std::string& inpu
             //float m = hProton[i]->GetMean();
             //float s = hProton[i]->GetRMS();
             //hProton[i]->Fit("gaus", "Q", "", m - 2*s, m + 2*s);
-            fit_results p_fit = calc_res(hProtonL[i]); //get fit parameters
+            fit_results p_fit = calc_res_land(hProtonL[i]); //get fit parameters
             if (p_fit.sigma > 0 && p_fit.mean > 0) { //skip if fit failed
                 pdg_to_l[2212].push_back(l_bin_center);
                 pdg_to_mean_l[2212].push_back(p_fit.mean);
@@ -1423,11 +1595,11 @@ void particle_dEdx(const std::string& inputFileNameMuon, const std::string& inpu
             //float m_mu = hMuon[i]->GetMean();
             //float s_mu = hMuon[i]->GetRMS();
             //hMuon[i]->Fit("gaus", "Q", "", m_mu - 2*s_mu, m_mu + 2*s_mu);
-            fit_results mu_fit = calc_res(hMuonL[i]); //get fit parameters
+            fit_results mu_fit = calc_res_land(hMuonL[i]); //get fit parameters
             //float m_pi = hPion[i]->GetMean();
             //float s_pi = hPion[i]->GetRMS();
             //hPion[i]->Fit("gaus", "Q", "", m_pi - 2*s_pi, m_pi + 2*s_pi);
-            fit_results pi_fit = calc_res(hPionL[i]); //get fit parameters
+            fit_results pi_fit = calc_res_land(hPionL[i]); //get fit parameters
             /*
             float frac_err_mu = mu_fit.mean_err / mu_fit.mean;
             float frac_err_pi = pi_fit.mean_err / pi_fit.mean;
@@ -1465,11 +1637,11 @@ void particle_dEdx(const std::string& inputFileNameMuon, const std::string& inpu
             //float m_mu = hMuon[i]->GetMean();
             //float s_mu = hMuon[i]->GetRMS();
             //hMuon[i]->Fit("gaus", "Q", "", m_mu - 2*s_mu, m_mu + 2*s_mu);
-            fit_results mu_fit = calc_res(hMuonL[i]); //get fit parameters
+            fit_results mu_fit = calc_res_land(hMuonL[i]); //get fit parameters
             //float m_p = hProton[i]->GetMean();
             //float s_p = hProton[i]->GetRMS();
             //hProton[i]->Fit("gaus", "Q", "", m_p - 2*s_p, m_p + 2*s_p);
-            fit_results p_fit = calc_res(hProtonL[i]); //get fit parameters
+            fit_results p_fit = calc_res_land(hProtonL[i]); //get fit parameters
             /*
             float frac_err_mu = mu_fit.mean_err / mu_fit.mean;
             float frac_err_p = p_fit.mean_err / p_fit.mean;
@@ -1507,11 +1679,11 @@ void particle_dEdx(const std::string& inputFileNameMuon, const std::string& inpu
             //float m_pi = hPion[i]->GetMean();
             //float s_pi = hPion[i]->GetRMS();
             //hPion[i]->Fit("gaus", "Q", "", m_pi - 2*s_pi, m_pi + 2*s_pi);
-            fit_results pi_fit = calc_res(hPion[i]); //get fit parameters
+            fit_results pi_fit = calc_res_land(hPion[i]); //get fit parameters
             //float m_p = hProton[i]->GetMean();
             //float s_p = hProton[i]->GetRMS();
             //hProton[i]->Fit("gaus", "Q", "", m_p - 2*s_p, m_p + 2*s_p);
-            fit_results p_fit = calc_res(hProton[i]); //get fit parameters
+            fit_results p_fit = calc_res_land(hProton[i]); //get fit parameters
             /*
             float frac_err_pi = pi_fit.mean_err / pi_fit.mean;
             float frac_err_p = p_fit.mean_err / p_fit.mean;
@@ -1557,9 +1729,9 @@ void particle_dEdx(const std::string& inputFileNameMuon, const std::string& inpu
     for(size_t i = 0; i < nLBins; i++){
         if (sampleName.find("CDR") == std::string::npos) continue; //only draw example histograms for CDR samples
         std::string l_bin_range = std::to_string(i);
-        if (hMuonL[i]->GetEntries() > 300 && hMuonL[i]->Integral() > 0) draw_gaussian_fit(hMuonL[i], "Muon dE/dx", ("gaussiandEdx/" + sampleName + "_track_muon_dEdx_" + l_bin_range + "_GaussianFit.png").c_str());
-        if (hPionL[i]->GetEntries() > 300 && hPionL[i]->Integral() > 0) draw_gaussian_fit(hPionL[i], "Pion dE/dx", ("gaussiandEdx/" + sampleName + "_track_pion_dEdx_" + l_bin_range + "_GaussianFit.png").c_str());
-        if (hProtonL[i]->GetEntries() > 300 && hProtonL[i]->Integral() > 0) draw_gaussian_fit(hProtonL[i], "Proton dE/dx", ("gaussiandEdx/" + sampleName + "_track_proton_dEdx_" + l_bin_range + "_GaussianFit.png").c_str());
+        if (hMuonL[i]->GetEntries() > 300 && hMuonL[i]->Integral() > 0) draw_landau_fit(hMuonL[i], "Muon dE/dx", ("gaussiandEdx/" + sampleName + "_track_muon_dEdx_" + l_bin_range + "_GaussianFit.png").c_str());
+        if (hPionL[i]->GetEntries() > 300 && hPionL[i]->Integral() > 0) draw_landau_fit(hPionL[i], "Pion dE/dx", ("gaussiandEdx/" + sampleName + "_track_pion_dEdx_" + l_bin_range + "_GaussianFit.png").c_str());
+        if (hProtonL[i]->GetEntries() > 300 && hProtonL[i]->Integral() > 0) draw_landau_fit(hProtonL[i], "Proton dE/dx", ("gaussiandEdx/" + sampleName + "_track_proton_dEdx_" + l_bin_range + "_GaussianFit.png").c_str());
     }
 
 

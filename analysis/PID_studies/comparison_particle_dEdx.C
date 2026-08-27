@@ -47,7 +47,7 @@
 using namespace geometry;
 
 
-void draw_histogram_overlay(TH1F* h1, TH1F* h2, const std::string& name1, const std::string& name2, Color_t color1, Color_t color2, const char* title, const std::string& outName, float ylim, bool norm){
+void draw_histogram_overlay(TH1F* h1, TH1F* h2, const std::string& name1, const std::string& name2, const std::string& samp, Color_t color1, Color_t color2, const char* title, const std::string& outName, float ylim, bool norm){
 
     TCanvas* canvas = new TCanvas("canvas", title, 800, 600);
     
@@ -80,6 +80,7 @@ void draw_histogram_overlay(TH1F* h1, TH1F* h2, const std::string& name1, const 
 
     //add legend
     TLegend* legend = new TLegend(0.65, 0.7, 0.9, 0.88);
+    legend->SetHeader(samp.c_str(), "C");
     legend->AddEntry(h1, name1.c_str(), "f");
     legend->AddEntry(h2, name2.c_str(), "f");
     legend->Draw();
@@ -558,12 +559,12 @@ void comparison_particle_dEdx(const std::string& inputFileNameMuon, const std::s
             */
             float lim = std::max(hMuonCDR[i]->GetMaximum(),hPionCDR[i]->GetMaximum())*1.2;
             
-            draw_histogram_overlay(hPionCDR[i], hMuonCDR[i], "Pion", "Muon", col_pi, col_mu, "Muon-Pion", filename_mupi1.c_str(), lim, false);
-            draw_histogram_overlay(hPion250[i], hMuon250[i], "Pion", "Muon", col_pi, col_mu, "Muon-Pion", filename_mupi2.c_str(), lim, true);
-            draw_histogram_overlay(hPion240[i], hMuon240[i], "Pion", "Muon", col_pi, col_mu, "Muon-Pion", filename_mupi3.c_str(), lim, true);
-            draw_histogram_overlay(hPion230[i], hMuon230[i], "Pion", "Muon", col_pi, col_mu, "Muon-Pion", filename_mupi4.c_str(), lim, true);
-            draw_histogram_overlay(hPion220[i], hMuon220[i], "Pion", "Muon", col_pi, col_mu, "Muon-Pion", filename_mupi5.c_str(), lim, true);
-            draw_histogram_overlay(hPion210[i], hMuon210[i], "Pion", "Muon", col_pi, col_mu, "Muon-Pion", filename_mupi6.c_str(), lim, true);
+            draw_histogram_overlay(hPionCDR[i], hMuonCDR[i], "Pion", "Muon", "260 cm", col_pi, col_mu, "Muon-Pion", filename_mupi1.c_str(), lim, false);
+            draw_histogram_overlay(hPion250[i], hMuon250[i], "Pion", "Muon", "250 cm", col_pi, col_mu, "Muon-Pion", filename_mupi2.c_str(), lim, true);
+            draw_histogram_overlay(hPion240[i], hMuon240[i], "Pion", "Muon", "240 cm", col_pi, col_mu, "Muon-Pion", filename_mupi3.c_str(), lim, true);
+            draw_histogram_overlay(hPion230[i], hMuon230[i], "Pion", "Muon", "230 cm", col_pi, col_mu, "Muon-Pion", filename_mupi4.c_str(), lim, true);
+            draw_histogram_overlay(hPion220[i], hMuon220[i], "Pion", "Muon", "220 cm", col_pi, col_mu, "Muon-Pion", filename_mupi5.c_str(), lim, true);
+            draw_histogram_overlay(hPion210[i], hMuon210[i], "Pion", "Muon", "210 cm", col_pi, col_mu, "Muon-Pion", filename_mupi6.c_str(), lim, true);
         }
 
         if (hMuonCDR[i+5]->GetEntries() > 300 && hProtonCDR[i]->GetEntries() > 300){
@@ -576,12 +577,12 @@ void comparison_particle_dEdx(const std::string& inputFileNameMuon, const std::s
             }*/
             float lim = std::max(hMuonCDR[i+5]->GetMaximum(),hProtonCDR[i]->GetMaximum())*1.2;
 
-            draw_histogram_overlay(hProtonCDR[i], hMuonCDR[i+5], "Proton", "Muon", col_p, col_mu, "Muon-Proton", filename_mup1.c_str(), lim, false);
-            draw_histogram_overlay(hProton250[i], hMuon250[i+5], "Proton", "Muon", col_p, col_mu, "Muon-Proton", filename_mup2.c_str(), lim, true);
-            draw_histogram_overlay(hProton240[i], hMuon240[i+5], "Proton", "Muon", col_p, col_mu, "Muon-Proton", filename_mup3.c_str(), lim, true);
-            draw_histogram_overlay(hProton230[i], hMuon230[i+5], "Proton", "Muon", col_p, col_mu, "Muon-Proton", filename_mup4.c_str(), lim, true);
-            draw_histogram_overlay(hProton220[i], hMuon220[i+5], "Proton", "Muon", col_p, col_mu, "Muon-Proton", filename_mup5.c_str(), lim, true);
-            draw_histogram_overlay(hProton210[i], hMuon210[i+5], "Proton", "Muon", col_p, col_mu, "Muon-Proton", filename_mup6.c_str(), lim, true);
+            draw_histogram_overlay(hProtonCDR[i], hMuonCDR[i+5], "Proton", "Muon", "260 cm", col_p, col_mu, "Muon-Proton", filename_mup1.c_str(), lim, false);
+            draw_histogram_overlay(hProton250[i], hMuon250[i+5], "Proton", "Muon", "250 cm", col_p, col_mu, "Muon-Proton", filename_mup2.c_str(), lim, true);
+            draw_histogram_overlay(hProton240[i], hMuon240[i+5], "Proton", "Muon", "240 cm", col_p, col_mu, "Muon-Proton", filename_mup3.c_str(), lim, true);
+            draw_histogram_overlay(hProton230[i], hMuon230[i+5], "Proton", "Muon", "230 cm", col_p, col_mu, "Muon-Proton", filename_mup4.c_str(), lim, true);
+            draw_histogram_overlay(hProton220[i], hMuon220[i+5], "Proton", "Muon", "220 cm", col_p, col_mu, "Muon-Proton", filename_mup5.c_str(), lim, true);
+            draw_histogram_overlay(hProton210[i], hMuon210[i+5], "Proton", "Muon", "210 cm", col_p, col_mu, "Muon-Proton", filename_mup6.c_str(), lim, true);
         }
 
         if (hPionCDR[i+5]->GetEntries() > 300 && hProtonCDR[i]->GetEntries() > 300){
@@ -594,12 +595,12 @@ void comparison_particle_dEdx(const std::string& inputFileNameMuon, const std::s
             }*/
             float lim = std::max(hPionCDR[i+5]->GetMaximum(),hProtonCDR[i]->GetMaximum())*1.2;
             
-            draw_histogram_overlay(hProtonCDR[i], hPionCDR[i+5], "Proton", "Pion", col_p, col_pi, "Pion-Proton", filename_pip1.c_str(), lim, false);
-            draw_histogram_overlay(hProton250[i], hPion250[i+5], "Proton", "Pion", col_p, col_pi, "Pion-Proton", filename_pip2.c_str(), lim, true);
-            draw_histogram_overlay(hProton240[i], hPion240[i+5], "Proton", "Pion", col_p, col_pi, "Pion-Proton", filename_pip3.c_str(), lim, true);
-            draw_histogram_overlay(hProton230[i], hPion230[i+5], "Proton", "Pion", col_p, col_pi, "Pion-Proton", filename_pip4.c_str(), lim, true);
-            draw_histogram_overlay(hProton220[i], hPion220[i+5], "Proton", "Pion", col_p, col_pi, "Pion-Proton", filename_pip5.c_str(), lim, true);
-            draw_histogram_overlay(hProton210[i], hPion210[i+5], "Proton", "Pion", col_p, col_pi, "Pion-Proton", filename_pip6.c_str(), lim, true);
+            draw_histogram_overlay(hProtonCDR[i], hPionCDR[i+5], "Proton", "Pion", "260 cm", col_p, col_pi, "Pion-Proton", filename_pip1.c_str(), lim, false);
+            draw_histogram_overlay(hProton250[i], hPion250[i+5], "Proton", "Pion", "250 cm", col_p, col_pi, "Pion-Proton", filename_pip2.c_str(), lim, true);
+            draw_histogram_overlay(hProton240[i], hPion240[i+5], "Proton", "Pion", "240 cm", col_p, col_pi, "Pion-Proton", filename_pip3.c_str(), lim, true);
+            draw_histogram_overlay(hProton230[i], hPion230[i+5], "Proton", "Pion", "230 cm", col_p, col_pi, "Pion-Proton", filename_pip4.c_str(), lim, true);
+            draw_histogram_overlay(hProton220[i], hPion220[i+5], "Proton", "Pion", "220 cm", col_p, col_pi, "Pion-Proton", filename_pip5.c_str(), lim, true);
+            draw_histogram_overlay(hProton210[i], hPion210[i+5], "Proton", "Pion", "210 cm", col_p, col_pi, "Pion-Proton", filename_pip6.c_str(), lim, true);
         }
 
     }
