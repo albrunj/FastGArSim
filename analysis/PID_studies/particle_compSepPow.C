@@ -151,103 +151,92 @@ void draw_graphs(std::vector<std::pair<float, float>> points1, std::vector<std::
     std::vector<Float_t> err_min1, err_min2, err_min3, err_min4, err_min5, err_min6;
 
     for (size_t i = 0; i < group1.size(); i++){
-        float frac_err = err_y1[i] / clean_y1[i];
-        if (frac_err >= 0.5) continue;
+        //float frac_err = err_y1[i] / clean_y1[i];
+        //if (frac_err >= 0.5) continue;
         err_max1.push_back(clean_y1[i] + err_y1[i]);
         err_min1.push_back(clean_y1[i] - err_y1[i]);
     }
     for (size_t i = 0; i < group2.size(); i++){
-        float frac_err = err_y2[i] / clean_y2[i];
-        if (frac_err >= 0.5) continue;
+        //float frac_err = err_y2[i] / clean_y2[i];
+        //if (frac_err >= 0.5) continue;
         err_max2.push_back(clean_y2[i] + err_y2[i]);
         err_min2.push_back(clean_y2[i] - err_y2[i]);
     }
     for (size_t i = 0; i < group3.size(); i++){
-        float frac_err = err_y3[i] / clean_y3[i];
-        if (frac_err >= 0.5) continue;
+        //float frac_err = err_y3[i] / clean_y3[i];
+        //if (frac_err >= 0.5) continue;
         err_max3.push_back(clean_y3[i] + err_y3[i]);
         err_min3.push_back(clean_y3[i] - err_y3[i]);
     }
     for (size_t i = 0; i < group4.size(); i++){
-        float frac_err = err_y4[i] / clean_y4[i];
-        if (frac_err >= 0.5) continue;
+        //float frac_err = err_y4[i] / clean_y4[i];
+        //if (frac_err >= 0.5) continue;
         err_max4.push_back(clean_y4[i] + err_y4[i]);
         err_min4.push_back(clean_y4[i] - err_y4[i]);
     }
     for (size_t i = 0; i < group5.size(); i++){
-        float frac_err = err_y5[i] / clean_y5[i];
-        if (frac_err >= 0.5) continue;
+        //float frac_err = err_y5[i] / clean_y5[i];
+        //if (frac_err >= 0.5) continue;
         err_max5.push_back(clean_y5[i] + err_y5[i]);
         err_min5.push_back(clean_y5[i] - err_y5[i]);
     }
     for (size_t i = 0; i < group6.size(); i++){
-        float frac_err = err_y6[i] / clean_y6[i];
-        if (frac_err >= 0.5) continue;
+        //float frac_err = err_y6[i] / clean_y6[i];
+        //if (frac_err >= 0.5) continue;
         err_max6.push_back(clean_y6[i] + err_y6[i]);
         err_min6.push_back(clean_y6[i] - err_y6[i]);
     }
 
-    float x_max = std::max({
-        *std::max_element(clean_x1.begin(), clean_x1.end()),
-        *std::max_element(clean_x2.begin(), clean_x2.end()),
-        *std::max_element(clean_x3.begin(), clean_x3.end()),
-        *std::max_element(clean_x4.begin(), clean_x4.end()),
-        *std::max_element(clean_x5.begin(), clean_x5.end()),
-        *std::max_element(clean_x6.begin(), clean_x6.end()),
-        *std::max_element(err_max1.begin(), err_max1.end()),
-        *std::max_element(err_max2.begin(), err_max2.end()),
-        *std::max_element(err_max3.begin(), err_max3.end()),
-        *std::max_element(err_max4.begin(), err_max4.end()),
-        *std::max_element(err_max5.begin(), err_max5.end()),
-        *std::max_element(err_max6.begin(), err_max6.end())
-    });
-    float y_max = std::max({
-        *std::max_element(clean_y1.begin(), clean_y1.end()),
-        *std::max_element(clean_y2.begin(), clean_y2.end()),
-        *std::max_element(clean_y3.begin(), clean_y3.end()),
-        *std::max_element(clean_y4.begin(), clean_y4.end()),
-        *std::max_element(clean_y5.begin(), clean_y5.end()),
-        *std::max_element(clean_y6.begin(), clean_y6.end()),
-        *std::max_element(err_max1.begin(), err_max1.end()),
-        *std::max_element(err_max2.begin(), err_max2.end()),
-        *std::max_element(err_max3.begin(), err_max3.end()),
-        *std::max_element(err_max4.begin(), err_max4.end()),
-        *std::max_element(err_max5.begin(), err_max5.end()),
-        *std::max_element(err_max6.begin(), err_max6.end())
-    });
-    float x_min = std::min({
-        *std::min_element(clean_x1.begin(), clean_x1.end()),
-        *std::min_element(clean_x2.begin(), clean_x2.end()),
-        *std::min_element(clean_x3.begin(), clean_x3.end()),
-        *std::min_element(clean_x4.begin(), clean_x4.end()),
-        *std::min_element(clean_x5.begin(), clean_x5.end()),
-        *std::min_element(clean_x6.begin(), clean_x6.end()),
-        *std::min_element(err_min1.begin(), err_min1.end()),
-        *std::min_element(err_min2.begin(), err_min2.end()),
-        *std::min_element(err_min3.begin(), err_min3.end()),
-        *std::min_element(err_min4.begin(), err_min4.end()),
-        *std::min_element(err_min5.begin(), err_min5.end()),
-        *std::min_element(err_min6.begin(), err_min6.end())
-    });
-    float y_min = std::min({
-        *std::min_element(clean_y1.begin(), clean_y1.end()),
-        *std::min_element(clean_y2.begin(), clean_y2.end()),
-        *std::min_element(clean_y3.begin(), clean_y3.end()),
-        *std::min_element(clean_y4.begin(), clean_y4.end()),
-        *std::min_element(clean_y5.begin(), clean_y5.end()),
-        *std::min_element(clean_y6.begin(), clean_y6.end()),
-        *std::min_element(err_min1.begin(), err_min1.end()),
-        *std::min_element(err_min2.begin(), err_min2.end()),
-        *std::min_element(err_min3.begin(), err_min3.end()),
-        *std::min_element(err_min4.begin(), err_min4.end()),
-        *std::min_element(err_min5.begin(), err_min5.end()),
-        *std::min_element(err_min6.begin(), err_min6.end())
-    });
+    float x_max = 0;
+    float y_max = 0;
+    float x_min = 0;
+    float y_min = 0;
+
+    if (clean_x1.size() > 0) x_max = std::max(x_max, *std::max_element(clean_x1.begin(), clean_x1.end()));
+    if (clean_x2.size() > 0) x_max = std::max(x_max, *std::max_element(clean_x2.begin(), clean_x2.end()));
+    if (clean_x3.size() > 0) x_max = std::max(x_max, *std::max_element(clean_x3.begin(), clean_x3.end()));
+    if (clean_x4.size() > 0) x_max = std::max(x_max, *std::max_element(clean_x4.begin(), clean_x4.end()));
+    if (clean_x5.size() > 0) x_max = std::max(x_max, *std::max_element(clean_x5.begin(), clean_x5.end()));
+    if( clean_x6.size() > 0) x_max = std::max(x_max, *std::max_element(clean_x6.begin(), clean_x6.end()));
+
+    if (clean_y1.size() > 0) y_max = std::max(y_max, *std::max_element(clean_y1.begin(), clean_y1.end()));
+    if (clean_y2.size() > 0) y_max = std::max(y_max, *std::max_element(clean_y2.begin(), clean_y2.end()));
+    if (clean_y3.size() > 0) y_max = std::max(y_max, *std::max_element(clean_y3.begin(), clean_y3.end()));
+    if (clean_y4.size() > 0) y_max = std::max(y_max, *std::max_element(clean_y4.begin(), clean_y4.end()));
+    if (clean_y5.size() > 0) y_max = std::max(y_max, *std::max_element(clean_y5.begin(), clean_y5.end()));
+    if( clean_y6.size() > 0) y_max = std::max(y_max, *std::max_element(clean_y6.begin(), clean_y6.end()));
+    if( err_max1.size() > 0) y_max = std::max(y_max, *std::max_element(err_max1.begin(), err_max1.end()));
+    if( err_max2.size() > 0) y_max = std::max(y_max, *std::max_element(err_max2.begin(), err_max2.end()));
+    if( err_max3.size() > 0) y_max = std::max(y_max, *std::max_element(err_max3.begin(), err_max3.end()));
+    if( err_max4.size() > 0) y_max = std::max(y_max, *std::max_element(err_max4.begin(), err_max4.end()));
+    if( err_max5.size() > 0) y_max = std::max(y_max, *std::max_element(err_max5.begin(), err_max5.end()));
+    if( err_max6.size() > 0) y_max = std::max(y_max, *std::max_element(err_max6.begin(), err_max6.end()));
+
+    if (clean_y1.size() > 0) y_min = std::min(y_min, *std::min_element(clean_y1.begin(), clean_y1.end()));
+    if (clean_y2.size() > 0) y_min = std::min(y_min, *std::min_element(clean_y2.begin(), clean_y2.end()));
+    if (clean_y3.size() > 0) y_min = std::min(y_min, *std::min_element(clean_y3.begin(), clean_y3.end()));
+    if (clean_y4.size() > 0) y_min = std::min(y_min, *std::min_element(clean_y4.begin(), clean_y4.end()));
+    if (clean_y5.size() > 0) y_min = std::min(y_min, *std::min_element(clean_y5.begin(), clean_y5.end()));
+    if( clean_y6.size() > 0) y_min = std::min(y_min, *std::min_element(clean_y6.begin(), clean_y6.end()));  
+    if( err_min1.size() > 0) y_min = std::min(y_min, *std::min_element(err_min1.begin(), err_min1.end()));
+    if( err_min2.size() > 0) y_min = std::min(y_min, *std::min_element(err_min2.begin(), err_min2.end()));
+    if( err_min3.size() > 0) y_min = std::min(y_min, *std::min_element(err_min3.begin(), err_min3.end()));
+    if( err_min4.size() > 0) y_min = std::min(y_min, *std::min_element(err_min4.begin(), err_min4.end()));
+    if( err_min5.size() > 0) y_min = std::min(y_min, *std::min_element(err_min5.begin(), err_min5.end()));
+    if( err_min6.size() > 0) y_min = std::min(y_min, *std::min_element(err_min6.begin(), err_min6.end()));
+
+
+    if (clean_x1.size() > 0) x_min = std::min(x_min, *std::min_element(clean_x1.begin(), clean_x1.end()));
+    if (clean_x2.size() > 0) x_min = std::min(x_min, *std::min_element(clean_x2.begin(), clean_x2.end()));
+    if (clean_x3.size() > 0) x_min = std::min(x_min, *std::min_element(clean_x3.begin(), clean_x3.end()));
+    if (clean_x4.size() > 0) x_min = std::min(x_min, *std::min_element(clean_x4.begin(), clean_x4.end()));
+    if (clean_x5.size() > 0) x_min = std::min(x_min, *std::min_element(clean_x5.begin(), clean_x5.end()));
+    if( clean_x6.size() > 0) x_min = std::min(x_min, *std::min_element(clean_x6.begin(), clean_x6.end()));  
 
     if (x_max<1e3) x_max = 1e3;
 
     TH1F* frame = canvas->DrawFrame(
-        0.8*7.0e1,
+        0.8*x_min,
         0,
         1.2*x_max,
         1.2*y_max
@@ -461,69 +450,75 @@ void draw_differences(std::vector<std::pair<float, float>> diff2, std::vector<st
     std::vector<float> err_min2, err_min3, err_min4, err_min5, err_min6;
 
     for (size_t i = 0; i < group2.size(); i++){
-        float frac_err = err_y2[i] / clean_y2[i];
-        if (frac_err >= 0.5) continue;
+        //float frac_err = err_y2[i] / clean_y2[i];
+        //if (frac_err >= 0.5) continue;
         err_max2.push_back(clean_y2[i] + err_y2[i]);
         err_min2.push_back(clean_y2[i] - err_y2[i]);
     }
     for (size_t i = 0; i < group3.size(); i++){
-        float frac_err = err_y3[i] / clean_y3[i];
-        if (frac_err >= 0.5) continue;
+        //float frac_err = err_y3[i] / clean_y3[i];
+        //if (frac_err >= 0.5) continue;
         err_max3.push_back(clean_y3[i] + err_y3[i]);
         err_min3.push_back(clean_y3[i] - err_y3[i]);
     }
     for (size_t i = 0; i < group4.size(); i++){
-        float frac_err = err_y4[i] / clean_y4[i];
-        if (frac_err >= 0.5) continue;
+        //float frac_err = err_y4[i] / clean_y4[i];
+        //if (frac_err >= 0.5) continue;
         err_max4.push_back(clean_y4[i] + err_y4[i]);
         err_min4.push_back(clean_y4[i] - err_y4[i]);
     }
     for (size_t i = 0; i < group5.size(); i++){
-        float frac_err = err_y5[i] / clean_y5[i];
-        if (frac_err >= 0.5) continue;
+        //float frac_err = err_y5[i] / clean_y5[i];
+        //if (frac_err >= 0.5) continue;
         err_max5.push_back(clean_y5[i] + err_y5[i]);
         err_min5.push_back(clean_y5[i] - err_y5[i]);
     }
     for (size_t i = 0; i < group6.size(); i++){
-        float frac_err = err_y6[i] / clean_y6[i];
-        if (frac_err >= 0.5) continue;
+        //float frac_err = err_y6[i] / clean_y6[i];
+        //if (frac_err >= 0.5) continue;
         err_max6.push_back(clean_y6[i] + err_y6[i]);
         err_min6.push_back(clean_y6[i] - err_y6[i]);
     }
 
-    float y_max = std::max({
-        *std::max_element(clean_y2.begin(), clean_y2.end()),
-        *std::max_element(clean_y3.begin(), clean_y3.end()),
-        *std::max_element(clean_y4.begin(), clean_y4.end()),
-        *std::max_element(clean_y5.begin(), clean_y5.end()),
-        *std::max_element(clean_y6.begin(), clean_y6.end()),
-        *std::max_element(err_max2.begin(), err_max2.end()),
-        *std::max_element(err_max3.begin(), err_max3.end()),
-        *std::max_element(err_max4.begin(), err_max4.end()),
-        *std::max_element(err_max5.begin(), err_max5.end()),
-        *std::max_element(err_max6.begin(), err_max6.end())
-    });
+    float y_max = 0;
+    float y_min = 0;
+    float x_max = 0;
+    float x_min = 0;
 
-    float y_min = std::min({
-        *std::min_element(clean_y2.begin(), clean_y2.end()),
-        *std::min_element(clean_y3.begin(), clean_y3.end()),
-        *std::min_element(clean_y4.begin(), clean_y4.end()),
-        *std::min_element(clean_y5.begin(), clean_y5.end()),
-        *std::min_element(clean_y6.begin(), clean_y6.end()),
-        *std::min_element(err_min2.begin(), err_min2.end()),
-        *std::min_element(err_min3.begin(), err_min3.end()),
-        *std::min_element(err_min4.begin(), err_min4.end()),
-        *std::min_element(err_min5.begin(), err_min5.end()),
-        *std::min_element(err_min6.begin(), err_min6.end())
-    });
+    if (clean_y2.size() > 0) y_max = std::max(y_max, *std::max_element(clean_y2.begin(), clean_y2.end()));
+    if (clean_y3.size() > 0) y_max = std::max(y_max, *std::max_element(clean_y3.begin(), clean_y3.end()));
+    if (clean_y4.size() > 0) y_max = std::max(y_max, *std::max_element(clean_y4.begin(), clean_y4.end()));
+    if (clean_y5.size() > 0) y_max = std::max(y_max, *std::max_element(clean_y5.begin(), clean_y5.end()));
+    if( clean_y6.size() > 0) y_max = std::max(y_max, *std::max_element(clean_y6.begin(), clean_y6.end()));  
+    if( err_max2.size() > 0) y_max = std::max(y_max, *std::max_element(err_max2.begin(), err_max2.end()));
+    if( err_max3.size() > 0) y_max = std::max(y_max, *std::max_element(err_max3.begin(), err_max3.end()));
+    if( err_max4.size() > 0) y_max = std::max(y_max, *std::max_element(err_max4.begin(), err_max4.end()));
+    if( err_max5.size() > 0) y_max = std::max(y_max, *std::max_element(err_max5.begin(), err_max5.end()));
+    if( err_max6.size() > 0) y_max = std::max(y_max, *std::max_element(err_max6.begin(), err_max6.end()));
 
-    float x_max = std::max({
-        *std::max_element(clean_x2.begin(), clean_x2.end()),
-        *std::max_element(clean_x3.begin(), clean_x3.end()),
-        *std::max_element(clean_x4.begin(), clean_x4.end()),
-        *std::max_element(clean_x5.begin(), clean_x5.end()),
-        *std::max_element(clean_x6.begin(), clean_x6.end())
-    });
+    if (clean_y2.size() > 0) y_min = std::min(y_min, *std::min_element(clean_y2.begin(), clean_y2.end()));
+    if (clean_y3.size() > 0) y_min = std::min(y_min, *std::min_element(clean_y3.begin(), clean_y3.end()));
+    if (clean_y4.size() > 0) y_min = std::min(y_min, *std::min_element(clean_y4.begin(), clean_y4.end()));
+    if (clean_y5.size() > 0) y_min = std::min(y_min, *std::min_element(clean_y5.begin(), clean_y5.end()));
+    if( clean_y6.size() > 0) y_min = std::min(y_min, *std::min_element(clean_y6.begin(), clean_y6.end()));  
+    if( err_min2.size() > 0) y_min = std::min(y_min, *std::min_element(err_min2.begin(), err_min2.end()));
+    if( err_min3.size() > 0) y_min = std::min(y_min, *std::min_element(err_min3.begin(), err_min3.end()));
+    if( err_min4.size() > 0) y_min = std::min(y_min, *std::min_element(err_min4.begin(), err_min4.end()));
+    if( err_min5.size() > 0) y_min = std::min(y_min, *std::min_element(err_min5.begin(), err_min5.end()));
+    if( err_min6.size() > 0) y_min = std::min(y_min, *std::min_element(err_min6.begin(), err_min6.end()));
+
+    if (clean_x2.size() > 0) x_max = std::max(x_max, *std::max_element(clean_x2.begin(), clean_x2.end()));
+    if (clean_x3.size() > 0) x_max = std::max(x_max, *std::max_element(clean_x3.begin(), clean_x3.end()));
+    if (clean_x4.size() > 0) x_max = std::max(x_max, *std::max_element(clean_x4.begin(), clean_x4.end()));
+    if (clean_x5.size() > 0) x_max = std::max(x_max, *std::max_element(clean_x5.begin(), clean_x5.end()));
+    if( clean_x6.size() > 0) x_max = std::max(x_max, *std::max_element(clean_x6.begin(), clean_x6.end()));  
+
+    if (clean_x2.size() > 0) x_min = std::min(x_min, *std::min_element(clean_x2.begin(), clean_x2.end()));
+    if (clean_x3.size() > 0) x_min = std::min(x_min, *std::min_element(clean_x3.begin(), clean_x3.end()));
+    if (clean_x4.size() > 0) x_min = std::min(x_min, *std::min_element(clean_x4.begin(), clean_x4.end()));
+    if (clean_x5.size() > 0) x_min = std::min(x_min, *std::min_element(clean_x5.begin(), clean_x5.end()));
+    if( clean_x6.size() > 0) x_min = std::min(x_min, *std::min_element(clean_x6.begin(), clean_x6.end()));  
+
 
     if (y_min > -0.1) y_min = -0.1;
     if (y_max < 0.1) y_max = 0.1;
@@ -532,7 +527,7 @@ void draw_differences(std::vector<std::pair<float, float>> diff2, std::vector<st
     if (x_max<1e3) x_max = 1e3;
 
     TH1F* frame = canvas->DrawFrame(
-        0.8*7.0e1,
+        0.8*x_min,
         1.2*y_min,
         1.2*x_max,
         1.2*y_max
@@ -587,7 +582,7 @@ void draw_differences(std::vector<std::pair<float, float>> diff2, std::vector<st
     gr6->Draw("P SAME");
 
 
-    TLine* CDR = new TLine(0.8*8.5e1,0, 1.2*x_max, 0);
+    TLine* CDR = new TLine(0.8*x_min,0, 1.2*x_max, 0);
     CDR->SetLineStyle(2);
     CDR->SetLineWidth(2);
     //CDR->SetLineColor(kRed);
@@ -604,11 +599,11 @@ void draw_differences(std::vector<std::pair<float, float>> diff2, std::vector<st
 
     canvas->SaveAs((outName).c_str());
 
-    delete gr2;
-    delete gr3;
-    delete gr4;
-    delete gr5;
-    delete gr6;
+    //delete gr2;
+    //delete gr3;
+    //delete gr4;
+    //delete gr5;
+    //delete gr6;
     //delete gs2;
     //delete gs3;
     //delete gs4;
@@ -708,77 +703,75 @@ void draw_percentages(std::vector<std::pair<float, float>> perc2, std::vector<st
     std::vector<float> err_min2, err_min3, err_min4, err_min5, err_min6;
 
     for (size_t i = 0; i < group2.size(); i++){
-        float frac_err = err_y2[i] / clean_y2[i];
-        if (frac_err >= 0.5) continue;
+        //float frac_err = err_y2[i] / clean_y2[i];
+        //if (frac_err >= 0.5) continue;
         err_max2.push_back(clean_y2[i] + err_y2[i]);
         err_min2.push_back(clean_y2[i] - err_y2[i]);
     }
     for (size_t i = 0; i < group3.size(); i++){
-        float frac_err = err_y3[i] / clean_y3[i];
-        if (frac_err >= 0.5) continue;
+        //float frac_err = err_y3[i] / clean_y3[i];
+        //if (frac_err >= 0.5) continue;
         err_max3.push_back(clean_y3[i] + err_y3[i]);
         err_min3.push_back(clean_y3[i] - err_y3[i]);
     }
     for (size_t i = 0; i < group4.size(); i++){
-        float frac_err = err_y4[i] / clean_y4[i];
-        if (frac_err >= 0.5) continue;
+        //float frac_err = err_y4[i] / clean_y4[i];
+        //if (frac_err >= 0.5) continue;
         err_max4.push_back(clean_y4[i] + err_y4[i]);
         err_min4.push_back(clean_y4[i] - err_y4[i]);
     }
     for (size_t i = 0; i < group5.size(); i++){
-        float frac_err = err_y5[i] / clean_y5[i];
-        if (frac_err >= 0.5) continue;
+        //float frac_err = err_y5[i] / clean_y5[i];
+        //if (frac_err >= 0.5) continue;
         err_max5.push_back(clean_y5[i] + err_y5[i]);
         err_min5.push_back(clean_y5[i] - err_y5[i]);
     }
     for (size_t i = 0; i < group6.size(); i++){
-        float frac_err = err_y6[i] / clean_y6[i];
-        if (frac_err >= 0.5) continue;
+        //float frac_err = err_y6[i] / clean_y6[i];
+        //if (frac_err >= 0.5) continue;
         err_max6.push_back(clean_y6[i] + err_y6[i]);
         err_min6.push_back(clean_y6[i] - err_y6[i]);
     }
 
-    float y_max = std::max({
-        *std::max_element(clean_y2.begin(), clean_y2.end()),
-        *std::max_element(clean_y3.begin(), clean_y3.end()),
-        *std::max_element(clean_y4.begin(), clean_y4.end()),
-        *std::max_element(clean_y5.begin(), clean_y5.end()),
-        *std::max_element(clean_y6.begin(), clean_y6.end()),
-        *std::max_element(err_max2.begin(), err_max2.end()),
-        *std::max_element(err_max3.begin(), err_max3.end()),
-        *std::max_element(err_max4.begin(), err_max4.end()),
-        *std::max_element(err_max5.begin(), err_max5.end()),
-        *std::max_element(err_max6.begin(), err_max6.end())
-    });
+    float y_max = 0;
+    float y_min = 0;
+    float x_max = 0;
+    float x_min = 0;
 
-    float y_min = std::min({
-        *std::min_element(clean_y2.begin(), clean_y2.end()),
-        *std::min_element(clean_y3.begin(), clean_y3.end()),
-        *std::min_element(clean_y4.begin(), clean_y4.end()),
-        *std::min_element(clean_y5.begin(), clean_y5.end()),
-        *std::min_element(clean_y6.begin(), clean_y6.end()),
-        *std::min_element(err_min2.begin(), err_min2.end()),
-        *std::min_element(err_min3.begin(), err_min3.end()),
-        *std::min_element(err_min4.begin(), err_min4.end()),
-        *std::min_element(err_min5.begin(), err_min5.end()),
-        *std::min_element(err_min6.begin(), err_min6.end())
-    });
+    if (clean_y2.size() > 0) y_max = std::max(y_max, *std::max_element(clean_y2.begin(), clean_y2.end()));
+    if (clean_y3.size() > 0) y_max = std::max(y_max, *std::max_element(clean_y3.begin(), clean_y3.end()));
+    if (clean_y4.size() > 0) y_max = std::max(y_max, *std::max_element(clean_y4.begin(), clean_y4.end()));
+    if (clean_y5.size() > 0) y_max = std::max(y_max, *std::max_element(clean_y5.begin(), clean_y5.end()));
+    if( clean_y6.size() > 0) y_max = std::max(y_max, *std::max_element(clean_y6.begin(), clean_y6.end()));  
+    if( err_max2.size() > 0) y_max = std::max(y_max, *std::max_element(err_max2.begin(), err_max2.end()));
+    if( err_max3.size() > 0) y_max = std::max(y_max, *std::max_element(err_max3.begin(), err_max3.end()));
+    if( err_max4.size() > 0) y_max = std::max(y_max, *std::max_element(err_max4.begin(), err_max4.end()));
+    if( err_max5.size() > 0) y_max = std::max(y_max, *std::max_element(err_max5.begin(), err_max5.end()));
+    if( err_max6.size() > 0) y_max = std::max(y_max, *std::max_element(err_max6.begin(), err_max6.end()));
 
-    float x_max = std::max({
-        *std::max_element(clean_x2.begin(), clean_x2.end()),
-        *std::max_element(clean_x3.begin(), clean_x3.end()),
-        *std::max_element(clean_x4.begin(), clean_x4.end()),
-        *std::max_element(clean_x5.begin(), clean_x5.end()),
-        *std::max_element(clean_x6.begin(), clean_x6.end())
-    });
+    if (clean_y2.size() > 0) y_min = std::min(y_min, *std::min_element(clean_y2.begin(), clean_y2.end()));
+    if (clean_y3.size() > 0) y_min = std::min(y_min, *std::min_element(clean_y3.begin(), clean_y3.end()));
+    if (clean_y4.size() > 0) y_min = std::min(y_min, *std::min_element(clean_y4.begin(), clean_y4.end()));
+    if (clean_y5.size() > 0) y_min = std::min(y_min, *std::min_element(clean_y5.begin(), clean_y5.end()));
+    if( clean_y6.size() > 0) y_min = std::min(y_min, *std::min_element(clean_y6.begin(), clean_y6.end()));  
+    if( err_min2.size() > 0) y_min = std::min(y_min, *std::min_element(err_min2.begin(), err_min2.end()));
+    if( err_min3.size() > 0) y_min = std::min(y_min, *std::min_element(err_min3.begin(), err_min3.end()));
+    if( err_min4.size() > 0) y_min = std::min(y_min, *std::min_element(err_min4.begin(), err_min4.end()));
+    if( err_min5.size() > 0) y_min = std::min(y_min, *std::min_element(err_min5.begin(), err_min5.end()));
+    if( err_min6.size() > 0) y_min = std::min(y_min, *std::min_element(err_min6.begin(), err_min6.end()));
 
-    float x_min = std::max({
-        *std::min_element(clean_x2.begin(), clean_x2.end()),
-        *std::min_element(clean_x3.begin(), clean_x3.end()),
-        *std::min_element(clean_x4.begin(), clean_x4.end()),
-        *std::min_element(clean_x5.begin(), clean_x5.end()),
-        *std::min_element(clean_x6.begin(), clean_x6.end())
-    });
+    if (clean_x2.size() > 0) x_max = std::max(x_max, *std::max_element(clean_x2.begin(), clean_x2.end()));
+    if (clean_x3.size() > 0) x_max = std::max(x_max, *std::max_element(clean_x3.begin(), clean_x3.end()));
+    if (clean_x4.size() > 0) x_max = std::max(x_max, *std::max_element(clean_x4.begin(), clean_x4.end()));
+    if (clean_x5.size() > 0) x_max = std::max(x_max, *std::max_element(clean_x5.begin(), clean_x5.end()));
+    if( clean_x6.size() > 0) x_max = std::max(x_max, *std::max_element(clean_x6.begin(), clean_x6.end()));  
+
+    if (clean_x2.size() > 0) x_min = std::min(x_min, *std::min_element(clean_x2.begin(), clean_x2.end()));
+    if (clean_x3.size() > 0) x_min = std::min(x_min, *std::min_element(clean_x3.begin(), clean_x3.end()));
+    if (clean_x4.size() > 0) x_min = std::min(x_min, *std::min_element(clean_x4.begin(), clean_x4.end()));
+    if (clean_x5.size() > 0) x_min = std::min(x_min, *std::min_element(clean_x5.begin(), clean_x5.end()));
+    if( clean_x6.size() > 0) x_min = std::min(x_min, *std::min_element(clean_x6.begin(), clean_x6.end()));  
+
 
     if (y_min > -0.1) y_min = -0.1;
     if (y_max < 25) y_max = 25; //make sure legend doesnt cover points
@@ -844,7 +837,7 @@ void draw_percentages(std::vector<std::pair<float, float>> perc2, std::vector<st
     gr6->Draw("P SAME");
 
 
-    TLine* CDR = new TLine(0.8*7.0e1,0, 1.2*x_max, 0);
+    TLine* CDR = new TLine(0.8*x_min,0, 1.2*x_max, 0);
     CDR->SetLineStyle(2);
     CDR->SetLineWidth(2);
     //CDR->SetLineColor(kRed);
@@ -995,47 +988,45 @@ void draw_percentages_line(std::vector<std::pair<float, float>> perc2, std::vect
         err_min6.push_back(clean_y6[i] - err_y6[i]);
     }
 
-    float y_max = std::max({
-        *std::max_element(clean_y2.begin(), clean_y2.end()),
-        *std::max_element(clean_y3.begin(), clean_y3.end()),
-        *std::max_element(clean_y4.begin(), clean_y4.end()),
-        *std::max_element(clean_y5.begin(), clean_y5.end()),
-        *std::max_element(clean_y6.begin(), clean_y6.end()),
-        *std::max_element(err_max2.begin(), err_max2.end()),
-        *std::max_element(err_max3.begin(), err_max3.end()),
-        *std::max_element(err_max4.begin(), err_max4.end()),
-        *std::max_element(err_max5.begin(), err_max5.end()),
-        *std::max_element(err_max6.begin(), err_max6.end())
-    });
+    float y_max = 0;
+    float y_min = 0;
+    float x_max = 0;
+    float x_min = 0;
 
-    float y_min = std::min({
-        *std::min_element(clean_y2.begin(), clean_y2.end()),
-        *std::min_element(clean_y3.begin(), clean_y3.end()),
-        *std::min_element(clean_y4.begin(), clean_y4.end()),
-        *std::min_element(clean_y5.begin(), clean_y5.end()),
-        *std::min_element(clean_y6.begin(), clean_y6.end()),
-        *std::min_element(err_min2.begin(), err_min2.end()),
-        *std::min_element(err_min3.begin(), err_min3.end()),
-        *std::min_element(err_min4.begin(), err_min4.end()),
-        *std::min_element(err_min5.begin(), err_min5.end()),
-        *std::min_element(err_min6.begin(), err_min6.end())
-    });
+    if (clean_y2.size() > 0) y_max = std::max(y_max, *std::max_element(clean_y2.begin(), clean_y2.end()));
+    if (clean_y3.size() > 0) y_max = std::max(y_max, *std::max_element(clean_y3.begin(), clean_y3.end()));
+    if (clean_y4.size() > 0) y_max = std::max(y_max, *std::max_element(clean_y4.begin(), clean_y4.end()));
+    if (clean_y5.size() > 0) y_max = std::max(y_max, *std::max_element(clean_y5.begin(), clean_y5.end()));
+    if( clean_y6.size() > 0) y_max = std::max(y_max, *std::max_element(clean_y6.begin(), clean_y6.end()));  
+    if( err_max2.size() > 0) y_max = std::max(y_max, *std::max_element(err_max2.begin(), err_max2.end()));
+    if( err_max3.size() > 0) y_max = std::max(y_max, *std::max_element(err_max3.begin(), err_max3.end()));
+    if( err_max4.size() > 0) y_max = std::max(y_max, *std::max_element(err_max4.begin(), err_max4.end()));
+    if( err_max5.size() > 0) y_max = std::max(y_max, *std::max_element(err_max5.begin(), err_max5.end()));
+    if( err_max6.size() > 0) y_max = std::max(y_max, *std::max_element(err_max6.begin(), err_max6.end()));
 
-    float x_max = std::max({
-        *std::max_element(clean_x2.begin(), clean_x2.end()),
-        *std::max_element(clean_x3.begin(), clean_x3.end()),
-        *std::max_element(clean_x4.begin(), clean_x4.end()),
-        *std::max_element(clean_x5.begin(), clean_x5.end()),
-        *std::max_element(clean_x6.begin(), clean_x6.end())
-    });
+    if (clean_y2.size() > 0) y_min = std::min(y_min, *std::min_element(clean_y2.begin(), clean_y2.end()));
+    if (clean_y3.size() > 0) y_min = std::min(y_min, *std::min_element(clean_y3.begin(), clean_y3.end()));
+    if (clean_y4.size() > 0) y_min = std::min(y_min, *std::min_element(clean_y4.begin(), clean_y4.end()));
+    if (clean_y5.size() > 0) y_min = std::min(y_min, *std::min_element(clean_y5.begin(), clean_y5.end()));
+    if( clean_y6.size() > 0) y_min = std::min(y_min, *std::min_element(clean_y6.begin(), clean_y6.end()));  
+    if( err_min2.size() > 0) y_min = std::min(y_min, *std::min_element(err_min2.begin(), err_min2.end()));
+    if( err_min3.size() > 0) y_min = std::min(y_min, *std::min_element(err_min3.begin(), err_min3.end()));
+    if( err_min4.size() > 0) y_min = std::min(y_min, *std::min_element(err_min4.begin(), err_min4.end()));
+    if( err_min5.size() > 0) y_min = std::min(y_min, *std::min_element(err_min5.begin(), err_min5.end()));
+    if( err_min6.size() > 0) y_min = std::min(y_min, *std::min_element(err_min6.begin(), err_min6.end()));
 
-    float x_min = std::max({
-        *std::min_element(clean_x2.begin(), clean_x2.end()),
-        *std::min_element(clean_x3.begin(), clean_x3.end()),
-        *std::min_element(clean_x4.begin(), clean_x4.end()),
-        *std::min_element(clean_x5.begin(), clean_x5.end()),
-        *std::min_element(clean_x6.begin(), clean_x6.end())
-    });
+    if (clean_x2.size() > 0) x_max = std::max(x_max, *std::max_element(clean_x2.begin(), clean_x2.end()));
+    if (clean_x3.size() > 0) x_max = std::max(x_max, *std::max_element(clean_x3.begin(), clean_x3.end()));
+    if (clean_x4.size() > 0) x_max = std::max(x_max, *std::max_element(clean_x4.begin(), clean_x4.end()));
+    if (clean_x5.size() > 0) x_max = std::max(x_max, *std::max_element(clean_x5.begin(), clean_x5.end()));
+    if( clean_x6.size() > 0) x_max = std::max(x_max, *std::max_element(clean_x6.begin(), clean_x6.end()));  
+
+    if (clean_x2.size() > 0) x_min = std::min(x_min, *std::min_element(clean_x2.begin(), clean_x2.end()));
+    if (clean_x3.size() > 0) x_min = std::min(x_min, *std::min_element(clean_x3.begin(), clean_x3.end()));
+    if (clean_x4.size() > 0) x_min = std::min(x_min, *std::min_element(clean_x4.begin(), clean_x4.end()));
+    if (clean_x5.size() > 0) x_min = std::min(x_min, *std::min_element(clean_x5.begin(), clean_x5.end()));
+    if( clean_x6.size() > 0) x_min = std::min(x_min, *std::min_element(clean_x6.begin(), clean_x6.end()));  
+
 
     if (y_min > -0.1) y_min = -0.1;
     if (y_max < 25) y_max = 25; //make sure legend doesnt cover points
@@ -1106,7 +1097,7 @@ void draw_percentages_line(std::vector<std::pair<float, float>> perc2, std::vect
     gr6->Draw("L SAME");
 
 
-    TLine* CDR = new TLine(0.8*7.0e1,0, 1.2*x_max, 0);
+    TLine* CDR = new TLine(0.8*x_min,0, 1.2*x_max, 0);
     CDR->SetLineStyle(2);
     CDR->SetLineWidth(2);
     //CDR->SetLineColor(kRed);
@@ -1351,47 +1342,45 @@ void draw_percentagesWithFit(std::vector<std::pair<float, float>> perc2, std::ve
         err_min6.push_back(clean_y6[i] - err_y6[i]);
     }
 
-    float y_max = std::max({
-        *std::max_element(clean_y2.begin(), clean_y2.end()),
-        *std::max_element(clean_y3.begin(), clean_y3.end()),
-        *std::max_element(clean_y4.begin(), clean_y4.end()),
-        *std::max_element(clean_y5.begin(), clean_y5.end()),
-        *std::max_element(clean_y6.begin(), clean_y6.end()),
-        *std::max_element(err_max2.begin(), err_max2.end()),
-        *std::max_element(err_max3.begin(), err_max3.end()),
-        *std::max_element(err_max4.begin(), err_max4.end()),
-        *std::max_element(err_max5.begin(), err_max5.end()),
-        *std::max_element(err_max6.begin(), err_max6.end())
-    });
+    float y_max = 0;
+    float y_min = 0;
+    float x_max = 0;
+    float x_min = 0;
 
-    float y_min = std::min({
-        *std::min_element(clean_y2.begin(), clean_y2.end()),
-        *std::min_element(clean_y3.begin(), clean_y3.end()),
-        *std::min_element(clean_y4.begin(), clean_y4.end()),
-        *std::min_element(clean_y5.begin(), clean_y5.end()),
-        *std::min_element(clean_y6.begin(), clean_y6.end()),
-        *std::min_element(err_min2.begin(), err_min2.end()),
-        *std::min_element(err_min3.begin(), err_min3.end()),
-        *std::min_element(err_min4.begin(), err_min4.end()),
-        *std::min_element(err_min5.begin(), err_min5.end()),
-        *std::min_element(err_min6.begin(), err_min6.end())
-    });
+    if (clean_y2.size() > 0) y_max = std::max(y_max, *std::max_element(clean_y2.begin(), clean_y2.end()));
+    if (clean_y3.size() > 0) y_max = std::max(y_max, *std::max_element(clean_y3.begin(), clean_y3.end()));
+    if (clean_y4.size() > 0) y_max = std::max(y_max, *std::max_element(clean_y4.begin(), clean_y4.end()));
+    if (clean_y5.size() > 0) y_max = std::max(y_max, *std::max_element(clean_y5.begin(), clean_y5.end()));
+    if( clean_y6.size() > 0) y_max = std::max(y_max, *std::max_element(clean_y6.begin(), clean_y6.end()));  
+    if( err_max2.size() > 0) y_max = std::max(y_max, *std::max_element(err_max2.begin(), err_max2.end()));
+    if( err_max3.size() > 0) y_max = std::max(y_max, *std::max_element(err_max3.begin(), err_max3.end()));
+    if( err_max4.size() > 0) y_max = std::max(y_max, *std::max_element(err_max4.begin(), err_max4.end()));
+    if( err_max5.size() > 0) y_max = std::max(y_max, *std::max_element(err_max5.begin(), err_max5.end()));
+    if( err_max6.size() > 0) y_max = std::max(y_max, *std::max_element(err_max6.begin(), err_max6.end()));
 
-    float x_max = std::max({
-        *std::max_element(clean_x2.begin(), clean_x2.end()),
-        *std::max_element(clean_x3.begin(), clean_x3.end()),
-        *std::max_element(clean_x4.begin(), clean_x4.end()),
-        *std::max_element(clean_x5.begin(), clean_x5.end()),
-        *std::max_element(clean_x6.begin(), clean_x6.end())
-    });
+    if (clean_y2.size() > 0) y_min = std::min(y_min, *std::min_element(clean_y2.begin(), clean_y2.end()));
+    if (clean_y3.size() > 0) y_min = std::min(y_min, *std::min_element(clean_y3.begin(), clean_y3.end()));
+    if (clean_y4.size() > 0) y_min = std::min(y_min, *std::min_element(clean_y4.begin(), clean_y4.end()));
+    if (clean_y5.size() > 0) y_min = std::min(y_min, *std::min_element(clean_y5.begin(), clean_y5.end()));
+    if( clean_y6.size() > 0) y_min = std::min(y_min, *std::min_element(clean_y6.begin(), clean_y6.end()));  
+    if( err_min2.size() > 0) y_min = std::min(y_min, *std::min_element(err_min2.begin(), err_min2.end()));
+    if( err_min3.size() > 0) y_min = std::min(y_min, *std::min_element(err_min3.begin(), err_min3.end()));
+    if( err_min4.size() > 0) y_min = std::min(y_min, *std::min_element(err_min4.begin(), err_min4.end()));
+    if( err_min5.size() > 0) y_min = std::min(y_min, *std::min_element(err_min5.begin(), err_min5.end()));
+    if( err_min6.size() > 0) y_min = std::min(y_min, *std::min_element(err_min6.begin(), err_min6.end()));
 
-    float x_min = std::max({
-        *std::min_element(clean_x2.begin(), clean_x2.end()),
-        *std::min_element(clean_x3.begin(), clean_x3.end()),
-        *std::min_element(clean_x4.begin(), clean_x4.end()),
-        *std::min_element(clean_x5.begin(), clean_x5.end()),
-        *std::min_element(clean_x6.begin(), clean_x6.end())
-    });
+    if (clean_x2.size() > 0) x_max = std::max(x_max, *std::max_element(clean_x2.begin(), clean_x2.end()));
+    if (clean_x3.size() > 0) x_max = std::max(x_max, *std::max_element(clean_x3.begin(), clean_x3.end()));
+    if (clean_x4.size() > 0) x_max = std::max(x_max, *std::max_element(clean_x4.begin(), clean_x4.end()));
+    if (clean_x5.size() > 0) x_max = std::max(x_max, *std::max_element(clean_x5.begin(), clean_x5.end()));
+    if( clean_x6.size() > 0) x_max = std::max(x_max, *std::max_element(clean_x6.begin(), clean_x6.end()));  
+
+    if (clean_x2.size() > 0) x_min = std::min(x_min, *std::min_element(clean_x2.begin(), clean_x2.end()));
+    if (clean_x3.size() > 0) x_min = std::min(x_min, *std::min_element(clean_x3.begin(), clean_x3.end()));
+    if (clean_x4.size() > 0) x_min = std::min(x_min, *std::min_element(clean_x4.begin(), clean_x4.end()));
+    if (clean_x5.size() > 0) x_min = std::min(x_min, *std::min_element(clean_x5.begin(), clean_x5.end()));
+    if( clean_x6.size() > 0) x_min = std::min(x_min, *std::min_element(clean_x6.begin(), clean_x6.end()));  
+
 
     if (y_min > -0.1) y_min = -0.1;
     if (y_max < 25) y_max = 25; //make sure legend doesnt cover points
@@ -1463,7 +1452,7 @@ void draw_percentagesWithFit(std::vector<std::pair<float, float>> perc2, std::ve
     TF1* fit6 = useQuad ? fitGraphQuad(gr6, "fit6", kCyan-5) : fitGraphBreak(gr6, "fit6", kCyan-5);
     fit6->Draw("SAME");
 
-    TLine* CDR = new TLine(0.8*7.0e1,0, 1.2*x_max, 0);
+    TLine* CDR = new TLine(0.8*x_min,0, 1.2*x_max, 0);
     CDR->SetLineStyle(2);
     CDR->SetLineWidth(2);
     //CDR->SetLineColor(kRed);
@@ -1614,47 +1603,45 @@ void draw_percentagesFit(std::vector<std::pair<float, float>> perc2, std::vector
         err_min6.push_back(clean_y6[i] - err_y6[i]);
     }
 
-    float y_max = std::max({
-        *std::max_element(clean_y2.begin(), clean_y2.end()),
-        *std::max_element(clean_y3.begin(), clean_y3.end()),
-        *std::max_element(clean_y4.begin(), clean_y4.end()),
-        *std::max_element(clean_y5.begin(), clean_y5.end()),
-        *std::max_element(clean_y6.begin(), clean_y6.end())/*,
-        *std::max_element(err_max2.begin(), err_max2.end()),
-        *std::max_element(err_max3.begin(), err_max3.end()),
-        *std::max_element(err_max4.begin(), err_max4.end()),
-        *std::max_element(err_max5.begin(), err_max5.end()),
-        *std::max_element(err_max6.begin(), err_max6.end())*/
-    });
+    float y_max = 0;
+    float y_min = 0;
+    float x_max = 0;
+    float x_min = 0;
 
-    float y_min = std::min({
-        *std::min_element(clean_y2.begin(), clean_y2.end()),
-        *std::min_element(clean_y3.begin(), clean_y3.end()),
-        *std::min_element(clean_y4.begin(), clean_y4.end()),
-        *std::min_element(clean_y5.begin(), clean_y5.end()),
-        *std::min_element(clean_y6.begin(), clean_y6.end())/*,
-        *std::min_element(err_min2.begin(), err_min2.end()),
-        *std::min_element(err_min3.begin(), err_min3.end()),
-        *std::min_element(err_min4.begin(), err_min4.end()),
-        *std::min_element(err_min5.begin(), err_min5.end()),
-        *std::min_element(err_min6.begin(), err_min6.end())*/
-    });
+    if (clean_y2.size() > 0) y_max = std::max(y_max, *std::max_element(clean_y2.begin(), clean_y2.end()));
+    if (clean_y3.size() > 0) y_max = std::max(y_max, *std::max_element(clean_y3.begin(), clean_y3.end()));
+    if (clean_y4.size() > 0) y_max = std::max(y_max, *std::max_element(clean_y4.begin(), clean_y4.end()));
+    if (clean_y5.size() > 0) y_max = std::max(y_max, *std::max_element(clean_y5.begin(), clean_y5.end()));
+    if( clean_y6.size() > 0) y_max = std::max(y_max, *std::max_element(clean_y6.begin(), clean_y6.end()));  
+    if( err_max2.size() > 0) y_max = std::max(y_max, *std::max_element(err_max2.begin(), err_max2.end()));
+    if( err_max3.size() > 0) y_max = std::max(y_max, *std::max_element(err_max3.begin(), err_max3.end()));
+    if( err_max4.size() > 0) y_max = std::max(y_max, *std::max_element(err_max4.begin(), err_max4.end()));
+    if( err_max5.size() > 0) y_max = std::max(y_max, *std::max_element(err_max5.begin(), err_max5.end()));
+    if( err_max6.size() > 0) y_max = std::max(y_max, *std::max_element(err_max6.begin(), err_max6.end()));
 
-    float x_max = std::max({
-        *std::max_element(clean_x2.begin(), clean_x2.end()),
-        *std::max_element(clean_x3.begin(), clean_x3.end()),
-        *std::max_element(clean_x4.begin(), clean_x4.end()),
-        *std::max_element(clean_x5.begin(), clean_x5.end()),
-        *std::max_element(clean_x6.begin(), clean_x6.end())
-    });
+    if (clean_y2.size() > 0) y_min = std::min(y_min, *std::min_element(clean_y2.begin(), clean_y2.end()));
+    if (clean_y3.size() > 0) y_min = std::min(y_min, *std::min_element(clean_y3.begin(), clean_y3.end()));
+    if (clean_y4.size() > 0) y_min = std::min(y_min, *std::min_element(clean_y4.begin(), clean_y4.end()));
+    if (clean_y5.size() > 0) y_min = std::min(y_min, *std::min_element(clean_y5.begin(), clean_y5.end()));
+    if( clean_y6.size() > 0) y_min = std::min(y_min, *std::min_element(clean_y6.begin(), clean_y6.end()));  
+    if( err_min2.size() > 0) y_min = std::min(y_min, *std::min_element(err_min2.begin(), err_min2.end()));
+    if( err_min3.size() > 0) y_min = std::min(y_min, *std::min_element(err_min3.begin(), err_min3.end()));
+    if( err_min4.size() > 0) y_min = std::min(y_min, *std::min_element(err_min4.begin(), err_min4.end()));
+    if( err_min5.size() > 0) y_min = std::min(y_min, *std::min_element(err_min5.begin(), err_min5.end()));
+    if( err_min6.size() > 0) y_min = std::min(y_min, *std::min_element(err_min6.begin(), err_min6.end()));
 
-    float x_min = std::max({
-        *std::min_element(clean_x2.begin(), clean_x2.end()),
-        *std::min_element(clean_x3.begin(), clean_x3.end()),
-        *std::min_element(clean_x4.begin(), clean_x4.end()),
-        *std::min_element(clean_x5.begin(), clean_x5.end()),
-        *std::min_element(clean_x6.begin(), clean_x6.end())
-    });
+    if (clean_x2.size() > 0) x_max = std::max(x_max, *std::max_element(clean_x2.begin(), clean_x2.end()));
+    if (clean_x3.size() > 0) x_max = std::max(x_max, *std::max_element(clean_x3.begin(), clean_x3.end()));
+    if (clean_x4.size() > 0) x_max = std::max(x_max, *std::max_element(clean_x4.begin(), clean_x4.end()));
+    if (clean_x5.size() > 0) x_max = std::max(x_max, *std::max_element(clean_x5.begin(), clean_x5.end()));
+    if( clean_x6.size() > 0) x_max = std::max(x_max, *std::max_element(clean_x6.begin(), clean_x6.end()));  
+
+    if (clean_x2.size() > 0) x_min = std::min(x_min, *std::min_element(clean_x2.begin(), clean_x2.end()));
+    if (clean_x3.size() > 0) x_min = std::min(x_min, *std::min_element(clean_x3.begin(), clean_x3.end()));
+    if (clean_x4.size() > 0) x_min = std::min(x_min, *std::min_element(clean_x4.begin(), clean_x4.end()));
+    if (clean_x5.size() > 0) x_min = std::min(x_min, *std::min_element(clean_x5.begin(), clean_x5.end()));
+    if( clean_x6.size() > 0) x_min = std::min(x_min, *std::min_element(clean_x6.begin(), clean_x6.end()));  
+
 
     if (y_min > -0.1) y_min = -0.1;
     if (y_max < 25) y_max = 25; //make sure legend doesnt cover points
@@ -1732,7 +1719,7 @@ void draw_percentagesFit(std::vector<std::pair<float, float>> perc2, std::vector
     fit6->Draw("SAME");
 
 
-    TLine* CDR = new TLine(0.8*7.0e1,0, 1.2*x_max, 0);
+    TLine* CDR = new TLine(0.8*x_min,0, 1.2*x_max, 0);
     CDR->SetLineStyle(2);
     CDR->SetLineWidth(2);
     //CDR->SetLineColor(kRed);
@@ -2108,6 +2095,30 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
     std::vector<double>* mu_p_err4 = nullptr;
     std::vector<double>* mu_p_err5 = nullptr;
     std::vector<double>* mu_p_err6 = nullptr;
+    std::vector<double>* mu_mean1 = nullptr;
+    std::vector<double>* mu_mean2 = nullptr;
+    std::vector<double>* mu_mean3 = nullptr;
+    std::vector<double>* mu_mean4 = nullptr;
+    std::vector<double>* mu_mean5 = nullptr;
+    std::vector<double>* mu_mean6 = nullptr;
+    std::vector<double>* mu_mean_err1 = nullptr;
+    std::vector<double>* mu_mean_err2 = nullptr;
+    std::vector<double>* mu_mean_err3 = nullptr;
+    std::vector<double>* mu_mean_err4 = nullptr;
+    std::vector<double>* mu_mean_err5 = nullptr;
+    std::vector<double>* mu_mean_err6 = nullptr;
+    std::vector<double>* mu_sigma1 = nullptr;
+    std::vector<double>* mu_sigma2 = nullptr;
+    std::vector<double>* mu_sigma3 = nullptr;
+    std::vector<double>* mu_sigma4 = nullptr;
+    std::vector<double>* mu_sigma5 = nullptr;
+    std::vector<double>* mu_sigma6 = nullptr;
+    std::vector<double>* mu_sigma_err1 = nullptr;
+    std::vector<double>* mu_sigma_err2 = nullptr;
+    std::vector<double>* mu_sigma_err3 = nullptr;
+    std::vector<double>* mu_sigma_err4 = nullptr;
+    std::vector<double>* mu_sigma_err5 = nullptr;
+    std::vector<double>* mu_sigma_err6 = nullptr;
     std::vector<double>* mu_res1 = nullptr;
     std::vector<double>* mu_res2 = nullptr;
     std::vector<double>* mu_res3 = nullptr;
@@ -2132,6 +2143,30 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
     std::vector<double>* pi_p_err4 = nullptr;
     std::vector<double>* pi_p_err5 = nullptr;
     std::vector<double>* pi_p_err6 = nullptr;
+    std::vector<double>* pi_mean1 = nullptr;
+    std::vector<double>* pi_mean2 = nullptr;
+    std::vector<double>* pi_mean3 = nullptr;
+    std::vector<double>* pi_mean4 = nullptr;
+    std::vector<double>* pi_mean5 = nullptr;
+    std::vector<double>* pi_mean6 = nullptr;
+    std::vector<double>* pi_mean_err1 = nullptr;
+    std::vector<double>* pi_mean_err2 = nullptr;
+    std::vector<double>* pi_mean_err3 = nullptr;
+    std::vector<double>* pi_mean_err4 = nullptr;
+    std::vector<double>* pi_mean_err5 = nullptr;
+    std::vector<double>* pi_mean_err6 = nullptr;
+    std::vector<double>* pi_sigma1 = nullptr;
+    std::vector<double>* pi_sigma2 = nullptr;
+    std::vector<double>* pi_sigma3 = nullptr;
+    std::vector<double>* pi_sigma4 = nullptr;
+    std::vector<double>* pi_sigma5 = nullptr;
+    std::vector<double>* pi_sigma6 = nullptr;
+    std::vector<double>* pi_sigma_err1 = nullptr;
+    std::vector<double>* pi_sigma_err2 = nullptr;
+    std::vector<double>* pi_sigma_err3 = nullptr;
+    std::vector<double>* pi_sigma_err4 = nullptr;
+    std::vector<double>* pi_sigma_err5 = nullptr;
+    std::vector<double>* pi_sigma_err6 = nullptr;
     std::vector<double>* pi_res1 = nullptr;
     std::vector<double>* pi_res2 = nullptr;
     std::vector<double>* pi_res3 = nullptr;
@@ -2156,6 +2191,30 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
     std::vector<double>* p_p_err4 = nullptr;
     std::vector<double>* p_p_err5 = nullptr;
     std::vector<double>* p_p_err6 = nullptr;
+    std::vector<double>* p_mean1 = nullptr;
+    std::vector<double>* p_mean2 = nullptr;
+    std::vector<double>* p_mean3 = nullptr;
+    std::vector<double>* p_mean4 = nullptr;
+    std::vector<double>* p_mean5 = nullptr;
+    std::vector<double>* p_mean6 = nullptr;
+    std::vector<double>* p_mean_err1 = nullptr;
+    std::vector<double>* p_mean_err2 = nullptr;
+    std::vector<double>* p_mean_err3 = nullptr;
+    std::vector<double>* p_mean_err4 = nullptr;
+    std::vector<double>* p_mean_err5 = nullptr;
+    std::vector<double>* p_mean_err6 = nullptr;
+    std::vector<double>* p_sigma1 = nullptr;
+    std::vector<double>* p_sigma2 = nullptr;
+    std::vector<double>* p_sigma3 = nullptr;
+    std::vector<double>* p_sigma4 = nullptr;
+    std::vector<double>* p_sigma5 = nullptr;
+    std::vector<double>* p_sigma6 = nullptr;
+    std::vector<double>* p_sigma_err1 = nullptr;
+    std::vector<double>* p_sigma_err2 = nullptr;
+    std::vector<double>* p_sigma_err3 = nullptr;
+    std::vector<double>* p_sigma_err4 = nullptr;
+    std::vector<double>* p_sigma_err5 = nullptr;
+    std::vector<double>* p_sigma_err6 = nullptr;
     std::vector<double>* p_res1 = nullptr;
     std::vector<double>* p_res2 = nullptr;
     std::vector<double>* p_res3 = nullptr;
@@ -2260,14 +2319,26 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
     inputTree1->SetBranchAddress("proton_size",   &proton_size_1);
     inputTree1->SetBranchAddress("mu_p", &mu_p1);
     inputTree1->SetBranchAddress("mu_p_err", &mu_p_err1);
+    inputTree1->SetBranchAddress("mu_mean", &mu_mean1);
+    inputTree1->SetBranchAddress("mu_mean_err", &mu_mean_err1);
+    inputTree1->SetBranchAddress("mu_sigma", &mu_sigma1);
+    inputTree1->SetBranchAddress("mu_sigma_err", &mu_sigma_err1);
     inputTree1->SetBranchAddress("mu_res", &mu_res1);
     inputTree1->SetBranchAddress("mu_res_err", &mu_res_err1);
     inputTree1->SetBranchAddress("pi_p", &pi_p1);
     inputTree1->SetBranchAddress("pi_p_err", &pi_p_err1);
+    inputTree1->SetBranchAddress("pi_mean", &pi_mean1);
+    inputTree1->SetBranchAddress("pi_mean_err", &pi_mean_err1);
+    inputTree1->SetBranchAddress("pi_sigma", &pi_sigma1);
+    inputTree1->SetBranchAddress("pi_sigma_err", &pi_sigma_err1);
     inputTree1->SetBranchAddress("pi_res", &pi_res1);
     inputTree1->SetBranchAddress("pi_res_err", &pi_res_err1);
     inputTree1->SetBranchAddress("pr_p", &p_p1);
     inputTree1->SetBranchAddress("pr_p_err", &p_p_err1);
+    inputTree1->SetBranchAddress("pr_mean", &p_mean1);
+    inputTree1->SetBranchAddress("pr_mean_err", &p_mean_err1);
+    inputTree1->SetBranchAddress("pr_sigma", &p_sigma1);
+    inputTree1->SetBranchAddress("pr_sigma_err", &p_sigma_err1);
     inputTree1->SetBranchAddress("pr_res", &p_res1);
     inputTree1->SetBranchAddress("pr_res_err", &p_res_err1);
 
@@ -2315,13 +2386,26 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
     inputTree2->SetBranchAddress("mu_p", &mu_p2);
     inputTree2->SetBranchAddress("mu_p_err", &mu_p_err2);
     inputTree2->SetBranchAddress("mu_res", &mu_res2);
+    inputTree2->SetBranchAddress("mu_mean", &mu_mean2);
+    inputTree2->SetBranchAddress("mu_mean_err", &mu_mean_err2);
+    inputTree2->SetBranchAddress("mu_sigma", &mu_sigma2);
+    inputTree2->SetBranchAddress("mu_sigma_err", &mu_sigma_err2);
+    inputTree2->SetBranchAddress("mu_res", &mu_res2);
     inputTree2->SetBranchAddress("mu_res_err", &mu_res_err2);
     inputTree2->SetBranchAddress("pi_p", &pi_p2);
     inputTree2->SetBranchAddress("pi_p_err", &pi_p_err2);
+    inputTree2->SetBranchAddress("pi_mean", &pi_mean2);
+    inputTree2->SetBranchAddress("pi_mean_err", &pi_mean_err2);
+    inputTree2->SetBranchAddress("pi_sigma", &pi_sigma2);
+    inputTree2->SetBranchAddress("pi_sigma_err", &pi_sigma_err2);
     inputTree2->SetBranchAddress("pi_res", &pi_res2);
     inputTree2->SetBranchAddress("pi_res_err", &pi_res_err2);
     inputTree2->SetBranchAddress("pr_p", &p_p2);
     inputTree2->SetBranchAddress("pr_p_err", &p_p_err2);
+    inputTree2->SetBranchAddress("pr_mean", &p_mean2);
+    inputTree2->SetBranchAddress("pr_mean_err", &p_mean_err2);
+    inputTree2->SetBranchAddress("pr_sigma", &p_sigma2);
+    inputTree2->SetBranchAddress("pr_sigma_err", &p_sigma_err2);
     inputTree2->SetBranchAddress("pr_res", &p_res2);
     inputTree2->SetBranchAddress("pr_res_err", &p_res_err2);
 
@@ -2368,14 +2452,26 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
     inputTree3->SetBranchAddress("proton_size",   &proton_size_3);
     inputTree3->SetBranchAddress("mu_p", &mu_p3);
     inputTree3->SetBranchAddress("mu_p_err", &mu_p_err3);
+    inputTree3->SetBranchAddress("mu_mean", &mu_mean3);
+    inputTree3->SetBranchAddress("mu_mean_err", &mu_mean_err3);
+    inputTree3->SetBranchAddress("mu_sigma", &mu_sigma3);
+    inputTree3->SetBranchAddress("mu_sigma_err", &mu_sigma_err3);
     inputTree3->SetBranchAddress("mu_res", &mu_res3);
     inputTree3->SetBranchAddress("mu_res_err", &mu_res_err3);
     inputTree3->SetBranchAddress("pi_p", &pi_p3);
     inputTree3->SetBranchAddress("pi_p_err", &pi_p_err3);
+    inputTree3->SetBranchAddress("pi_mean", &pi_mean3);
+    inputTree3->SetBranchAddress("pi_mean_err", &pi_mean_err3);
+    inputTree3->SetBranchAddress("pi_sigma", &pi_sigma3);
+    inputTree3->SetBranchAddress("pi_sigma_err", &pi_sigma_err3);
     inputTree3->SetBranchAddress("pi_res", &pi_res3);
     inputTree3->SetBranchAddress("pi_res_err", &pi_res_err3);
     inputTree3->SetBranchAddress("pr_p", &p_p3);
     inputTree3->SetBranchAddress("pr_p_err", &p_p_err3);
+    inputTree3->SetBranchAddress("pr_mean", &p_mean3);
+    inputTree3->SetBranchAddress("pr_mean_err", &p_mean_err3);
+    inputTree3->SetBranchAddress("pr_sigma", &p_sigma3);
+    inputTree3->SetBranchAddress("pr_sigma_err", &p_sigma_err3);
     inputTree3->SetBranchAddress("pr_res", &p_res3);
     inputTree3->SetBranchAddress("pr_res_err", &p_res_err3);
 
@@ -2422,14 +2518,26 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
     inputTree4->SetBranchAddress("proton_size",   &proton_size_4);
     inputTree4->SetBranchAddress("mu_p", &mu_p4);
     inputTree4->SetBranchAddress("mu_p_err", &mu_p_err4);
+    inputTree4->SetBranchAddress("mu_mean", &mu_mean4);
+    inputTree4->SetBranchAddress("mu_mean_err", &mu_mean_err4);
+    inputTree4->SetBranchAddress("mu_sigma", &mu_sigma4);
+    inputTree4->SetBranchAddress("mu_sigma_err", &mu_sigma_err4);
     inputTree4->SetBranchAddress("mu_res", &mu_res4);
     inputTree4->SetBranchAddress("mu_res_err", &mu_res_err4);
     inputTree4->SetBranchAddress("pi_p", &pi_p4);
     inputTree4->SetBranchAddress("pi_p_err", &pi_p_err4);
+    inputTree4->SetBranchAddress("pi_mean", &pi_mean4);
+    inputTree4->SetBranchAddress("pi_mean_err", &pi_mean_err4);
+    inputTree4->SetBranchAddress("pi_sigma", &pi_sigma4);
+    inputTree4->SetBranchAddress("pi_sigma_err", &pi_sigma_err4);
     inputTree4->SetBranchAddress("pi_res", &pi_res4);
     inputTree4->SetBranchAddress("pi_res_err", &pi_res_err4);
     inputTree4->SetBranchAddress("pr_p", &p_p4);
     inputTree4->SetBranchAddress("pr_p_err", &p_p_err4);
+    inputTree4->SetBranchAddress("pr_mean", &p_mean4);
+    inputTree4->SetBranchAddress("pr_mean_err", &p_mean_err4);
+    inputTree4->SetBranchAddress("pr_sigma", &p_sigma4);
+    inputTree4->SetBranchAddress("pr_sigma_err", &p_sigma_err4);
     inputTree4->SetBranchAddress("pr_res", &p_res4);
     inputTree4->SetBranchAddress("pr_res_err", &p_res_err4);
 
@@ -2476,14 +2584,26 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
     inputTree5->SetBranchAddress("proton_size",   &proton_size_5);
     inputTree5->SetBranchAddress("mu_p", &mu_p5);
     inputTree5->SetBranchAddress("mu_p_err", &mu_p_err5);
+    inputTree5->SetBranchAddress("mu_mean", &mu_mean5);
+    inputTree5->SetBranchAddress("mu_mean_err", &mu_mean_err5);
+    inputTree5->SetBranchAddress("mu_sigma", &mu_sigma5);
+    inputTree5->SetBranchAddress("mu_sigma_err", &mu_sigma_err5);
     inputTree5->SetBranchAddress("mu_res", &mu_res5);
     inputTree5->SetBranchAddress("mu_res_err", &mu_res_err5);
     inputTree5->SetBranchAddress("pi_p", &pi_p5);
     inputTree5->SetBranchAddress("pi_p_err", &pi_p_err5);
+    inputTree5->SetBranchAddress("pi_mean", &pi_mean5);
+    inputTree5->SetBranchAddress("pi_mean_err", &pi_mean_err5);
+    inputTree5->SetBranchAddress("pi_sigma", &pi_sigma5);
+    inputTree5->SetBranchAddress("pi_sigma_err", &pi_sigma_err5);
     inputTree5->SetBranchAddress("pi_res", &pi_res5);
     inputTree5->SetBranchAddress("pi_res_err", &pi_res_err5);
     inputTree5->SetBranchAddress("pr_p", &p_p5);
     inputTree5->SetBranchAddress("pr_p_err", &p_p_err5);
+    inputTree5->SetBranchAddress("pr_mean", &p_mean5);
+    inputTree5->SetBranchAddress("pr_mean_err", &p_mean_err5);
+    inputTree5->SetBranchAddress("pr_sigma", &p_sigma5);
+    inputTree5->SetBranchAddress("pr_sigma_err", &p_sigma_err5);
     inputTree5->SetBranchAddress("pr_res", &p_res5);
     inputTree5->SetBranchAddress("pr_res_err", &p_res_err5);
 
@@ -2530,14 +2650,26 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
     inputTree6->SetBranchAddress("proton_size",   &proton_size_6);
     inputTree6->SetBranchAddress("mu_p", &mu_p6);
     inputTree6->SetBranchAddress("mu_p_err", &mu_p_err6);
+    inputTree6->SetBranchAddress("mu_mean", &mu_mean6);
+    inputTree6->SetBranchAddress("mu_mean_err", &mu_mean_err6);
+    inputTree6->SetBranchAddress("mu_sigma", &mu_sigma6);
+    inputTree6->SetBranchAddress("mu_sigma_err", &mu_sigma_err6);
     inputTree6->SetBranchAddress("mu_res", &mu_res6);
     inputTree6->SetBranchAddress("mu_res_err", &mu_res_err6);
     inputTree6->SetBranchAddress("pi_p", &pi_p6);
     inputTree6->SetBranchAddress("pi_p_err", &pi_p_err6);
+    inputTree6->SetBranchAddress("pi_mean", &pi_mean6);
+    inputTree6->SetBranchAddress("pi_mean_err", &pi_mean_err6);
+    inputTree6->SetBranchAddress("pi_sigma", &pi_sigma6);
+    inputTree6->SetBranchAddress("pi_sigma_err", &pi_sigma_err6);
     inputTree6->SetBranchAddress("pi_res", &pi_res6);
     inputTree6->SetBranchAddress("pi_res_err", &pi_res_err6);
     inputTree6->SetBranchAddress("pr_p", &p_p6);
     inputTree6->SetBranchAddress("pr_p_err", &p_p_err6);
+    inputTree6->SetBranchAddress("pr_mean", &p_mean6);
+    inputTree6->SetBranchAddress("pr_mean_err", &p_mean_err6);
+    inputTree6->SetBranchAddress("pr_sigma", &p_sigma6);
+    inputTree6->SetBranchAddress("pr_sigma_err", &p_sigma_err6);
     inputTree6->SetBranchAddress("pr_res", &p_res6);
     inputTree6->SetBranchAddress("pr_res_err", &p_res_err6);
 
@@ -2590,13 +2722,13 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
     const float p_min = 70.0; // MeV
     const float p_max = 5e3; // MeV
     //const float p_interval = (p_max - p_min) / nPBins; // MeV
-    const int nPBins = 100; // number of momentum bins for p vs dE/dx graph
+    const int nPBins = 140; // number of momentum bins for p vs dE/dx graph
     float p_bin_min = std::log10(p_min); // MeV
     float p_bin_max = std::log10(p_max); // MeV
 
     const float l_min = 10.0; // cm
     const float l_max = 2000; // cm
-    const int nLBins = 100; // number of track length bins for l vs dE/dx graph
+    const int nLBins = 60; // number of track length bins for l vs dE/dx graph
     const float l_interval = (l_max - l_min) / nLBins; // cm
     float l_bin_min = std::log10(l_min); // cm
     float l_bin_max = std::log10(l_max); // cm
@@ -2667,7 +2799,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
         hProton6[i] = dynamic_cast<TH1F*>(hPr6->Clone(Form("hProton6_p%.2f-%.2f", p_bin_low, p_bin_high)));
     }
 
-    for (size_t i = 0; i < nPBins; i++){
+    for (size_t i = 0; i < nLBins; i++){
 
         //define momentum edges for histogram names
         //float p_bin_low = p_min + i * p_interval;
@@ -2739,12 +2871,40 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
     std::vector<int> mu_size5, pi_size5, p_size5;
     std::vector<int> mu_size6, pi_size6, p_size6;
 
+    std::vector<std::pair<float, float>> mu_mean_vec1, pi_mean_vec1, p_mean_vec1;
+    std::vector<std::pair<float, float>> mu_mean_vec2, pi_mean_vec2, p_mean_vec2;
+    std::vector<std::pair<float, float>> mu_mean_vec3, pi_mean_vec3, p_mean_vec3;
+    std::vector<std::pair<float, float>> mu_mean_vec4, pi_mean_vec4, p_mean_vec4;
+    std::vector<std::pair<float, float>> mu_mean_vec5, pi_mean_vec5, p_mean_vec5;
+    std::vector<std::pair<float, float>> mu_mean_vec6, pi_mean_vec6, p_mean_vec6;
+
+    std::vector<std::pair<float, float>> mu_sigma_vec1, pi_sigma_vec1, p_sigma_vec1;
+    std::vector<std::pair<float, float>> mu_sigma_vec2, pi_sigma_vec2, p_sigma_vec2;
+    std::vector<std::pair<float, float>> mu_sigma_vec3, pi_sigma_vec3, p_sigma_vec3;
+    std::vector<std::pair<float, float>> mu_sigma_vec4, pi_sigma_vec4, p_sigma_vec4;
+    std::vector<std::pair<float, float>> mu_sigma_vec5, pi_sigma_vec5, p_sigma_vec5;
+    std::vector<std::pair<float, float>> mu_sigma_vec6, pi_sigma_vec6, p_sigma_vec6;
+
     std::vector<std::pair<float, float>> mu_res_vec1, pi_res_vec1, p_res_vec1;
     std::vector<std::pair<float, float>> mu_res_vec2, pi_res_vec2, p_res_vec2;
     std::vector<std::pair<float, float>> mu_res_vec3, pi_res_vec3, p_res_vec3;
     std::vector<std::pair<float, float>> mu_res_vec4, pi_res_vec4, p_res_vec4;
     std::vector<std::pair<float, float>> mu_res_vec5, pi_res_vec5, p_res_vec5;
     std::vector<std::pair<float, float>> mu_res_vec6, pi_res_vec6, p_res_vec6;
+
+    std::vector<std::pair<float, float>> mu_mean_vec_err1, pi_mean_vec_err1, p_mean_vec_err1;
+    std::vector<std::pair<float, float>> mu_mean_vec_err2, pi_mean_vec_err2, p_mean_vec_err2;
+    std::vector<std::pair<float, float>> mu_mean_vec_err3, pi_mean_vec_err3, p_mean_vec_err3;
+    std::vector<std::pair<float, float>> mu_mean_vec_err4, pi_mean_vec_err4, p_mean_vec_err4;
+    std::vector<std::pair<float, float>> mu_mean_vec_err5, pi_mean_vec_err5, p_mean_vec_err5;
+    std::vector<std::pair<float, float>> mu_mean_vec_err6, pi_mean_vec_err6, p_mean_vec_err6;
+
+    std::vector<std::pair<float, float>> mu_sigma_vec_err1, pi_sigma_vec_err1, p_sigma_vec_err1;
+    std::vector<std::pair<float, float>> mu_sigma_vec_err2, pi_sigma_vec_err2, p_sigma_vec_err2;
+    std::vector<std::pair<float, float>> mu_sigma_vec_err3, pi_sigma_vec_err3, p_sigma_vec_err3;
+    std::vector<std::pair<float, float>> mu_sigma_vec_err4, pi_sigma_vec_err4, p_sigma_vec_err4;
+    std::vector<std::pair<float, float>> mu_sigma_vec_err5, pi_sigma_vec_err5, p_sigma_vec_err5;
+    std::vector<std::pair<float, float>> mu_sigma_vec_err6, pi_sigma_vec_err6, p_sigma_vec_err6;
 
     std::vector<std::pair<float, float>> mu_res_vec_err1, pi_res_vec_err1, p_res_vec_err1;
     std::vector<std::pair<float, float>> mu_res_vec_err2, pi_res_vec_err2, p_res_vec_err2;
@@ -2823,16 +2983,28 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
             piP_track_err1.emplace_back(pp_track_err_1->at(i), piP_track_1_err->at(i));
         }
 
-        //get resolution and fill vectors
+        //get resolution, mean and sigma and fill vectors
         for (size_t i = 0; i < mu_p1->size(); i++) {
+            mu_mean_vec1.emplace_back(mu_p1->at(i), mu_mean1->at(i));
+            mu_mean_vec_err1.emplace_back(mu_p_err1->at(i), mu_mean_err1->at(i));
+            mu_sigma_vec1.emplace_back(mu_p1->at(i), mu_sigma1->at(i));
+            mu_sigma_vec_err1.emplace_back(mu_p_err1->at(i), mu_sigma_err1->at(i));
             mu_res_vec1.emplace_back(mu_p1->at(i), mu_res1->at(i));
             mu_res_vec_err1.emplace_back(mu_p_err1->at(i), mu_res_err1->at(i));
         }
         for (size_t i = 0; i < pi_p1->size(); i++) {
+            pi_mean_vec1.emplace_back(pi_p1->at(i), pi_mean1->at(i));
+            pi_mean_vec_err1.emplace_back(pi_p_err1->at(i), pi_mean_err1->at(i));
+            pi_sigma_vec1.emplace_back(pi_p1->at(i), pi_sigma1->at(i));
+            pi_sigma_vec_err1.emplace_back(pi_p_err1->at(i), pi_sigma_err1->at(i));
             pi_res_vec1.emplace_back(pi_p1->at(i), pi_res1->at(i));
             pi_res_vec_err1.emplace_back(pi_p_err1->at(i), pi_res_err1->at(i));
         }
         for (size_t i = 0; i < p_p1->size(); i++) {
+            p_mean_vec1.emplace_back(p_p1->at(i), p_mean1->at(i));
+            p_mean_vec_err1.emplace_back(p_p_err1->at(i), p_mean_err1->at(i));
+            p_sigma_vec1.emplace_back(p_p1->at(i), p_sigma1->at(i));
+            p_sigma_vec_err1.emplace_back(p_p_err1->at(i), p_sigma_err1->at(i));
             p_res_vec1.emplace_back(p_p1->at(i), p_res1->at(i));
             p_res_vec_err1.emplace_back(p_p_err1->at(i), p_res_err1->at(i));
         }
@@ -2895,14 +3067,26 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
 
         //get resolution and fill vectors
         for (size_t i = 0; i < mu_p2->size(); i++) {
+            mu_mean_vec2.emplace_back(mu_p2->at(i), mu_mean2->at(i));
+            mu_mean_vec_err2.emplace_back(mu_p_err2->at(i), mu_mean_err2->at(i));
+            mu_sigma_vec2.emplace_back(mu_p2->at(i), mu_sigma2->at(i));
+            mu_sigma_vec_err2.emplace_back(mu_p_err2->at(i), mu_sigma_err2->at(i));
             mu_res_vec2.emplace_back(mu_p2->at(i), mu_res2->at(i));
             mu_res_vec_err2.emplace_back(mu_p_err2->at(i), mu_res_err2->at(i));
         }
         for (size_t i = 0; i < pi_p2->size(); i++) {
+            pi_mean_vec2.emplace_back(pi_p2->at(i), pi_mean2->at(i));
+            pi_mean_vec_err2.emplace_back(pi_p_err2->at(i), pi_mean_err2->at(i));
+            pi_sigma_vec2.emplace_back(pi_p2->at(i), pi_sigma2->at(i));
+            pi_sigma_vec_err2.emplace_back(pi_p_err2->at(i), pi_sigma_err2->at(i));
             pi_res_vec2.emplace_back(pi_p2->at(i), pi_res2->at(i));
             pi_res_vec_err2.emplace_back(pi_p_err2->at(i), pi_res_err2->at(i));
         }
         for (size_t i = 0; i < p_p2->size(); i++) {
+            p_mean_vec2.emplace_back(p_p2->at(i), p_mean2->at(i));
+            p_mean_vec_err2.emplace_back(p_p_err2->at(i), p_mean_err2->at(i));
+            p_sigma_vec2.emplace_back(p_p2->at(i), p_sigma2->at(i));
+            p_sigma_vec_err2.emplace_back(p_p_err2->at(i), p_sigma_err2->at(i));
             p_res_vec2.emplace_back(p_p2->at(i), p_res2->at(i));
             p_res_vec_err2.emplace_back(p_p_err2->at(i), p_res_err2->at(i));
         }
@@ -2964,14 +3148,26 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
 
         //get resolution and fill vectors
         for (size_t i = 0; i < mu_p3->size(); i++) {
+            mu_mean_vec3.emplace_back(mu_p3->at(i), mu_mean3->at(i));
+            mu_mean_vec_err3.emplace_back(mu_p_err3->at(i), mu_mean_err3->at(i));
+            mu_sigma_vec3.emplace_back(mu_p3->at(i), mu_sigma3->at(i));
+            mu_sigma_vec_err3.emplace_back(mu_p_err3->at(i), mu_sigma_err3->at(i));
             mu_res_vec3.emplace_back(mu_p3->at(i), mu_res3->at(i));
             mu_res_vec_err3.emplace_back(mu_p_err3->at(i), mu_res_err3->at(i));
         }
         for (size_t i = 0; i < pi_p3->size(); i++) {
+            pi_mean_vec3.emplace_back(pi_p3->at(i), pi_mean3->at(i));
+            pi_mean_vec_err3.emplace_back(pi_p_err3->at(i), pi_mean_err3->at(i));
+            pi_sigma_vec3.emplace_back(pi_p3->at(i), pi_sigma3->at(i));
+            pi_sigma_vec_err3.emplace_back(pi_p_err3->at(i), pi_sigma_err3->at(i));
             pi_res_vec3.emplace_back(pi_p3->at(i), pi_res3->at(i));
             pi_res_vec_err3.emplace_back(pi_p_err3->at(i), pi_res_err3->at(i));
         }
         for (size_t i = 0; i < p_p3->size(); i++) {
+            p_mean_vec3.emplace_back(p_p3->at(i), p_mean3->at(i));
+            p_mean_vec_err3.emplace_back(p_p_err3->at(i), p_mean_err3->at(i));
+            p_sigma_vec3.emplace_back(p_p3->at(i), p_sigma3->at(i));
+            p_sigma_vec_err3.emplace_back(p_p_err3->at(i), p_sigma_err3->at(i));
             p_res_vec3.emplace_back(p_p3->at(i), p_res3->at(i));
             p_res_vec_err3.emplace_back(p_p_err3->at(i), p_res_err3->at(i));
         }
@@ -3033,14 +3229,26 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
 
         //get resolution and fill vectors
         for (size_t i = 0; i < mu_p4->size(); i++) {
+            mu_mean_vec4.emplace_back(mu_p4->at(i), mu_mean4->at(i));
+            mu_mean_vec_err4.emplace_back(mu_p_err4->at(i), mu_mean_err4->at(i));
+            mu_sigma_vec4.emplace_back(mu_p4->at(i), mu_sigma4->at(i));
+            mu_sigma_vec_err4.emplace_back(mu_p_err4->at(i), mu_sigma_err4->at(i));
             mu_res_vec4.emplace_back(mu_p4->at(i), mu_res4->at(i));
             mu_res_vec_err4.emplace_back(mu_p_err4->at(i), mu_res_err4->at(i));
         }
         for (size_t i = 0; i < pi_p4->size(); i++) {
+            pi_mean_vec4.emplace_back(pi_p4->at(i), pi_mean4->at(i));
+            pi_mean_vec_err4.emplace_back(pi_p_err4->at(i), pi_mean_err4->at(i));
+            pi_sigma_vec4.emplace_back(pi_p4->at(i), pi_sigma4->at(i));
+            pi_sigma_vec_err4.emplace_back(pi_p_err4->at(i), pi_sigma_err4->at(i));
             pi_res_vec4.emplace_back(pi_p4->at(i), pi_res4->at(i));
             pi_res_vec_err4.emplace_back(pi_p_err4->at(i), pi_res_err4->at(i));
         }
         for (size_t i = 0; i < p_p4->size(); i++) {
+            p_mean_vec4.emplace_back(p_p4->at(i), p_mean4->at(i));
+            p_mean_vec_err4.emplace_back(p_p_err4->at(i), p_mean_err4->at(i));
+            p_sigma_vec4.emplace_back(p_p4->at(i), p_sigma4->at(i));
+            p_sigma_vec_err4.emplace_back(p_p_err4->at(i), p_sigma_err4->at(i));
             p_res_vec4.emplace_back(p_p4->at(i), p_res4->at(i));
             p_res_vec_err4.emplace_back(p_p_err4->at(i), p_res_err4->at(i));
         }
@@ -3104,14 +3312,26 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
 
         //get resolution and fill vectors
         for (size_t i = 0; i < mu_p5->size(); i++) {
+            mu_mean_vec5.emplace_back(mu_p5->at(i), mu_mean5->at(i));
+            mu_mean_vec_err5.emplace_back(mu_p_err5->at(i), mu_mean_err5->at(i));
+            mu_sigma_vec5.emplace_back(mu_p5->at(i), mu_sigma5->at(i));
+            mu_sigma_vec_err5.emplace_back(mu_p_err5->at(i), mu_sigma_err5->at(i));
             mu_res_vec5.emplace_back(mu_p5->at(i), mu_res5->at(i));
             mu_res_vec_err5.emplace_back(mu_p_err5->at(i), mu_res_err5->at(i));
         }
         for (size_t i = 0; i < pi_p5->size(); i++) {
+            pi_mean_vec5.emplace_back(pi_p5->at(i), pi_mean5->at(i));
+            pi_mean_vec_err5.emplace_back(pi_p_err5->at(i), pi_mean_err5->at(i));
+            pi_sigma_vec5.emplace_back(pi_p5->at(i), pi_sigma5->at(i));
+            pi_sigma_vec_err5.emplace_back(pi_p_err5->at(i), pi_sigma_err5->at(i));
             pi_res_vec5.emplace_back(pi_p5->at(i), pi_res5->at(i));
             pi_res_vec_err5.emplace_back(pi_p_err5->at(i), pi_res_err5->at(i));
         }
         for (size_t i = 0; i < p_p5->size(); i++) {
+            p_mean_vec5.emplace_back(p_p5->at(i), p_mean5->at(i));
+            p_mean_vec_err5.emplace_back(p_p_err5->at(i), p_mean_err5->at(i));
+            p_sigma_vec5.emplace_back(p_p5->at(i), p_sigma5->at(i));
+            p_sigma_vec_err5.emplace_back(p_p_err5->at(i), p_sigma_err5->at(i));
             p_res_vec5.emplace_back(p_p5->at(i), p_res5->at(i));
             p_res_vec_err5.emplace_back(p_p_err5->at(i), p_res_err5->at(i));
         }
@@ -3173,14 +3393,26 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
 
         //get resolution and fill vectors
         for (size_t i = 0; i < mu_p6->size(); i++) {
+            mu_mean_vec6.emplace_back(mu_p6->at(i), mu_mean6->at(i));
+            mu_mean_vec_err6.emplace_back(mu_p_err6->at(i), mu_mean_err6->at(i));
+            mu_sigma_vec6.emplace_back(mu_p6->at(i), mu_sigma6->at(i));
+            mu_sigma_vec_err6.emplace_back(mu_p_err6->at(i), mu_sigma_err6->at(i));
             mu_res_vec6.emplace_back(mu_p6->at(i), mu_res6->at(i));
             mu_res_vec_err6.emplace_back(mu_p_err6->at(i), mu_res_err6->at(i));
         }
         for (size_t i = 0; i < pi_p6->size(); i++) {
+            pi_mean_vec6.emplace_back(pi_p6->at(i), pi_mean6->at(i));
+            pi_mean_vec_err6.emplace_back(pi_p_err6->at(i), pi_mean_err6->at(i));
+            pi_sigma_vec6.emplace_back(pi_p6->at(i), pi_sigma6->at(i));
+            pi_sigma_vec_err6.emplace_back(pi_p_err6->at(i), pi_sigma_err6->at(i));
             pi_res_vec6.emplace_back(pi_p6->at(i), pi_res6->at(i));
             pi_res_vec_err6.emplace_back(pi_p_err6->at(i), pi_res_err6->at(i));
         }
         for (size_t i = 0; i < p_p6->size(); i++) {
+            p_mean_vec6.emplace_back(p_p6->at(i), p_mean6->at(i));
+            p_mean_vec_err6.emplace_back(p_p_err6->at(i), p_mean_err6->at(i));
+            p_sigma_vec6.emplace_back(p_p6->at(i), p_sigma6->at(i));
+            p_sigma_vec_err6.emplace_back(p_p_err6->at(i), p_sigma_err6->at(i));
             p_res_vec6.emplace_back(p_p6->at(i), p_res6->at(i));
             p_res_vec_err6.emplace_back(p_p_err6->at(i), p_res_err6->at(i));
         }
@@ -3210,6 +3442,24 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
     //tree 1 pion proton
     std::sort(piP_sep1.begin(), piP_sep1.end());
     std::sort(piP_err1.begin(), piP_err1.end());
+    //tree 1 muon mean dE/dx
+    std::sort(mu_mean_vec1.begin(), mu_mean_vec1.end());
+    std::sort(mu_mean_vec_err1.begin(), mu_mean_vec_err1.end());
+    //tree 1 pion mean dE/dx
+    std::sort(pi_mean_vec1.begin(), pi_mean_vec1.end());
+    std::sort(pi_mean_vec_err1.begin(), pi_mean_vec_err1.end());
+    //tree 1 proton mean dE/dx
+    std::sort(p_mean_vec1.begin(), p_mean_vec1.end());
+    std::sort(p_mean_vec_err1.begin(), p_mean_vec_err1.end());
+    //tree 1 muon sigma of dE/dx
+    std::sort(mu_sigma_vec1.begin(), mu_sigma_vec1.end());
+    std::sort(mu_sigma_vec_err1.begin(), mu_sigma_vec_err1.end());
+    //tree 1 pion resolsigma of dE/dxution
+    std::sort(pi_sigma_vec1.begin(), pi_sigma_vec1.end());
+    std::sort(pi_sigma_vec_err1.begin(), pi_sigma_vec_err1.end());
+    //tree 1 proton sigma of dE/dx
+    std::sort(p_sigma_vec1.begin(), p_sigma_vec1.end());
+    std::sort(p_sigma_vec_err1.begin(), p_sigma_vec_err1.end());
     //tree 1 muon resolution
     std::sort(mu_res_vec1.begin(), mu_res_vec1.end());
     std::sort(mu_res_vec_err1.begin(), mu_res_vec_err1.end());
@@ -3248,6 +3498,24 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
     //tree 2 pion proton
     std::sort(piP_sep2.begin(), piP_sep2.end());
     std::sort(piP_err2.begin(), piP_err2.end());
+    //tree 2 muon mean dE/dx
+    std::sort(mu_mean_vec2.begin(), mu_mean_vec2.end());
+    std::sort(mu_mean_vec_err2.begin(), mu_mean_vec_err2.end());
+    //tree 2 pion mean dE/dx
+    std::sort(pi_mean_vec2.begin(), pi_mean_vec2.end());
+    std::sort(pi_mean_vec_err2.begin(), pi_mean_vec_err2.end());
+    //tree 2 proton mean dE/dx
+    std::sort(p_mean_vec2.begin(), p_mean_vec2.end());
+    std::sort(p_mean_vec_err2.begin(), p_mean_vec_err2.end());
+    //tree 2 muon sigma of dE/dx
+    std::sort(mu_sigma_vec2.begin(), mu_sigma_vec2.end());
+    std::sort(mu_sigma_vec_err2.begin(), mu_sigma_vec_err2.end());
+    //tree 2 pion resolsigma of dE/dxution
+    std::sort(pi_sigma_vec2.begin(), pi_sigma_vec2.end());
+    std::sort(pi_sigma_vec_err2.begin(), pi_sigma_vec_err2.end());
+    //tree 2 proton sigma of dE/dx
+    std::sort(p_sigma_vec2.begin(), p_sigma_vec2.end());
+    std::sort(p_sigma_vec_err2.begin(), p_sigma_vec_err2.end());
     //tree 2 muon resolution
     std::sort(mu_res_vec2.begin(), mu_res_vec2.end());
     std::sort(mu_res_vec_err2.begin(), mu_res_vec_err2.end());
@@ -3287,6 +3555,24 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
     //tree 3 pion proton
     std::sort(piP_sep3.begin(), piP_sep3.end());
     std::sort(piP_err3.begin(), piP_err3.end());
+    //tree 3 muon mean dE/dx
+    std::sort(mu_mean_vec3.begin(), mu_mean_vec3.end());
+    std::sort(mu_mean_vec_err3.begin(), mu_mean_vec_err3.end());
+    //tree 3 pion mean dE/dx
+    std::sort(pi_mean_vec3.begin(), pi_mean_vec3.end());
+    std::sort(pi_mean_vec_err3.begin(), pi_mean_vec_err3.end());
+    //tree 3 proton mean dE/dx
+    std::sort(p_mean_vec3.begin(), p_mean_vec3.end());
+    std::sort(p_mean_vec_err3.begin(), p_mean_vec_err3.end());
+    //tree 3 muon sigma of dE/dx
+    std::sort(mu_sigma_vec3.begin(), mu_sigma_vec3.end());
+    std::sort(mu_sigma_vec_err3.begin(), mu_sigma_vec_err3.end());
+    //tree 3 pion resolsigma of dE/dxution
+    std::sort(pi_sigma_vec3.begin(), pi_sigma_vec3.end());
+    std::sort(pi_sigma_vec_err3.begin(), pi_sigma_vec_err3.end());
+    //tree 3 proton sigma of dE/dx
+    std::sort(p_sigma_vec3.begin(), p_sigma_vec3.end());
+    std::sort(p_sigma_vec_err3.begin(), p_sigma_vec_err3.end());
     //tree 3 muon resolution
     std::sort(mu_res_vec3.begin(), mu_res_vec3.end());
     std::sort(mu_res_vec_err3.begin(), mu_res_vec_err3.end());
@@ -3345,6 +3631,24 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
     //tree 4 pion proton
     std::sort(piP_sep_track4.begin(), piP_sep_track4.end());
     std::sort(piP_track_err4.begin(), piP_track_err4.end());
+    //tree 4 muon mean dE/dx
+    std::sort(mu_mean_vec4.begin(), mu_mean_vec4.end());
+    std::sort(mu_mean_vec_err4.begin(), mu_mean_vec_err4.end());
+    //tree 4 pion mean dE/dx
+    std::sort(pi_mean_vec4.begin(), pi_mean_vec4.end());
+    std::sort(pi_mean_vec_err4.begin(), pi_mean_vec_err4.end());
+    //tree 4 proton mean dE/dx
+    std::sort(p_mean_vec4.begin(), p_mean_vec4.end());
+    std::sort(p_mean_vec_err4.begin(), p_mean_vec_err4.end());
+    //tree 4 muon sigma of dE/dx
+    std::sort(mu_sigma_vec4.begin(), mu_sigma_vec4.end());
+    std::sort(mu_sigma_vec_err4.begin(), mu_sigma_vec_err4.end());
+    //tree 4 pion resolsigma of dE/dxution
+    std::sort(pi_sigma_vec4.begin(), pi_sigma_vec4.end());
+    std::sort(pi_sigma_vec_err4.begin(), pi_sigma_vec_err4.end());
+    //tree 4 proton sigma of dE/dx
+    std::sort(p_sigma_vec4.begin(), p_sigma_vec4.end());
+    std::sort(p_sigma_vec_err4.begin(), p_sigma_vec_err4.end());
     //tree 4 muon resolution
     std::sort(mu_res_track_vec4.begin(), mu_res_track_vec4.end());
     std::sort(mu_res_track_vec_err4.begin(), mu_res_track_vec_err4.end());
@@ -3365,6 +3669,24 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
     //tree 5 pion proton
     std::sort(piP_sep5.begin(), piP_sep5.end());
     std::sort(piP_err5.begin(), piP_err5.end());
+    //tree 5 muon mean dE/dx
+    std::sort(mu_mean_vec5.begin(), mu_mean_vec5.end());
+    std::sort(mu_mean_vec_err5.begin(), mu_mean_vec_err5.end());
+    //tree 5 pion mean dE/dx
+    std::sort(pi_mean_vec5.begin(), pi_mean_vec5.end());
+    std::sort(pi_mean_vec_err5.begin(), pi_mean_vec_err5.end());
+    //tree 5 proton mean dE/dx
+    std::sort(p_mean_vec5.begin(), p_mean_vec5.end());
+    std::sort(p_mean_vec_err5.begin(), p_mean_vec_err5.end());
+    //tree 5 muon sigma of dE/dx
+    std::sort(mu_sigma_vec5.begin(), mu_sigma_vec5.end());
+    std::sort(mu_sigma_vec_err5.begin(), mu_sigma_vec_err5.end());
+    //tree 5 pion resolsigma of dE/dxution
+    std::sort(pi_sigma_vec5.begin(), pi_sigma_vec5.end());
+    std::sort(pi_sigma_vec_err5.begin(), pi_sigma_vec_err5.end());
+    //tree 5 proton sigma of dE/dx
+    std::sort(p_sigma_vec5.begin(), p_sigma_vec5.end());
+    std::sort(p_sigma_vec_err5.begin(), p_sigma_vec_err5.end());
     //tree 5 muon resolution
     std::sort(mu_res_vec5.begin(), mu_res_vec5.end());
     std::sort(mu_res_vec_err5.begin(), mu_res_vec_err5.end());
@@ -3404,6 +3726,24 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
     //tree 6 pion proton
     std::sort(piP_sep6.begin(), piP_sep6.end());
     std::sort(piP_err6.begin(), piP_err6.end());
+    //tree 6 muon mean dE/dx
+    std::sort(mu_mean_vec6.begin(), mu_mean_vec6.end());
+    std::sort(mu_mean_vec_err6.begin(), mu_mean_vec_err6.end());
+    //tree 6 pion mean dE/dx
+    std::sort(pi_mean_vec6.begin(), pi_mean_vec6.end());
+    std::sort(pi_mean_vec_err6.begin(), pi_mean_vec_err6.end());
+    //tree 6 proton mean dE/dx
+    std::sort(p_mean_vec6.begin(), p_mean_vec6.end());
+    std::sort(p_mean_vec_err6.begin(), p_mean_vec_err6.end());
+    //tree 6 muon sigma of dE/dx
+    std::sort(mu_sigma_vec6.begin(), mu_sigma_vec6.end());
+    std::sort(mu_sigma_vec_err6.begin(), mu_sigma_vec_err6.end());
+    //tree 6 pion resolsigma of dE/dxution
+    std::sort(pi_sigma_vec6.begin(), pi_sigma_vec6.end());
+    std::sort(pi_sigma_vec_err6.begin(), pi_sigma_vec_err6.end());
+    //tree 6 proton sigma of dE/dx
+    std::sort(p_sigma_vec6.begin(), p_sigma_vec6.end());
+    std::sort(p_sigma_vec_err6.begin(), p_sigma_vec_err6.end());
     //tree 6 muon resolution
     std::sort(mu_res_vec6.begin(), mu_res_vec6.end());
     std::sort(mu_res_vec_err6.begin(), mu_res_vec_err6.end());
@@ -3440,6 +3780,40 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
 
     std::vector<std::pair<float, float>> muPi_diff_err2, muPi_diff_err3, muPi_diff_err4, muP_diff_err2, muP_diff_err3, muP_diff_err4, piP_diff_err2, piP_diff_err3, piP_diff_err4, muPi_diff_err5, muP_diff_err5, piP_diff_err5, muPi_diff_err6, muP_diff_err6, piP_diff_err6;
     std::vector<std::pair<float, float>> muPi_perc_err2, muPi_perc_err3, muPi_perc_err4, muP_perc_err2, muP_perc_err3, muP_perc_err4, piP_perc_err2, piP_perc_err3, piP_perc_err4, muPi_perc_err5, muP_perc_err5, piP_perc_err5, muPi_perc_err6, muP_perc_err6, piP_perc_err6;
+
+    //calculate difference in mean dE/dx to CDR per momentum
+    std::vector<std::pair<float, float>> mu_mean_diff2, mu_mean_diff3, mu_mean_diff4, mu_mean_diff5, mu_mean_diff6;
+    std::vector<std::pair<float, float>> pi_mean_diff2, pi_mean_diff3, pi_mean_diff4, pi_mean_diff5, pi_mean_diff6;
+    std::vector<std::pair<float, float>> p_mean_diff2, p_mean_diff3, p_mean_diff4, p_mean_diff5, p_mean_diff6;
+
+    std::vector<std::pair<float, float>> mu_mean_perc2, mu_mean_perc3, mu_mean_perc4, mu_mean_perc5, mu_mean_perc6;
+    std::vector<std::pair<float, float>> pi_mean_perc2, pi_mean_perc3, pi_mean_perc4, pi_mean_perc5, pi_mean_perc6;
+    std::vector<std::pair<float, float>> p_mean_perc2, p_mean_perc3, p_mean_perc4, p_mean_perc5, p_mean_perc6;
+
+    std::vector<std::pair<float, float>> mu_mean_diff_err2, mu_mean_diff_err3, mu_mean_diff_err4, mu_mean_diff_err5, mu_mean_diff_err6;
+    std::vector<std::pair<float, float>> pi_mean_diff_err2, pi_mean_diff_err3, pi_mean_diff_err4, pi_mean_diff_err5, pi_mean_diff_err6;
+    std::vector<std::pair<float, float>> p_mean_diff_err2, p_mean_diff_err3, p_mean_diff_err4, p_mean_diff_err5, p_mean_diff_err6;
+
+    std::vector<std::pair<float, float>> mu_mean_perc_err2, mu_mean_perc_err3, mu_mean_perc_err4, mu_mean_perc_err5, mu_mean_perc_err6;
+    std::vector<std::pair<float, float>> pi_mean_perc_err2, pi_mean_perc_err3, pi_mean_perc_err4, pi_mean_perc_err5, pi_mean_perc_err6;
+    std::vector<std::pair<float, float>> p_mean_perc_err2, p_mean_perc_err3, p_mean_perc_err4, p_mean_perc_err5, p_mean_perc_err6;
+
+    //calculate difference in sigma to CDR per momentum
+    std::vector<std::pair<float, float>> mu_sigma_diff2, mu_sigma_diff3, mu_sigma_diff4, mu_sigma_diff5, mu_sigma_diff6;
+    std::vector<std::pair<float, float>> pi_sigma_diff2, pi_sigma_diff3, pi_sigma_diff4, pi_sigma_diff5, pi_sigma_diff6;
+    std::vector<std::pair<float, float>> p_sigma_diff2, p_sigma_diff3, p_sigma_diff4, p_sigma_diff5, p_sigma_diff6;
+
+    std::vector<std::pair<float, float>> mu_sigma_perc2, mu_sigma_perc3, mu_sigma_perc4, mu_sigma_perc5, mu_sigma_perc6;
+    std::vector<std::pair<float, float>> pi_sigma_perc2, pi_sigma_perc3, pi_sigma_perc4, pi_sigma_perc5, pi_sigma_perc6;
+    std::vector<std::pair<float, float>> p_sigma_perc2, p_sigma_perc3, p_sigma_perc4, p_sigma_perc5, p_sigma_perc6;
+
+    std::vector<std::pair<float, float>> mu_sigma_diff_err2, mu_sigma_diff_err3, mu_sigma_diff_err4, mu_sigma_diff_err5, mu_sigma_diff_err6;
+    std::vector<std::pair<float, float>> pi_sigma_diff_err2, pi_sigma_diff_err3, pi_sigma_diff_err4, pi_sigma_diff_err5, pi_sigma_diff_err6;
+    std::vector<std::pair<float, float>> p_sigma_diff_err2, p_sigma_diff_err3, p_sigma_diff_err4, p_sigma_diff_err5, p_sigma_diff_err6;
+
+    std::vector<std::pair<float, float>> mu_sigma_perc_err2, mu_sigma_perc_err3, mu_sigma_perc_err4, mu_sigma_perc_err5, mu_sigma_perc_err6;
+    std::vector<std::pair<float, float>> pi_sigma_perc_err2, pi_sigma_perc_err3, pi_sigma_perc_err4, pi_sigma_perc_err5, pi_sigma_perc_err6;
+    std::vector<std::pair<float, float>> p_sigma_perc_err2, p_sigma_perc_err3, p_sigma_perc_err4, p_sigma_perc_err5, p_sigma_perc_err6;
 
     //calculate difference in resolution to CDR per momentum
     std::vector<std::pair<float, float>> mu_res_diff2, mu_res_diff3, mu_res_diff4, mu_res_diff5, mu_res_diff6;
@@ -3522,6 +3896,44 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
         float this_pi_size6 = pi_size6[i];
         float this_p_size6 = p_size6[i];
 
+        float this_mu_mean_CDR = 0;
+        float this_pi_mean_CDR = 0;
+        float this_p_mean_CDR = 0;
+        float this_mu_mean_2 = 0;
+        float this_pi_mean_2 = 0;
+        float this_p_mean_2 = 0;
+        float this_mu_mean_3 = 0;
+        float this_pi_mean_3 = 0;
+        float this_p_mean_3 = 0;
+        float this_mu_mean_4 = 0;
+        float this_pi_mean_4 = 0;
+        float this_p_mean_4 = 0;
+        float this_mu_mean_5 = 0;
+        float this_pi_mean_5 = 0;
+        float this_p_mean_5 = 0;
+        float this_mu_mean_6 = 0;
+        float this_pi_mean_6 = 0;
+        float this_p_mean_6 = 0;
+
+        float this_mu_sigma_CDR = 0;
+        float this_pi_sigma_CDR = 0;
+        float this_p_sigma_CDR = 0;
+        float this_mu_sigma_2 = 0;
+        float this_pi_sigma_2 = 0;
+        float this_p_sigma_2 = 0;
+        float this_mu_sigma_3 = 0;
+        float this_pi_sigma_3 = 0;
+        float this_p_sigma_3 = 0;
+        float this_mu_sigma_4 = 0;
+        float this_pi_sigma_4 = 0;
+        float this_p_sigma_4 = 0;
+        float this_mu_sigma_5 = 0;
+        float this_pi_sigma_5 = 0;
+        float this_p_sigma_5 = 0;
+        float this_mu_sigma_6 = 0;
+        float this_pi_sigma_6 = 0;
+        float this_p_sigma_6 = 0;
+
         float this_mu_res_CDR = 0;
         float this_pi_res_CDR = 0;
         float this_p_res_CDR = 0;
@@ -3540,6 +3952,44 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
         float this_mu_res_6 = 0;
         float this_pi_res_6 = 0;
         float this_p_res_6 = 0;
+
+        float this_mu_mean_err_CDR = 0;
+        float this_pi_mean_err_CDR = 0;
+        float this_p_mean_err_CDR = 0;
+        float this_mu_mean_err_2 = 0;
+        float this_pi_mean_err_2 = 0;
+        float this_p_mean_err_2 = 0;
+        float this_mu_mean_err_3 = 0;
+        float this_pi_mean_err_3 = 0;
+        float this_p_mean_err_3 = 0;
+        float this_mu_mean_err_4 = 0;
+        float this_pi_mean_err_4 = 0;
+        float this_p_mean_err_4 = 0;
+        float this_mu_mean_err_5 = 0;
+        float this_pi_mean_err_5 = 0;
+        float this_p_mean_err_5 = 0;
+        float this_mu_mean_err_6 = 0;
+        float this_pi_mean_err_6 = 0;
+        float this_p_mean_err_6 = 0;
+
+        float this_mu_sigma_err_CDR = 0;
+        float this_pi_sigma_err_CDR = 0;
+        float this_p_sigma_err_CDR = 0;
+        float this_mu_sigma_err_2 = 0;
+        float this_pi_sigma_err_2 = 0;
+        float this_p_sigma_err_2 = 0;
+        float this_mu_sigma_err_3 = 0;
+        float this_pi_sigma_err_3 = 0;
+        float this_p_sigma_err_3 = 0;
+        float this_mu_sigma_err_4 = 0;
+        float this_pi_sigma_err_4 = 0;
+        float this_p_sigma_err_4 = 0;
+        float this_mu_sigma_err_5 = 0;
+        float this_pi_sigma_err_5 = 0;
+        float this_p_sigma_err_5 = 0;
+        float this_mu_sigma_err_6 = 0;
+        float this_pi_sigma_err_6 = 0;
+        float this_p_sigma_err_6 = 0;
 
         float this_mu_res_err_CDR = 0;
         float this_pi_res_err_CDR = 0;
@@ -3639,6 +4089,166 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
             if (piP_sep6[l].first == p_bin_center) this_piP_err_6 = piP_err6[l].second;
         }
 
+        //get mean for this momentum
+        for(size_t l = 0; l < mu_mean_vec1.size(); l++){
+            if (mu_mean_vec1[l].first == p_bin_center) this_mu_mean_CDR = mu_mean_vec1[l].second;
+            if (mu_mean_vec1[l].first == p_bin_center) this_mu_mean_err_CDR = mu_mean_vec_err1[l].second;
+        }
+        for(size_t l = 0; l < pi_mean_vec1.size(); l++){
+            if (pi_mean_vec1[l].first == p_bin_center) this_pi_mean_CDR = pi_mean_vec1[l].second;
+            if (pi_mean_vec1[l].first == p_bin_center) this_pi_mean_err_CDR = pi_mean_vec_err1[l].second;
+        }
+        for(size_t l = 0; l < p_mean_vec1.size(); l++){
+            if (p_mean_vec1[l].first == p_bin_center) this_p_mean_CDR = p_mean_vec1[l].second;
+            if (p_mean_vec1[l].first == p_bin_center) this_p_mean_err_CDR = p_mean_vec_err1[l].second;
+        }
+
+        for(size_t l = 0; l < mu_mean_vec2.size(); l++){
+            if (mu_mean_vec2[l].first == p_bin_center) this_mu_mean_2 = mu_mean_vec2[l].second;
+            if (mu_mean_vec2[l].first == p_bin_center) this_mu_mean_err_2 = mu_mean_vec_err2[l].second;
+        }
+        for(size_t l = 0; l < pi_mean_vec2.size(); l++){
+            if (pi_mean_vec2[l].first == p_bin_center) this_pi_mean_2 = pi_mean_vec2[l].second;
+            if (pi_mean_vec2[l].first == p_bin_center) this_pi_mean_err_2 = pi_mean_vec_err2[l].second;
+        }
+        for(size_t l = 0; l < p_mean_vec2.size(); l++){
+            if (p_mean_vec2[l].first == p_bin_center) this_p_mean_2 = p_mean_vec2[l].second;
+            if (p_mean_vec2[l].first == p_bin_center) this_p_mean_err_2 = p_mean_vec_err2[l].second;
+        }
+
+        for(size_t l = 0; l < mu_mean_vec3.size(); l++){
+            if (mu_mean_vec3[l].first == p_bin_center) this_mu_mean_3 = mu_mean_vec3[l].second;
+            if (mu_mean_vec3[l].first == p_bin_center) this_mu_mean_err_3 = mu_mean_vec_err3[l].second;
+        }
+        for(size_t l = 0; l < pi_mean_vec3.size(); l++){
+            if (pi_mean_vec3[l].first == p_bin_center) this_pi_mean_3 = pi_mean_vec3[l].second;
+            if (pi_mean_vec3[l].first == p_bin_center) this_pi_mean_err_3 = pi_mean_vec_err3[l].second;
+        }
+        for(size_t l = 0; l < p_mean_vec3.size(); l++){
+            if (p_mean_vec3[l].first == p_bin_center) this_p_mean_3 = p_mean_vec3[l].second;
+            if (p_mean_vec3[l].first == p_bin_center) this_p_mean_err_3 = p_mean_vec_err3[l].second;
+        }
+
+        for(size_t l = 0; l < mu_mean_vec4.size(); l++){
+            if (mu_mean_vec4[l].first == p_bin_center) this_mu_mean_4 = mu_mean_vec4[l].second;
+            if (mu_mean_vec4[l].first == p_bin_center) this_mu_mean_err_4 = mu_mean_vec_err4[l].second;
+        }
+        for(size_t l = 0; l < pi_mean_vec4.size(); l++){
+            if (pi_mean_vec4[l].first == p_bin_center) this_pi_mean_4 = pi_mean_vec4[l].second;
+            if (pi_mean_vec4[l].first == p_bin_center) this_pi_mean_err_4 = pi_mean_vec_err4[l].second;
+        }
+        for(size_t l = 0; l < p_mean_vec4.size(); l++){
+            if (p_mean_vec4[l].first == p_bin_center) this_p_mean_4 = p_mean_vec4[l].second;
+            if (p_mean_vec4[l].first == p_bin_center) this_p_mean_err_4 = p_mean_vec_err4[l].second;
+        }
+
+        for(size_t l = 0; l < mu_mean_vec5.size(); l++){
+            if (mu_mean_vec5[l].first == p_bin_center) this_mu_mean_5 = mu_mean_vec5[l].second;
+            if (mu_mean_vec5[l].first == p_bin_center) this_mu_mean_err_5 = mu_mean_vec_err5[l].second;
+        }
+        for(size_t l = 0; l < pi_mean_vec5.size(); l++){
+            if (pi_mean_vec5[l].first == p_bin_center) this_pi_mean_5 = pi_mean_vec5[l].second;
+            if (pi_mean_vec5[l].first == p_bin_center) this_pi_mean_err_5 = pi_mean_vec_err5[l].second;
+        }
+        for(size_t l = 0; l < p_mean_vec5.size(); l++){
+            if (p_mean_vec5[l].first == p_bin_center) this_p_mean_5 = p_mean_vec5[l].second;
+            if (p_mean_vec5[l].first == p_bin_center) this_p_mean_err_5 = p_mean_vec_err5[l].second;
+        }
+
+        for(size_t l = 0; l < mu_mean_vec6.size(); l++){
+            if (mu_mean_vec6[l].first == p_bin_center) this_mu_mean_6 = mu_mean_vec6[l].second;
+            if (mu_mean_vec6[l].first == p_bin_center) this_mu_mean_err_6 = mu_mean_vec_err6[l].second;
+        }
+        for(size_t l = 0; l < pi_mean_vec6.size(); l++){
+            if (pi_mean_vec6[l].first == p_bin_center) this_pi_mean_6 = pi_mean_vec6[l].second;
+            if (pi_mean_vec6[l].first == p_bin_center) this_pi_mean_err_6 = pi_mean_vec_err6[l].second;
+        }
+        for(size_t l = 0; l < p_mean_vec6.size(); l++){
+            if (p_mean_vec6[l].first == p_bin_center) this_p_mean_6 = p_mean_vec6[l].second;
+            if (p_mean_vec6[l].first == p_bin_center) this_p_mean_err_6 = p_mean_vec_err6[l].second;
+        }
+
+
+        //get sigma for this momentum
+        for(size_t l = 0; l < mu_sigma_vec1.size(); l++){
+            if (mu_sigma_vec1[l].first == p_bin_center) this_mu_sigma_CDR = mu_sigma_vec1[l].second;
+            if (mu_sigma_vec1[l].first == p_bin_center) this_mu_sigma_err_CDR = mu_sigma_vec_err1[l].second;
+        }
+        for(size_t l = 0; l < pi_sigma_vec1.size(); l++){
+            if (pi_sigma_vec1[l].first == p_bin_center) this_pi_sigma_CDR = pi_sigma_vec1[l].second;
+            if (pi_sigma_vec1[l].first == p_bin_center) this_pi_sigma_err_CDR = pi_sigma_vec_err1[l].second;
+        }
+        for(size_t l = 0; l < p_sigma_vec1.size(); l++){
+            if (p_sigma_vec1[l].first == p_bin_center) this_p_sigma_CDR = p_sigma_vec1[l].second;
+            if (p_sigma_vec1[l].first == p_bin_center) this_p_sigma_err_CDR = p_sigma_vec_err1[l].second;
+        }
+
+        for(size_t l = 0; l < mu_sigma_vec2.size(); l++){
+            if (mu_sigma_vec2[l].first == p_bin_center) this_mu_sigma_2 = mu_sigma_vec2[l].second;
+            if (mu_sigma_vec2[l].first == p_bin_center) this_mu_sigma_err_2 = mu_sigma_vec_err2[l].second;
+        }
+        for(size_t l = 0; l < pi_sigma_vec2.size(); l++){
+            if (pi_sigma_vec2[l].first == p_bin_center) this_pi_sigma_2 = pi_sigma_vec2[l].second;
+            if (pi_sigma_vec2[l].first == p_bin_center) this_pi_sigma_err_2 = pi_sigma_vec_err2[l].second;
+        }
+        for(size_t l = 0; l < p_sigma_vec2.size(); l++){
+            if (p_sigma_vec2[l].first == p_bin_center) this_p_sigma_2 = p_sigma_vec2[l].second;
+            if (p_sigma_vec2[l].first == p_bin_center) this_p_sigma_err_2 = p_sigma_vec_err2[l].second;
+        }
+
+        for(size_t l = 0; l < mu_sigma_vec3.size(); l++){
+            if (mu_sigma_vec3[l].first == p_bin_center) this_mu_sigma_3 = mu_sigma_vec3[l].second;
+            if (mu_sigma_vec3[l].first == p_bin_center) this_mu_sigma_err_3 = mu_sigma_vec_err3[l].second;
+        }
+        for(size_t l = 0; l < pi_sigma_vec3.size(); l++){
+            if (pi_sigma_vec3[l].first == p_bin_center) this_pi_sigma_3 = pi_sigma_vec3[l].second;
+            if (pi_sigma_vec3[l].first == p_bin_center) this_pi_sigma_err_3 = pi_sigma_vec_err3[l].second;
+        }
+        for(size_t l = 0; l < p_sigma_vec3.size(); l++){
+            if (p_sigma_vec3[l].first == p_bin_center) this_p_sigma_3 = p_sigma_vec3[l].second;
+            if (p_sigma_vec3[l].first == p_bin_center) this_p_sigma_err_3 = p_sigma_vec_err3[l].second;
+        }
+
+        for(size_t l = 0; l < mu_sigma_vec4.size(); l++){
+            if (mu_sigma_vec4[l].first == p_bin_center) this_mu_sigma_4 = mu_sigma_vec4[l].second;
+            if (mu_sigma_vec4[l].first == p_bin_center) this_mu_sigma_err_4 = mu_sigma_vec_err4[l].second;
+        }
+        for(size_t l = 0; l < pi_sigma_vec4.size(); l++){
+            if (pi_sigma_vec4[l].first == p_bin_center) this_pi_sigma_4 = pi_sigma_vec4[l].second;
+            if (pi_sigma_vec4[l].first == p_bin_center) this_pi_sigma_err_4 = pi_sigma_vec_err4[l].second;
+        }
+        for(size_t l = 0; l < p_sigma_vec4.size(); l++){
+            if (p_sigma_vec4[l].first == p_bin_center) this_p_sigma_4 = p_sigma_vec4[l].second;
+            if (p_sigma_vec4[l].first == p_bin_center) this_p_sigma_err_4 = p_sigma_vec_err4[l].second;
+        }
+
+        for(size_t l = 0; l < mu_sigma_vec5.size(); l++){
+            if (mu_sigma_vec5[l].first == p_bin_center) this_mu_sigma_5 = mu_sigma_vec5[l].second;
+            if (mu_sigma_vec5[l].first == p_bin_center) this_mu_sigma_err_5 = mu_sigma_vec_err5[l].second;
+        }
+        for(size_t l = 0; l < pi_sigma_vec5.size(); l++){
+            if (pi_sigma_vec5[l].first == p_bin_center) this_pi_sigma_5 = pi_sigma_vec5[l].second;
+            if (pi_sigma_vec5[l].first == p_bin_center) this_pi_sigma_err_5 = pi_sigma_vec_err5[l].second;
+        }
+        for(size_t l = 0; l < p_sigma_vec5.size(); l++){
+            if (p_sigma_vec5[l].first == p_bin_center) this_p_sigma_5 = p_sigma_vec5[l].second;
+            if (p_sigma_vec5[l].first == p_bin_center) this_p_sigma_err_5 = p_sigma_vec_err5[l].second;
+        }
+
+        for(size_t l = 0; l < mu_sigma_vec6.size(); l++){
+            if (mu_sigma_vec6[l].first == p_bin_center) this_mu_sigma_6 = mu_sigma_vec6[l].second;
+            if (mu_sigma_vec6[l].first == p_bin_center) this_mu_sigma_err_6 = mu_sigma_vec_err6[l].second;
+        }
+        for(size_t l = 0; l < pi_sigma_vec6.size(); l++){
+            if (pi_sigma_vec6[l].first == p_bin_center) this_pi_sigma_6 = pi_sigma_vec6[l].second;
+            if (pi_sigma_vec6[l].first == p_bin_center) this_pi_sigma_err_6 = pi_sigma_vec_err6[l].second;
+        }
+        for(size_t l = 0; l < p_sigma_vec6.size(); l++){
+            if (p_sigma_vec6[l].first == p_bin_center) this_p_sigma_6 = p_sigma_vec6[l].second;
+            if (p_sigma_vec6[l].first == p_bin_center) this_p_sigma_err_6 = p_sigma_vec_err6[l].second;
+        }
+
+
         //get resolution for this momentum
         for(size_t l = 0; l < mu_res_vec1.size(); l++){
             if (mu_res_vec1[l].first == p_bin_center) this_mu_res_CDR = mu_res_vec1[l].second;
@@ -3721,7 +4331,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
         const double tol = 0.01; // Tolerance for floating-point comparison
 
         //calculate difference to CDR if one is non-zero
-        if ((this_muPi_2 > 0 || this_muPi_CDR > 0) && (p_bin_center < 460 || p_bin_center > 555)){
+        if ((this_muPi_2 > 0 || this_muPi_CDR > 0)){// && (p_bin_center < 460 || p_bin_center > 555)){
             float this_muPi_diff2 = this_muPi_2 - this_muPi_CDR;
             float this_muPi_diff_err2 = std::sqrt(this_muPi_err_2*this_muPi_err_2 + this_muPi_err_CDR*this_muPi_err_CDR);
             float this_muPi_perc2 = 0;
@@ -3736,7 +4346,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
             muPi_diff_err2.emplace_back(p_bin_err, this_muPi_diff_err2);
             muPi_perc_err2.emplace_back(p_bin_err, this_muPi_perc_err2);
         }
-        if((this_muP_2 > 0 || this_muP_CDR > 0) && std::abs(p_bin_center - 1756.999) > tol){
+        if((this_muP_2 > 0 || this_muP_CDR > 0)){// && std::abs(p_bin_center - 1756.999) > tol){
             float this_muP_diff2 = this_muP_2 - this_muP_CDR;
             float this_muP_diff_err2 = std::sqrt(this_muP_err_2*this_muP_err_2 + this_muP_err_CDR*this_muP_err_CDR);
             float this_muP_perc2 = 0;
@@ -3750,7 +4360,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
             muP_diff_err2.emplace_back(p_bin_err, this_muP_diff_err2);
             muP_perc_err2.emplace_back(p_bin_err, this_muP_perc_err2);
         }
-        if((this_piP_2 > 0 || this_piP_CDR > 0) && std::abs(p_bin_center - 1756.999) > tol){
+        if((this_piP_2 > 0 || this_piP_CDR > 0)){// && std::abs(p_bin_center - 1756.999) > tol){
             float this_piP_diff2 = this_piP_2 - this_piP_CDR;
             float this_piP_diff_err2 = std::sqrt(this_piP_err_2*this_piP_err_2 + this_piP_err_CDR*this_piP_err_CDR);
             float this_piP_perc2 = 0;
@@ -3765,7 +4375,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
             piP_perc_err2.emplace_back(p_bin_err, this_piP_perc_err2);
         }
 
-        if ((this_muPi_3 > 0 || this_muPi_CDR > 0) && (p_bin_center < 460 || p_bin_center > 555)){
+        if ((this_muPi_3 > 0 || this_muPi_CDR > 0)){// && (p_bin_center < 460 || p_bin_center > 555)){
             float this_muPi_diff3 = this_muPi_3 - this_muPi_CDR;
             float this_muPi_diff_err3 = std::sqrt(this_muPi_err_3*this_muPi_err_3 + this_muPi_err_CDR*this_muPi_err_CDR);
             float this_muPi_perc3 = 0;
@@ -3779,7 +4389,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
             muPi_diff_err3.emplace_back(p_bin_err, this_muPi_diff_err3);
             muPi_perc_err3.emplace_back(p_bin_err, this_muPi_perc_err3);
         }
-        if((this_muP_3 > 0 || this_muP_CDR > 0) && std::abs(p_bin_center - 1756.999) > tol){
+        if((this_muP_3 > 0 || this_muP_CDR > 0)){// && std::abs(p_bin_center - 1756.999) > tol){
             float this_muP_diff3 = this_muP_3 - this_muP_CDR;
             float this_muP_diff_err3 = std::sqrt(this_muP_err_3*this_muP_err_3 + this_muP_err_CDR*this_muP_err_CDR);
             float this_muP_perc3 = 0;
@@ -3793,7 +4403,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
             muP_diff_err3.emplace_back(p_bin_err, this_muP_diff_err3);
             muP_perc_err3.emplace_back(p_bin_err, this_muP_perc_err3);
         }
-        if((this_piP_3 > 0 || this_piP_CDR > 0) && std::abs(p_bin_center - 1756.999) > tol){
+        if((this_piP_3 > 0 || this_piP_CDR > 0)){// && std::abs(p_bin_center - 1756.999) > tol){
             float this_piP_diff3 = this_piP_3 - this_piP_CDR;
             float this_piP_diff_err3 = std::sqrt(this_piP_err_3*this_piP_err_3 + this_piP_err_CDR*this_piP_err_CDR);
             float this_piP_perc3 = 0;
@@ -3808,7 +4418,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
             piP_perc_err3.emplace_back(p_bin_err, this_piP_perc_err3);
         }
 
-        if ((this_muPi_4 > 0 || this_muPi_CDR > 0) && (p_bin_center < 460 || p_bin_center > 555)){
+        if ((this_muPi_4 > 0 || this_muPi_CDR > 0)){// && (p_bin_center < 460 || p_bin_center > 555)){
             float this_muPi_diff4 = this_muPi_4 - this_muPi_CDR;
             float this_muPi_diff_err4 = std::sqrt(this_muPi_err_4*this_muPi_err_4 + this_muPi_err_CDR*this_muPi_err_CDR);
             float this_muPi_perc4 = 0;
@@ -3822,7 +4432,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
             muPi_diff_err4.emplace_back(p_bin_err, this_muPi_diff_err4);
             muPi_perc_err4.emplace_back(p_bin_err, this_muPi_perc_err4);
         }
-        if((this_muP_4 > 0 || this_muP_CDR > 0) && std::abs(p_bin_center - 1756.999) > tol){
+        if((this_muP_4 > 0 || this_muP_CDR > 0)){// && std::abs(p_bin_center - 1756.999) > tol){
             float this_muP_diff4 = this_muP_4 - this_muP_CDR;
             float this_muP_diff_err4 = std::sqrt(this_muP_err_4*this_muP_err_4 + this_muP_err_CDR*this_muP_err_CDR);
             float this_muP_perc4 = 0;
@@ -3836,7 +4446,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
             muP_diff_err4.emplace_back(p_bin_err, this_muP_diff_err4);
             muP_perc_err4.emplace_back(p_bin_err, this_muP_perc_err4);
         }
-        if((this_piP_4 > 0 || this_piP_CDR > 0) && std::abs(p_bin_center - 1756.999) > tol){
+        if((this_piP_4 > 0 || this_piP_CDR > 0)){// && std::abs(p_bin_center - 1756.999) > tol){
             float this_piP_diff4 = this_piP_4 - this_piP_CDR;
             float this_piP_diff_err4 = std::sqrt(this_piP_err_4*this_piP_err_4 + this_piP_err_CDR*this_piP_err_CDR);
             float this_piP_perc4 = 0;
@@ -3851,7 +4461,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
             piP_perc_err4.emplace_back(p_bin_err, this_piP_perc_err4);
         }
 
-        if ((this_muPi_5 > 0 || this_muPi_CDR > 0) && (p_bin_center < 460 || p_bin_center > 555)){
+        if ((this_muPi_5 > 0 || this_muPi_CDR > 0)){// && (p_bin_center < 460 || p_bin_center > 555)){
             float this_muPi_diff5 = this_muPi_5 - this_muPi_CDR;
             float this_muPi_diff_err5 = std::sqrt(this_muPi_err_5*this_muPi_err_5 + this_muPi_err_CDR*this_muPi_err_CDR);
             float this_muPi_perc5 = 0;
@@ -3866,7 +4476,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
             muPi_perc_err5.emplace_back(p_bin_err, this_muPi_perc_err5);
         }
 
-        if((this_muP_5 > 0 || this_muP_CDR > 0) && std::abs(p_bin_center - 1756.999) > tol){
+        if((this_muP_5 > 0 || this_muP_CDR > 0)){// && std::abs(p_bin_center - 1756.999) > tol){
             float this_muP_diff5 = this_muP_5 - this_muP_CDR;
             float this_muP_diff_err5 = std::sqrt(this_muP_err_5*this_muP_err_5 + this_muP_err_CDR*this_muP_err_CDR);
             float this_muP_perc5 = 0;
@@ -3880,7 +4490,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
             muP_diff_err5.emplace_back(p_bin_err, this_muP_diff_err5);
             muP_perc_err5.emplace_back(p_bin_err, this_muP_perc_err5);
         }
-        if((this_piP_5 > 0 || this_piP_CDR > 0) && std::abs(p_bin_center - 1756.999) > tol){
+        if((this_piP_5 > 0 || this_piP_CDR > 0)){// && std::abs(p_bin_center - 1756.999) > tol){
             float this_piP_diff5 = this_piP_5 - this_piP_CDR;
             float this_piP_diff_err5 = std::sqrt(this_piP_err_5*this_piP_err_5 + this_piP_err_CDR*this_piP_err_CDR);
             float this_piP_perc5 = 0;
@@ -3895,7 +4505,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
             piP_perc_err5.emplace_back(p_bin_err, this_piP_perc_err5);
         }
 
-        if ((this_muPi_6 > 0 || this_muPi_CDR > 0) && (p_bin_center < 460 || p_bin_center > 555)){
+        if ((this_muPi_6 > 0 || this_muPi_CDR > 0)){// && (p_bin_center < 460 || p_bin_center > 555)){
             float this_muPi_diff6 = this_muPi_6 - this_muPi_CDR;
             float this_muPi_diff_err6 = std::sqrt(this_muPi_err_6*this_muPi_err_6 + this_muPi_err_CDR*this_muPi_err_CDR);
             float this_muPi_perc6 = 0;
@@ -3909,7 +4519,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
             muPi_diff_err6.emplace_back(p_bin_err, this_muPi_diff_err6);
             muPi_perc_err6.emplace_back(p_bin_err, this_muPi_perc_err6);
         }
-        if((this_muP_6 > 0 || this_muP_CDR > 0) && std::abs(p_bin_center - 1756.999) > tol){
+        if((this_muP_6 > 0 || this_muP_CDR > 0)){// && std::abs(p_bin_center - 1756.999) > tol){
             float this_muP_diff6 = this_muP_6 - this_muP_CDR;
             float this_muP_diff_err6 = std::sqrt(this_muP_err_6*this_muP_err_6 + this_muP_err_CDR*this_muP_err_CDR);
             float this_muP_perc6 = 0;
@@ -3923,7 +4533,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
             muP_perc_err6.emplace_back(p_bin_err, this_muP_perc_err6);
             muP_diff_err6.emplace_back(p_bin_err, this_muP_diff_err6);
         }
-        if((this_piP_6 > 0 || this_piP_CDR > 0) && std::abs(p_bin_center - 1756.999) > tol){
+        if((this_piP_6 > 0 || this_piP_CDR > 0)){// && std::abs(p_bin_center - 1756.999) > tol){
             float this_piP_diff6 = this_piP_6 - this_piP_CDR;
             float this_piP_diff_err6 = std::sqrt(this_piP_err_6*this_piP_err_6 + this_piP_err_CDR*this_piP_err_CDR);
             float this_piP_perc6 = 0;
@@ -3937,6 +4547,460 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
             piP_perc_err6.emplace_back(p_bin_err, this_piP_perc_err6);
             piP_diff_err6.emplace_back(p_bin_err, this_piP_diff_err6);
         }
+
+        //calculate difference in mean to CDR if one is non-zero
+        if ((this_mu_mean_2 > 0 || this_mu_mean_CDR > 0)){
+            float this_mu_mean_diff2 = this_mu_mean_2 - this_mu_mean_CDR;
+            float this_mu_mean_diff_err2 = std::sqrt(this_mu_mean_err_2*this_mu_mean_err_2 + this_mu_mean_err_CDR*this_mu_mean_err_CDR);
+            float this_mu_mean_perc2 = 0;
+            float this_mu_mean_perc_err2 = 0;
+            if (this_mu_mean_CDR != 0){
+                this_mu_mean_perc2 = 100 * this_mu_mean_diff2 / (this_mu_mean_CDR);
+                this_mu_mean_perc_err2 = (100 / this_mu_mean_CDR) * std::sqrt(this_mu_mean_err_2*this_mu_mean_err_2 + (this_mu_mean_2*this_mu_mean_err_CDR/this_mu_mean_CDR)*(this_mu_mean_2*this_mu_mean_err_CDR/this_mu_mean_CDR));
+            }
+            mu_mean_diff2.emplace_back(p_bin_center, this_mu_mean_diff2);
+            mu_mean_diff_err2.emplace_back(p_bin_err, this_mu_mean_diff_err2);
+            mu_mean_perc2.emplace_back(p_bin_center, this_mu_mean_perc2);
+            mu_mean_perc_err2.emplace_back(p_bin_err, this_mu_mean_perc_err2);
+        }
+
+        if ((this_pi_mean_2 > 0 || this_pi_mean_CDR > 0)){
+            float this_pi_mean_diff2 = this_pi_mean_2 - this_pi_mean_CDR;
+            float this_pi_mean_diff_err2 = std::sqrt(this_pi_mean_err_2*this_pi_mean_err_2 + this_pi_mean_err_CDR*this_pi_mean_err_CDR);
+            float this_pi_mean_perc2 = 0;
+            float this_pi_mean_perc_err2 = 0;
+            if (this_pi_mean_CDR != 0){
+                this_pi_mean_perc2 = 100 * this_pi_mean_diff2 / (this_pi_mean_CDR);
+                this_pi_mean_perc_err2 = (100 / this_pi_mean_CDR) * std::sqrt(this_pi_mean_err_2*this_pi_mean_err_2 + (this_pi_mean_2*this_pi_mean_err_CDR/this_pi_mean_CDR)*(this_pi_mean_2*this_pi_mean_err_CDR/this_pi_mean_CDR));
+            }
+            pi_mean_diff2.emplace_back(p_bin_center, this_pi_mean_diff2);
+            pi_mean_diff_err2.emplace_back(p_bin_err, this_pi_mean_diff_err2);
+            pi_mean_perc2.emplace_back(p_bin_center, this_pi_mean_perc2);
+            pi_mean_perc_err2.emplace_back(p_bin_err, this_pi_mean_perc_err2);
+        }
+
+        if ((this_p_mean_2 > 0 || this_p_mean_CDR > 0)){
+            float this_p_mean_diff2 = this_p_mean_2 - this_p_mean_CDR;
+            float this_p_mean_diff_err2 = std::sqrt(this_p_mean_err_2*this_p_mean_err_2 + this_p_mean_err_CDR*this_p_mean_err_CDR);
+            float this_p_mean_perc2 = 0;
+            float this_p_mean_perc_err2 = 0;
+            if (this_p_mean_CDR != 0){
+                this_p_mean_perc2 = 100 * this_p_mean_diff2 / (this_p_mean_CDR);
+                this_p_mean_perc_err2 = (100 / this_p_mean_CDR) * std::sqrt(this_p_mean_err_2*this_p_mean_err_2 + (this_p_mean_2*this_p_mean_err_CDR/this_p_mean_CDR)*(this_p_mean_2*this_p_mean_err_CDR/this_p_mean_CDR));
+            }
+            p_mean_diff2.emplace_back(p_bin_center, this_p_mean_diff2);
+            p_mean_diff_err2.emplace_back(p_bin_err, this_p_mean_diff_err2);
+            p_mean_perc2.emplace_back(p_bin_center, this_p_mean_perc2);
+            p_mean_perc_err2.emplace_back(p_bin_err, this_p_mean_perc_err2);
+        }
+
+        if ((this_mu_mean_3 > 0 || this_mu_mean_CDR > 0)){
+            float this_mu_mean_diff3 = this_mu_mean_3 - this_mu_mean_CDR;
+            float this_mu_mean_diff_err3 = std::sqrt(this_mu_mean_err_3*this_mu_mean_err_3 + this_mu_mean_err_CDR*this_mu_mean_err_CDR);
+            float this_mu_mean_perc3 = 0;
+            float this_mu_mean_perc_err3 = 0;
+            if (this_mu_mean_CDR != 0){
+                this_mu_mean_perc3 = 100 * this_mu_mean_diff3 / (this_mu_mean_CDR);
+                this_mu_mean_perc_err3 = (100 / this_mu_mean_CDR) * std::sqrt(this_mu_mean_err_3*this_mu_mean_err_3 + (this_mu_mean_3*this_mu_mean_err_CDR/this_mu_mean_CDR)*(this_mu_mean_3*this_mu_mean_err_CDR/this_mu_mean_CDR));
+            }
+            mu_mean_diff3.emplace_back(p_bin_center, this_mu_mean_diff3);
+            mu_mean_diff_err3.emplace_back(p_bin_err, this_mu_mean_diff_err3);
+            mu_mean_perc3.emplace_back(p_bin_center, this_mu_mean_perc3);
+            mu_mean_perc_err3.emplace_back(p_bin_err, this_mu_mean_perc_err3);
+        }
+
+        if ((this_pi_mean_3 > 0 || this_pi_mean_CDR > 0)){
+            float this_pi_mean_diff3 = this_pi_mean_3 - this_pi_mean_CDR;
+            float this_pi_mean_diff_err3 = std::sqrt(this_pi_mean_err_3*this_pi_mean_err_3 + this_pi_mean_err_CDR*this_pi_mean_err_CDR);
+            float this_pi_mean_perc3 = 0;
+            float this_pi_mean_perc_err3 = 0;
+            if (this_pi_mean_CDR != 0){
+                this_pi_mean_perc3 = 100 * this_pi_mean_diff3 / (this_pi_mean_CDR);
+                this_pi_mean_perc_err3 = (100 / this_pi_mean_CDR) * std::sqrt(this_pi_mean_err_3*this_pi_mean_err_3 + (this_pi_mean_3*this_pi_mean_err_CDR/this_pi_mean_CDR)*(this_pi_mean_3*this_pi_mean_err_CDR/this_pi_mean_CDR));
+            }
+            pi_mean_diff3.emplace_back(p_bin_center, this_pi_mean_diff3);
+            pi_mean_diff_err3.emplace_back(p_bin_err, this_pi_mean_diff_err3);
+            pi_mean_perc3.emplace_back(p_bin_center, this_pi_mean_perc3);
+            pi_mean_perc_err3.emplace_back(p_bin_err, this_pi_mean_perc_err3);
+        }
+
+        if ((this_p_mean_3 > 0 || this_p_mean_CDR > 0)){
+            float this_p_mean_diff3 = this_p_mean_3 - this_p_mean_CDR;
+            float this_p_mean_diff_err3 = std::sqrt(this_p_mean_err_3*this_p_mean_err_3 + this_p_mean_err_CDR*this_p_mean_err_CDR);
+            float this_p_mean_perc3 = 0;
+            float this_p_mean_perc_err3 = 0;
+            if (this_p_mean_CDR != 0){
+                this_p_mean_perc3 = 100 * this_p_mean_diff3 / (this_p_mean_CDR);
+                this_p_mean_perc_err3 = (100 / this_p_mean_CDR) * std::sqrt(this_p_mean_err_3*this_p_mean_err_3 + (this_p_mean_3*this_p_mean_err_CDR/this_p_mean_CDR)*(this_p_mean_3*this_p_mean_err_CDR/this_p_mean_CDR));
+            }
+            p_mean_diff3.emplace_back(p_bin_center, this_p_mean_diff3);
+            p_mean_diff_err3.emplace_back(p_bin_err, this_p_mean_diff_err3);
+            p_mean_perc3.emplace_back(p_bin_center, this_p_mean_perc3);
+            p_mean_perc_err3.emplace_back(p_bin_err, this_p_mean_perc_err3);
+        }
+
+        if ((this_mu_mean_4 > 0 || this_mu_mean_CDR > 0)){
+            float this_mu_mean_diff4 = this_mu_mean_4 - this_mu_mean_CDR;
+            float this_mu_mean_diff_err4 = std::sqrt(this_mu_mean_err_4*this_mu_mean_err_4 + this_mu_mean_err_CDR*this_mu_mean_err_CDR);
+            float this_mu_mean_perc4 = 0;
+            float this_mu_mean_perc_err4 = 0;
+            if (this_mu_mean_CDR != 0){
+                this_mu_mean_perc4 = 100 * this_mu_mean_diff4 / (this_mu_mean_CDR);
+                this_mu_mean_perc_err4 = (100 / this_mu_mean_CDR) * std::sqrt(this_mu_mean_err_4*this_mu_mean_err_4 + (this_mu_mean_4*this_mu_mean_err_CDR/this_mu_mean_CDR)*(this_mu_mean_4*this_mu_mean_err_CDR/this_mu_mean_CDR));
+            }
+            mu_mean_diff4.emplace_back(p_bin_center, this_mu_mean_diff4);
+            mu_mean_diff_err4.emplace_back(p_bin_err, this_mu_mean_diff_err4);
+            mu_mean_perc4.emplace_back(p_bin_center, this_mu_mean_perc4);
+            mu_mean_perc_err4.emplace_back(p_bin_err, this_mu_mean_perc_err4);
+        }
+
+        if ((this_pi_mean_4 > 0 || this_pi_mean_CDR > 0)){
+            float this_pi_mean_diff4 = this_pi_mean_4 - this_pi_mean_CDR;
+            float this_pi_mean_diff_err4 = std::sqrt(this_pi_mean_err_4*this_pi_mean_err_4 + this_pi_mean_err_CDR*this_pi_mean_err_CDR);
+            float this_pi_mean_perc4 = 0;
+            float this_pi_mean_perc_err4 = 0;
+            if (this_pi_mean_CDR != 0){
+                this_pi_mean_perc4 = 100 * this_pi_mean_diff4 / (this_pi_mean_CDR);
+                this_pi_mean_perc_err4 = (100 / this_pi_mean_CDR) * std::sqrt(this_pi_mean_err_4*this_pi_mean_err_4 + (this_pi_mean_4*this_pi_mean_err_CDR/this_pi_mean_CDR)*(this_pi_mean_4*this_pi_mean_err_CDR/this_pi_mean_CDR));
+            }
+            pi_mean_diff4.emplace_back(p_bin_center, this_pi_mean_diff4);
+            pi_mean_diff_err4.emplace_back(p_bin_err, this_pi_mean_diff_err4);
+            pi_mean_perc4.emplace_back(p_bin_center, this_pi_mean_perc4);
+            pi_mean_perc_err4.emplace_back(p_bin_err, this_pi_mean_perc_err4);
+        }
+
+        if ((this_p_mean_4 > 0 || this_p_mean_CDR > 0)){
+            float this_p_mean_diff4 = this_p_mean_4 - this_p_mean_CDR;
+            float this_p_mean_diff_err4 = std::sqrt(this_p_mean_err_4*this_p_mean_err_4 + this_p_mean_err_CDR*this_p_mean_err_CDR);
+            float this_p_mean_perc4 = 0;
+            float this_p_mean_perc_err4 = 0;
+            if (this_p_mean_CDR != 0){
+                this_p_mean_perc4 = 100 * this_p_mean_diff4 / (this_p_mean_CDR);
+                this_p_mean_perc_err4 = (100 / this_p_mean_CDR) * std::sqrt(this_p_mean_err_4*this_p_mean_err_4 + (this_p_mean_4*this_p_mean_err_CDR/this_p_mean_CDR)*(this_p_mean_4*this_p_mean_err_CDR/this_p_mean_CDR));
+            }
+            p_mean_diff4.emplace_back(p_bin_center, this_p_mean_diff4);
+            p_mean_diff_err4.emplace_back(p_bin_err, this_p_mean_diff_err4);
+            p_mean_perc4.emplace_back(p_bin_center, this_p_mean_perc4);
+            p_mean_perc_err4.emplace_back(p_bin_err, this_p_mean_perc_err4);
+        }
+
+        if ((this_mu_mean_5 > 0 || this_mu_mean_CDR > 0)){
+            float this_mu_mean_diff5 = this_mu_mean_5 - this_mu_mean_CDR;
+            float this_mu_mean_diff_err5 = std::sqrt(this_mu_mean_err_5*this_mu_mean_err_5 + this_mu_mean_err_CDR*this_mu_mean_err_CDR);
+            float this_mu_mean_perc5 = 0;
+            float this_mu_mean_perc_err5 = 0;
+            if (this_mu_mean_CDR != 0){
+                this_mu_mean_perc5 = 100 * this_mu_mean_diff5 / (this_mu_mean_CDR);
+                this_mu_mean_perc_err5 = (100 / this_mu_mean_CDR) * std::sqrt(this_mu_mean_err_5*this_mu_mean_err_5 + (this_mu_mean_5*this_mu_mean_err_CDR/this_mu_mean_CDR)*(this_mu_mean_5*this_mu_mean_err_CDR/this_mu_mean_CDR));
+            }
+            mu_mean_diff5.emplace_back(p_bin_center, this_mu_mean_diff5);
+            mu_mean_diff_err5.emplace_back(p_bin_err, this_mu_mean_diff_err5);
+            mu_mean_perc5.emplace_back(p_bin_center, this_mu_mean_perc5);
+            mu_mean_perc_err5.emplace_back(p_bin_err, this_mu_mean_perc_err5);
+        }
+
+        if ((this_pi_mean_5 > 0 || this_pi_mean_CDR > 0)){
+            float this_pi_mean_diff5 = this_pi_mean_5 - this_pi_mean_CDR;
+            float this_pi_mean_diff_err5 = std::sqrt(this_pi_mean_err_5*this_pi_mean_err_5 + this_pi_mean_err_CDR*this_pi_mean_err_CDR);
+            float this_pi_mean_perc5 = 0;
+            float this_pi_mean_perc_err5 = 0;
+            if (this_pi_mean_CDR != 0){
+                this_pi_mean_perc5 = 100 * this_pi_mean_diff5 / (this_pi_mean_CDR);
+                this_pi_mean_perc_err5 = (100 / this_pi_mean_CDR) * std::sqrt(this_pi_mean_err_5*this_pi_mean_err_5 + (this_pi_mean_5*this_pi_mean_err_CDR/this_pi_mean_CDR)*(this_pi_mean_5*this_pi_mean_err_CDR/this_pi_mean_CDR));
+            }
+            pi_mean_diff5.emplace_back(p_bin_center, this_pi_mean_diff5);
+            pi_mean_diff_err5.emplace_back(p_bin_err, this_pi_mean_diff_err5);
+            pi_mean_perc5.emplace_back(p_bin_center, this_pi_mean_perc5);
+            pi_mean_perc_err5.emplace_back(p_bin_err, this_pi_mean_perc_err5);
+        }
+
+        if ((this_p_mean_5 > 0 || this_p_mean_CDR > 0)){
+            float this_p_mean_diff5 = this_p_mean_5 - this_p_mean_CDR;
+            float this_p_mean_diff_err5 = std::sqrt(this_p_mean_err_5*this_p_mean_err_5 + this_p_mean_err_CDR*this_p_mean_err_CDR);
+            float this_p_mean_perc5 = 0;
+            float this_p_mean_perc_err5 = 0;
+            if (this_p_mean_CDR != 0){
+                this_p_mean_perc5 = 100 * this_p_mean_diff5 / (this_p_mean_CDR);
+                this_p_mean_perc_err5 = (100 / this_p_mean_CDR) * std::sqrt(this_p_mean_err_5*this_p_mean_err_5 + (this_p_mean_5*this_p_mean_err_CDR/this_p_mean_CDR)*(this_p_mean_5*this_p_mean_err_CDR/this_p_mean_CDR));
+            }
+            p_mean_diff5.emplace_back(p_bin_center, this_p_mean_diff5);
+            p_mean_diff_err5.emplace_back(p_bin_err, this_p_mean_diff_err5);
+            p_mean_perc5.emplace_back(p_bin_center, this_p_mean_perc5);
+            p_mean_perc_err5.emplace_back(p_bin_err, this_p_mean_perc_err5);
+        }
+
+        if ((this_mu_mean_6 > 0 || this_mu_mean_CDR > 0)){
+            float this_mu_mean_diff6 = this_mu_mean_6 - this_mu_mean_CDR;
+            float this_mu_mean_diff_err6 = std::sqrt(this_mu_mean_err_6*this_mu_mean_err_6 + this_mu_mean_err_CDR*this_mu_mean_err_CDR);
+            float this_mu_mean_perc6 = 0;
+            float this_mu_mean_perc_err6 = 0;
+            if (this_mu_mean_CDR != 0){
+                this_mu_mean_perc6 = 100 * this_mu_mean_diff6 / (this_mu_mean_CDR);
+                this_mu_mean_perc_err6 = (100 / this_mu_mean_CDR) * std::sqrt(this_mu_mean_err_6*this_mu_mean_err_6 + (this_mu_mean_6*this_mu_mean_err_CDR/this_mu_mean_CDR)*(this_mu_mean_6*this_mu_mean_err_CDR/this_mu_mean_CDR));
+            }
+            mu_mean_diff6.emplace_back(p_bin_center, this_mu_mean_diff6);
+            mu_mean_diff_err6.emplace_back(p_bin_err, this_mu_mean_diff_err6);
+            mu_mean_perc6.emplace_back(p_bin_center, this_mu_mean_perc6);
+            mu_mean_perc_err6.emplace_back(p_bin_err, this_mu_mean_perc_err6);
+        }
+
+        if ((this_pi_mean_6 > 0 || this_pi_mean_CDR > 0)){
+            float this_pi_mean_diff6 = this_pi_mean_6 - this_pi_mean_CDR;
+            float this_pi_mean_diff_err6 = std::sqrt(this_pi_mean_err_6*this_pi_mean_err_6 + this_pi_mean_err_CDR*this_pi_mean_err_CDR);
+            float this_pi_mean_perc6 = 0;
+            float this_pi_mean_perc_err6 = 0;
+            if (this_pi_mean_CDR != 0){
+                this_pi_mean_perc6 = 100 * this_pi_mean_diff6 / (this_pi_mean_CDR);
+                this_pi_mean_perc_err6 = (100 / this_pi_mean_CDR) * std::sqrt(this_pi_mean_err_6*this_pi_mean_err_6 + (this_pi_mean_6*this_pi_mean_err_CDR/this_pi_mean_CDR)*(this_pi_mean_6*this_pi_mean_err_CDR/this_pi_mean_CDR));
+            }
+            pi_mean_diff6.emplace_back(p_bin_center, this_pi_mean_diff6);
+            pi_mean_diff_err6.emplace_back(p_bin_err, this_pi_mean_diff_err6);
+            pi_mean_perc6.emplace_back(p_bin_center, this_pi_mean_perc6);
+            pi_mean_perc_err6.emplace_back(p_bin_err, this_pi_mean_perc_err6);
+        }
+
+        if ((this_p_mean_6 > 0 || this_p_mean_CDR > 0)){
+            float this_p_mean_diff6 = this_p_mean_6 - this_p_mean_CDR;
+            float this_p_mean_diff_err6 = std::sqrt(this_p_mean_err_6*this_p_mean_err_6 + this_p_mean_err_CDR*this_p_mean_err_CDR);
+            float this_p_mean_perc6 = 0;
+            float this_p_mean_perc_err6 = 0;
+            if (this_p_mean_CDR != 0){
+                this_p_mean_perc6 = 100 * this_p_mean_diff6 / (this_p_mean_CDR);
+                this_p_mean_perc_err6 = (100 / this_p_mean_CDR) * std::sqrt(this_p_mean_err_6*this_p_mean_err_6 + (this_p_mean_6*this_p_mean_err_CDR/this_p_mean_CDR)*(this_p_mean_6*this_p_mean_err_CDR/this_p_mean_CDR));
+            }
+            p_mean_diff6.emplace_back(p_bin_center, this_p_mean_diff6);
+            p_mean_diff_err6.emplace_back(p_bin_err, this_p_mean_diff_err6);
+            p_mean_perc6.emplace_back(p_bin_center, this_p_mean_perc6);
+            p_mean_perc_err6.emplace_back(p_bin_err, this_p_mean_perc_err6);
+        }
+
+
+        //calculate difference in sigma to CDR if one is non-zero
+        if ((this_mu_sigma_2 > 0 || this_mu_sigma_CDR > 0)){
+            float this_mu_sigma_diff2 = this_mu_sigma_2 - this_mu_sigma_CDR;
+            float this_mu_sigma_diff_err2 = std::sqrt(this_mu_sigma_err_2*this_mu_sigma_err_2 + this_mu_sigma_err_CDR*this_mu_sigma_err_CDR);
+            float this_mu_sigma_perc2 = 0;
+            float this_mu_sigma_perc_err2 = 0;
+            if (this_mu_sigma_CDR != 0){
+                this_mu_sigma_perc2 = 100 * this_mu_sigma_diff2 / (this_mu_sigma_CDR);
+                this_mu_sigma_perc_err2 = (100 / this_mu_sigma_CDR) * std::sqrt(this_mu_sigma_err_2*this_mu_sigma_err_2 + (this_mu_sigma_2*this_mu_sigma_err_CDR/this_mu_sigma_CDR)*(this_mu_sigma_2*this_mu_sigma_err_CDR/this_mu_sigma_CDR));
+            }
+            mu_sigma_diff2.emplace_back(p_bin_center, this_mu_sigma_diff2);
+            mu_sigma_diff_err2.emplace_back(p_bin_err, this_mu_sigma_diff_err2);
+            mu_sigma_perc2.emplace_back(p_bin_center, this_mu_sigma_perc2);
+            mu_sigma_perc_err2.emplace_back(p_bin_err, this_mu_sigma_perc_err2);
+        }
+
+        if ((this_pi_sigma_2 > 0 || this_pi_sigma_CDR > 0)){
+            float this_pi_sigma_diff2 = this_pi_sigma_2 - this_pi_sigma_CDR;
+            float this_pi_sigma_diff_err2 = std::sqrt(this_pi_sigma_err_2*this_pi_sigma_err_2 + this_pi_sigma_err_CDR*this_pi_sigma_err_CDR);
+            float this_pi_sigma_perc2 = 0;
+            float this_pi_sigma_perc_err2 = 0;
+            if (this_pi_sigma_CDR != 0){
+                this_pi_sigma_perc2 = 100 * this_pi_sigma_diff2 / (this_pi_sigma_CDR);
+                this_pi_sigma_perc_err2 = (100 / this_pi_sigma_CDR) * std::sqrt(this_pi_sigma_err_2*this_pi_sigma_err_2 + (this_pi_sigma_2*this_pi_sigma_err_CDR/this_pi_sigma_CDR)*(this_pi_sigma_2*this_pi_sigma_err_CDR/this_pi_sigma_CDR));
+            }
+            pi_sigma_diff2.emplace_back(p_bin_center, this_pi_sigma_diff2);
+            pi_sigma_diff_err2.emplace_back(p_bin_err, this_pi_sigma_diff_err2);
+            pi_sigma_perc2.emplace_back(p_bin_center, this_pi_sigma_perc2);
+            pi_sigma_perc_err2.emplace_back(p_bin_err, this_pi_sigma_perc_err2);
+        }
+
+        if ((this_p_sigma_2 > 0 || this_p_sigma_CDR > 0)){
+            float this_p_sigma_diff2 = this_p_sigma_2 - this_p_sigma_CDR;
+            float this_p_sigma_diff_err2 = std::sqrt(this_p_sigma_err_2*this_p_sigma_err_2 + this_p_sigma_err_CDR*this_p_sigma_err_CDR);
+            float this_p_sigma_perc2 = 0;
+            float this_p_sigma_perc_err2 = 0;
+            if (this_p_sigma_CDR != 0){
+                this_p_sigma_perc2 = 100 * this_p_sigma_diff2 / (this_p_sigma_CDR);
+                this_p_sigma_perc_err2 = (100 / this_p_sigma_CDR) * std::sqrt(this_p_sigma_err_2*this_p_sigma_err_2 + (this_p_sigma_2*this_p_sigma_err_CDR/this_p_sigma_CDR)*(this_p_sigma_2*this_p_sigma_err_CDR/this_p_sigma_CDR));
+            }
+            p_sigma_diff2.emplace_back(p_bin_center, this_p_sigma_diff2);
+            p_sigma_diff_err2.emplace_back(p_bin_err, this_p_sigma_diff_err2);
+            p_sigma_perc2.emplace_back(p_bin_center, this_p_sigma_perc2);
+            p_sigma_perc_err2.emplace_back(p_bin_err, this_p_sigma_perc_err2);
+        }
+
+        if ((this_mu_sigma_3 > 0 || this_mu_sigma_CDR > 0)){
+            float this_mu_sigma_diff3 = this_mu_sigma_3 - this_mu_sigma_CDR;
+            float this_mu_sigma_diff_err3 = std::sqrt(this_mu_sigma_err_3*this_mu_sigma_err_3 + this_mu_sigma_err_CDR*this_mu_sigma_err_CDR);
+            float this_mu_sigma_perc3 = 0;
+            float this_mu_sigma_perc_err3 = 0;
+            if (this_mu_sigma_CDR != 0){
+                this_mu_sigma_perc3 = 100 * this_mu_sigma_diff3 / (this_mu_sigma_CDR);
+                this_mu_sigma_perc_err3 = (100 / this_mu_sigma_CDR) * std::sqrt(this_mu_sigma_err_3*this_mu_sigma_err_3 + (this_mu_sigma_3*this_mu_sigma_err_CDR/this_mu_sigma_CDR)*(this_mu_sigma_3*this_mu_sigma_err_CDR/this_mu_sigma_CDR));
+            }
+            mu_sigma_diff3.emplace_back(p_bin_center, this_mu_sigma_diff3);
+            mu_sigma_diff_err3.emplace_back(p_bin_err, this_mu_sigma_diff_err3);
+            mu_sigma_perc3.emplace_back(p_bin_center, this_mu_sigma_perc3);
+            mu_sigma_perc_err3.emplace_back(p_bin_err, this_mu_sigma_perc_err3);
+        }
+
+        if ((this_pi_sigma_3 > 0 || this_pi_sigma_CDR > 0)){
+            float this_pi_sigma_diff3 = this_pi_sigma_3 - this_pi_sigma_CDR;
+            float this_pi_sigma_diff_err3 = std::sqrt(this_pi_sigma_err_3*this_pi_sigma_err_3 + this_pi_sigma_err_CDR*this_pi_sigma_err_CDR);
+            float this_pi_sigma_perc3 = 0;
+            float this_pi_sigma_perc_err3 = 0;
+            if (this_pi_sigma_CDR != 0){
+                this_pi_sigma_perc3 = 100 * this_pi_sigma_diff3 / (this_pi_sigma_CDR);
+                this_pi_sigma_perc_err3 = (100 / this_pi_sigma_CDR) * std::sqrt(this_pi_sigma_err_3*this_pi_sigma_err_3 + (this_pi_sigma_3*this_pi_sigma_err_CDR/this_pi_sigma_CDR)*(this_pi_sigma_3*this_pi_sigma_err_CDR/this_pi_sigma_CDR));
+            }
+            pi_sigma_diff3.emplace_back(p_bin_center, this_pi_sigma_diff3);
+            pi_sigma_diff_err3.emplace_back(p_bin_err, this_pi_sigma_diff_err3);
+            pi_sigma_perc3.emplace_back(p_bin_center, this_pi_sigma_perc3);
+            pi_sigma_perc_err3.emplace_back(p_bin_err, this_pi_sigma_perc_err3);
+        }
+
+        if ((this_p_sigma_3 > 0 || this_p_sigma_CDR > 0)){
+            float this_p_sigma_diff3 = this_p_sigma_3 - this_p_sigma_CDR;
+            float this_p_sigma_diff_err3 = std::sqrt(this_p_sigma_err_3*this_p_sigma_err_3 + this_p_sigma_err_CDR*this_p_sigma_err_CDR);
+            float this_p_sigma_perc3 = 0;
+            float this_p_sigma_perc_err3 = 0;
+            if (this_p_sigma_CDR != 0){
+                this_p_sigma_perc3 = 100 * this_p_sigma_diff3 / (this_p_sigma_CDR);
+                this_p_sigma_perc_err3 = (100 / this_p_sigma_CDR) * std::sqrt(this_p_sigma_err_3*this_p_sigma_err_3 + (this_p_sigma_3*this_p_sigma_err_CDR/this_p_sigma_CDR)*(this_p_sigma_3*this_p_sigma_err_CDR/this_p_sigma_CDR));
+            }
+            p_sigma_diff3.emplace_back(p_bin_center, this_p_sigma_diff3);
+            p_sigma_diff_err3.emplace_back(p_bin_err, this_p_sigma_diff_err3);
+            p_sigma_perc3.emplace_back(p_bin_center, this_p_sigma_perc3);
+            p_sigma_perc_err3.emplace_back(p_bin_err, this_p_sigma_perc_err3);
+        }
+
+        if ((this_mu_sigma_4 > 0 || this_mu_sigma_CDR > 0)){
+            float this_mu_sigma_diff4 = this_mu_sigma_4 - this_mu_sigma_CDR;
+            float this_mu_sigma_diff_err4 = std::sqrt(this_mu_sigma_err_4*this_mu_sigma_err_4 + this_mu_sigma_err_CDR*this_mu_sigma_err_CDR);
+            float this_mu_sigma_perc4 = 0;
+            float this_mu_sigma_perc_err4 = 0;
+            if (this_mu_sigma_CDR != 0){
+                this_mu_sigma_perc4 = 100 * this_mu_sigma_diff4 / (this_mu_sigma_CDR);
+                this_mu_sigma_perc_err4 = (100 / this_mu_sigma_CDR) * std::sqrt(this_mu_sigma_err_4*this_mu_sigma_err_4 + (this_mu_sigma_4*this_mu_sigma_err_CDR/this_mu_sigma_CDR)*(this_mu_sigma_4*this_mu_sigma_err_CDR/this_mu_sigma_CDR));
+            }
+            mu_sigma_diff4.emplace_back(p_bin_center, this_mu_sigma_diff4);
+            mu_sigma_diff_err4.emplace_back(p_bin_err, this_mu_sigma_diff_err4);
+            mu_sigma_perc4.emplace_back(p_bin_center, this_mu_sigma_perc4);
+            mu_sigma_perc_err4.emplace_back(p_bin_err, this_mu_sigma_perc_err4);
+        }
+
+        if ((this_pi_sigma_4 > 0 || this_pi_sigma_CDR > 0)){
+            float this_pi_sigma_diff4 = this_pi_sigma_4 - this_pi_sigma_CDR;
+            float this_pi_sigma_diff_err4 = std::sqrt(this_pi_sigma_err_4*this_pi_sigma_err_4 + this_pi_sigma_err_CDR*this_pi_sigma_err_CDR);
+            float this_pi_sigma_perc4 = 0;
+            float this_pi_sigma_perc_err4 = 0;
+            if (this_pi_sigma_CDR != 0){
+                this_pi_sigma_perc4 = 100 * this_pi_sigma_diff4 / (this_pi_sigma_CDR);
+                this_pi_sigma_perc_err4 = (100 / this_pi_sigma_CDR) * std::sqrt(this_pi_sigma_err_4*this_pi_sigma_err_4 + (this_pi_sigma_4*this_pi_sigma_err_CDR/this_pi_sigma_CDR)*(this_pi_sigma_4*this_pi_sigma_err_CDR/this_pi_sigma_CDR));
+            }
+            pi_sigma_diff4.emplace_back(p_bin_center, this_pi_sigma_diff4);
+            pi_sigma_diff_err4.emplace_back(p_bin_err, this_pi_sigma_diff_err4);
+            pi_sigma_perc4.emplace_back(p_bin_center, this_pi_sigma_perc4);
+            pi_sigma_perc_err4.emplace_back(p_bin_err, this_pi_sigma_perc_err4);
+        }
+
+        if ((this_p_sigma_4 > 0 || this_p_sigma_CDR > 0)){
+            float this_p_sigma_diff4 = this_p_sigma_4 - this_p_sigma_CDR;
+            float this_p_sigma_diff_err4 = std::sqrt(this_p_sigma_err_4*this_p_sigma_err_4 + this_p_sigma_err_CDR*this_p_sigma_err_CDR);
+            float this_p_sigma_perc4 = 0;
+            float this_p_sigma_perc_err4 = 0;
+            if (this_p_sigma_CDR != 0){
+                this_p_sigma_perc4 = 100 * this_p_sigma_diff4 / (this_p_sigma_CDR);
+                this_p_sigma_perc_err4 = (100 / this_p_sigma_CDR) * std::sqrt(this_p_sigma_err_4*this_p_sigma_err_4 + (this_p_sigma_4*this_p_sigma_err_CDR/this_p_sigma_CDR)*(this_p_sigma_4*this_p_sigma_err_CDR/this_p_sigma_CDR));
+            }
+            p_sigma_diff4.emplace_back(p_bin_center, this_p_sigma_diff4);
+            p_sigma_diff_err4.emplace_back(p_bin_err, this_p_sigma_diff_err4);
+            p_sigma_perc4.emplace_back(p_bin_center, this_p_sigma_perc4);
+            p_sigma_perc_err4.emplace_back(p_bin_err, this_p_sigma_perc_err4);
+        }
+
+        if ((this_mu_sigma_5 > 0 || this_mu_sigma_CDR > 0)){
+            float this_mu_sigma_diff5 = this_mu_sigma_5 - this_mu_sigma_CDR;
+            float this_mu_sigma_diff_err5 = std::sqrt(this_mu_sigma_err_5*this_mu_sigma_err_5 + this_mu_sigma_err_CDR*this_mu_sigma_err_CDR);
+            float this_mu_sigma_perc5 = 0;
+            float this_mu_sigma_perc_err5 = 0;
+            if (this_mu_sigma_CDR != 0){
+                this_mu_sigma_perc5 = 100 * this_mu_sigma_diff5 / (this_mu_sigma_CDR);
+                this_mu_sigma_perc_err5 = (100 / this_mu_sigma_CDR) * std::sqrt(this_mu_sigma_err_5*this_mu_sigma_err_5 + (this_mu_sigma_5*this_mu_sigma_err_CDR/this_mu_sigma_CDR)*(this_mu_sigma_5*this_mu_sigma_err_CDR/this_mu_sigma_CDR));
+            }
+            mu_sigma_diff5.emplace_back(p_bin_center, this_mu_sigma_diff5);
+            mu_sigma_diff_err5.emplace_back(p_bin_err, this_mu_sigma_diff_err5);
+            mu_sigma_perc5.emplace_back(p_bin_center, this_mu_sigma_perc5);
+            mu_sigma_perc_err5.emplace_back(p_bin_err, this_mu_sigma_perc_err5);
+        }
+
+        if ((this_pi_sigma_5 > 0 || this_pi_sigma_CDR > 0)){
+            float this_pi_sigma_diff5 = this_pi_sigma_5 - this_pi_sigma_CDR;
+            float this_pi_sigma_diff_err5 = std::sqrt(this_pi_sigma_err_5*this_pi_sigma_err_5 + this_pi_sigma_err_CDR*this_pi_sigma_err_CDR);
+            float this_pi_sigma_perc5 = 0;
+            float this_pi_sigma_perc_err5 = 0;
+            if (this_pi_sigma_CDR != 0){
+                this_pi_sigma_perc5 = 100 * this_pi_sigma_diff5 / (this_pi_sigma_CDR);
+                this_pi_sigma_perc_err5 = (100 / this_pi_sigma_CDR) * std::sqrt(this_pi_sigma_err_5*this_pi_sigma_err_5 + (this_pi_sigma_5*this_pi_sigma_err_CDR/this_pi_sigma_CDR)*(this_pi_sigma_5*this_pi_sigma_err_CDR/this_pi_sigma_CDR));
+            }
+            pi_sigma_diff5.emplace_back(p_bin_center, this_pi_sigma_diff5);
+            pi_sigma_diff_err5.emplace_back(p_bin_err, this_pi_sigma_diff_err5);
+            pi_sigma_perc5.emplace_back(p_bin_center, this_pi_sigma_perc5);
+            pi_sigma_perc_err5.emplace_back(p_bin_err, this_pi_sigma_perc_err5);
+        }
+
+        if ((this_p_sigma_5 > 0 || this_p_sigma_CDR > 0)){
+            float this_p_sigma_diff5 = this_p_sigma_5 - this_p_sigma_CDR;
+            float this_p_sigma_diff_err5 = std::sqrt(this_p_sigma_err_5*this_p_sigma_err_5 + this_p_sigma_err_CDR*this_p_sigma_err_CDR);
+            float this_p_sigma_perc5 = 0;
+            float this_p_sigma_perc_err5 = 0;
+            if (this_p_sigma_CDR != 0){
+                this_p_sigma_perc5 = 100 * this_p_sigma_diff5 / (this_p_sigma_CDR);
+                this_p_sigma_perc_err5 = (100 / this_p_sigma_CDR) * std::sqrt(this_p_sigma_err_5*this_p_sigma_err_5 + (this_p_sigma_5*this_p_sigma_err_CDR/this_p_sigma_CDR)*(this_p_sigma_5*this_p_sigma_err_CDR/this_p_sigma_CDR));
+            }
+            p_sigma_diff5.emplace_back(p_bin_center, this_p_sigma_diff5);
+            p_sigma_diff_err5.emplace_back(p_bin_err, this_p_sigma_diff_err5);
+            p_sigma_perc5.emplace_back(p_bin_center, this_p_sigma_perc5);
+            p_sigma_perc_err5.emplace_back(p_bin_err, this_p_sigma_perc_err5);
+        }
+
+        if ((this_mu_sigma_6 > 0 || this_mu_sigma_CDR > 0)){
+            float this_mu_sigma_diff6 = this_mu_sigma_6 - this_mu_sigma_CDR;
+            float this_mu_sigma_diff_err6 = std::sqrt(this_mu_sigma_err_6*this_mu_sigma_err_6 + this_mu_sigma_err_CDR*this_mu_sigma_err_CDR);
+            float this_mu_sigma_perc6 = 0;
+            float this_mu_sigma_perc_err6 = 0;
+            if (this_mu_sigma_CDR != 0){
+                this_mu_sigma_perc6 = 100 * this_mu_sigma_diff6 / (this_mu_sigma_CDR);
+                this_mu_sigma_perc_err6 = (100 / this_mu_sigma_CDR) * std::sqrt(this_mu_sigma_err_6*this_mu_sigma_err_6 + (this_mu_sigma_6*this_mu_sigma_err_CDR/this_mu_sigma_CDR)*(this_mu_sigma_6*this_mu_sigma_err_CDR/this_mu_sigma_CDR));
+            }
+            mu_sigma_diff6.emplace_back(p_bin_center, this_mu_sigma_diff6);
+            mu_sigma_diff_err6.emplace_back(p_bin_err, this_mu_sigma_diff_err6);
+            mu_sigma_perc6.emplace_back(p_bin_center, this_mu_sigma_perc6);
+            mu_sigma_perc_err6.emplace_back(p_bin_err, this_mu_sigma_perc_err6);
+        }
+
+        if ((this_pi_sigma_6 > 0 || this_pi_sigma_CDR > 0)){
+            float this_pi_sigma_diff6 = this_pi_sigma_6 - this_pi_sigma_CDR;
+            float this_pi_sigma_diff_err6 = std::sqrt(this_pi_sigma_err_6*this_pi_sigma_err_6 + this_pi_sigma_err_CDR*this_pi_sigma_err_CDR);
+            float this_pi_sigma_perc6 = 0;
+            float this_pi_sigma_perc_err6 = 0;
+            if (this_pi_sigma_CDR != 0){
+                this_pi_sigma_perc6 = 100 * this_pi_sigma_diff6 / (this_pi_sigma_CDR);
+                this_pi_sigma_perc_err6 = (100 / this_pi_sigma_CDR) * std::sqrt(this_pi_sigma_err_6*this_pi_sigma_err_6 + (this_pi_sigma_6*this_pi_sigma_err_CDR/this_pi_sigma_CDR)*(this_pi_sigma_6*this_pi_sigma_err_CDR/this_pi_sigma_CDR));
+            }
+            pi_sigma_diff6.emplace_back(p_bin_center, this_pi_sigma_diff6);
+            pi_sigma_diff_err6.emplace_back(p_bin_err, this_pi_sigma_diff_err6);
+            pi_sigma_perc6.emplace_back(p_bin_center, this_pi_sigma_perc6);
+            pi_sigma_perc_err6.emplace_back(p_bin_err, this_pi_sigma_perc_err6);
+        }
+
+        if ((this_p_sigma_6 > 0 || this_p_sigma_CDR > 0)){
+            float this_p_sigma_diff6 = this_p_sigma_6 - this_p_sigma_CDR;
+            float this_p_sigma_diff_err6 = std::sqrt(this_p_sigma_err_6*this_p_sigma_err_6 + this_p_sigma_err_CDR*this_p_sigma_err_CDR);
+            float this_p_sigma_perc6 = 0;
+            float this_p_sigma_perc_err6 = 0;
+            if (this_p_sigma_CDR != 0){
+                this_p_sigma_perc6 = 100 * this_p_sigma_diff6 / (this_p_sigma_CDR);
+                this_p_sigma_perc_err6 = (100 / this_p_sigma_CDR) * std::sqrt(this_p_sigma_err_6*this_p_sigma_err_6 + (this_p_sigma_6*this_p_sigma_err_CDR/this_p_sigma_CDR)*(this_p_sigma_6*this_p_sigma_err_CDR/this_p_sigma_CDR));
+            }
+            p_sigma_diff6.emplace_back(p_bin_center, this_p_sigma_diff6);
+            p_sigma_diff_err6.emplace_back(p_bin_err, this_p_sigma_diff_err6);
+            p_sigma_perc6.emplace_back(p_bin_center, this_p_sigma_perc6);
+            p_sigma_perc_err6.emplace_back(p_bin_err, this_p_sigma_perc_err6);
+        }
+
 
         //calculate difference in resolution to CDR if one is non-zero
         if ((this_mu_res_2 > 0 || this_mu_res_CDR > 0)){
@@ -4893,25 +5957,66 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
     draw_percentages_line(muP_perc2, muP_perc3, muP_perc4, muP_perc5, muP_perc6, muP_perc_err2, muP_perc_err3, muP_perc_err4, muP_perc_err5, muP_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonProtonSepPowDiffPercLine.png" ).c_str(), "Difference in Muon Proton Separation", "Momentum [MeV]", "(S-S_{Pilot})/S_{Pilot} *100", 5e4);
     draw_percentages_line(piP_perc2, piP_perc3, piP_perc4, piP_perc5, piP_perc6, piP_perc_err2, piP_perc_err3, piP_perc_err4, piP_perc_err5, piP_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionProtonSepPowDiffPercLine.png" ).c_str(), "Difference in Pion Proton Separation", "Momentum [MeV]", "(S-S_{Pilot})/S_{Pilot} *100", 5e4);
 
-    draw_graphs(mu_res_vec1, mu_res_vec2, mu_res_vec3, mu_res_vec4, mu_res_vec5, mu_res_vec6, mu_res_vec_err1, mu_res_vec_err2, mu_res_vec_err3, mu_res_vec_err4, mu_res_vec_err5, mu_res_vec_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonResComp.png" ).c_str(), "Muon Resolution", "Momentum [MeV]", "Resolution [MeV]", 5e4);
-    draw_graphs(pi_res_vec1, pi_res_vec2, pi_res_vec3, pi_res_vec4, pi_res_vec5, pi_res_vec6, pi_res_vec_err1, pi_res_vec_err2, pi_res_vec_err3, pi_res_vec_err4, pi_res_vec_err5, pi_res_vec_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionResComp.png" ).c_str(), "Pion Resolution", "Momentum [MeV]", "Resolution [MeV]", 5e4);
-    draw_graphs(p_res_vec1, p_res_vec2, p_res_vec3, p_res_vec4, p_res_vec5, p_res_vec6, p_res_vec_err1, p_res_vec_err2, p_res_vec_err3, p_res_vec_err4, p_res_vec_err5, p_res_vec_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_ProtonResComp.png" ).c_str(), "Proton Resolution", "Momentum [MeV]", "Resolution [MeV]", 5e4);
+    draw_graphs(mu_mean_vec1, mu_mean_vec2, mu_mean_vec3, mu_mean_vec4, mu_mean_vec5, mu_mean_vec6, mu_mean_vec_err1, mu_mean_vec_err2, mu_mean_vec_err3, mu_mean_vec_err4, mu_mean_vec_err5, mu_mean_vec_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonMeanComp.png" ).c_str(), "Muon Mean dE/dx", "Momentum [MeV]", "Mean dE/dx [keV(cm)]", 5e4);
+    draw_graphs(pi_mean_vec1, pi_mean_vec2, pi_mean_vec3, pi_mean_vec4, pi_mean_vec5, pi_mean_vec6, pi_mean_vec_err1, pi_mean_vec_err2, pi_mean_vec_err3, pi_mean_vec_err4, pi_mean_vec_err5, pi_mean_vec_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionMeanComp.png" ).c_str(), "Pion Mean dE/dx", "Momentum [MeV]", "Mean dE/dx [keV/cm]", 5e4);
+    draw_graphs(p_mean_vec1, p_mean_vec2, p_mean_vec3, p_mean_vec4, p_mean_vec5, p_mean_vec6, p_mean_vec_err1, p_mean_vec_err2, p_mean_vec_err3, p_mean_vec_err4, p_mean_vec_err5, p_mean_vec_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_ProtonMeanComp.png" ).c_str(), "Proton Mean dE/dx", "Momentum [MeV]", "Mean dE/dx [keV/cm]", 5e4);
+    
+    draw_graphs(mu_sigma_vec1, mu_sigma_vec2, mu_sigma_vec3, mu_sigma_vec4, mu_sigma_vec5, mu_sigma_vec6, mu_sigma_vec_err1, mu_sigma_vec_err2, mu_sigma_vec_err3, mu_sigma_vec_err4, mu_sigma_vec_err5, mu_sigma_vec_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonSigmaComp.png" ).c_str(), "Muon dE/dx Sigma", "Momentum [MeV]", "#sigma_{dE/dx} [keV/cm]", 5e4);
+    draw_graphs(pi_sigma_vec1, pi_sigma_vec2, pi_sigma_vec3, pi_sigma_vec4, pi_sigma_vec5, pi_sigma_vec6, pi_sigma_vec_err1, pi_sigma_vec_err2, pi_sigma_vec_err3, pi_sigma_vec_err4, pi_sigma_vec_err5, pi_sigma_vec_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionSigmaComp.png" ).c_str(), "Pion dE/dx Sigma", "Momentum [MeV]", "#sigma_{dE/dx} [keV/cm]", 5e4);
+    draw_graphs(p_sigma_vec1, p_sigma_vec2, p_sigma_vec3, p_sigma_vec4, p_sigma_vec5, p_sigma_vec6, p_sigma_vec_err1, p_sigma_vec_err2, p_sigma_vec_err3, p_sigma_vec_err4, p_sigma_vec_err5, p_sigma_vec_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_ProtonSigmaComp.png" ).c_str(), "Proton dE/dx Sigma", "Momentum [MeV]", "#sigma_{dE/dx} [keV/cm]", 5e4);
+    
+    draw_graphs(mu_res_vec1, mu_res_vec2, mu_res_vec3, mu_res_vec4, mu_res_vec5, mu_res_vec6, mu_res_vec_err1, mu_res_vec_err2, mu_res_vec_err3, mu_res_vec_err4, mu_res_vec_err5, mu_res_vec_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonResComp.png" ).c_str(), "Muon Resolution", "Momentum [MeV]", "Resolution", 5e4);
+    draw_graphs(pi_res_vec1, pi_res_vec2, pi_res_vec3, pi_res_vec4, pi_res_vec5, pi_res_vec6, pi_res_vec_err1, pi_res_vec_err2, pi_res_vec_err3, pi_res_vec_err4, pi_res_vec_err5, pi_res_vec_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionResComp.png" ).c_str(), "Pion Resolution", "Momentum [MeV]", "Resolution", 5e4);
+    draw_graphs(p_res_vec1, p_res_vec2, p_res_vec3, p_res_vec4, p_res_vec5, p_res_vec6, p_res_vec_err1, p_res_vec_err2, p_res_vec_err3, p_res_vec_err4, p_res_vec_err5, p_res_vec_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_ProtonResComp.png" ).c_str(), "Proton Resolution", "Momentum [MeV]", "Resolution", 5e4);
+    
+    draw_differences(mu_mean_diff2, mu_mean_diff3, mu_mean_diff4, mu_mean_diff5, mu_mean_diff6, mu_mean_diff_err2, mu_mean_diff_err3, mu_mean_diff_err4, mu_mean_diff_err5, mu_mean_diff_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonMeanDiff.png" ).c_str(), "Difference in Muon Mean dE/dx", "Momentum [MeV]", "#mu-#mu_{Pilot} [keV/cm]", 5e4);
+    draw_differences(pi_mean_diff2, pi_mean_diff3, pi_mean_diff4, pi_mean_diff5, pi_mean_diff6, pi_mean_diff_err2, pi_mean_diff_err3, pi_mean_diff_err4, pi_mean_diff_err5, pi_mean_diff_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionMeanDiff.png" ).c_str(), "Difference in Pion Mean dE/dx", "Momentum [MeV]", "#mu-#mu_{Pilot} [keV/cm]", 5e4);
+    draw_differences(p_mean_diff2, p_mean_diff3, p_mean_diff4, p_mean_diff5, p_mean_diff6, p_mean_diff_err2, p_mean_diff_err3, p_mean_diff_err4, p_mean_diff_err5, p_mean_diff_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_ProtonMeanDiff.png" ).c_str(), "Difference in Proton Mean dE/dx", "Momentum [MeV]", "#mu-#mu_{Pilot} [keV/cm]", 5e4);
+    
+    draw_differences(mu_sigma_diff2, mu_sigma_diff3, mu_sigma_diff4, mu_sigma_diff5, mu_sigma_diff6, mu_sigma_diff_err2, mu_sigma_diff_err3, mu_sigma_diff_err4, mu_sigma_diff_err5, mu_sigma_diff_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonSigmaDiff.png" ).c_str(), "Difference in Muon Sigma", "Momentum [MeV]", "#sigma-#sigma_{Pilot} [keV/cm]", 5e4);
+    draw_differences(pi_sigma_diff2, pi_sigma_diff3, pi_sigma_diff4, pi_sigma_diff5, pi_sigma_diff6, pi_sigma_diff_err2, pi_sigma_diff_err3, pi_sigma_diff_err4, pi_sigma_diff_err5, pi_sigma_diff_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionSigmaDiff.png" ).c_str(), "Difference in Pion Sigma", "Momentum [MeV]", "#sigma-sigma_{Pilot} [keV/cm]", 5e4);
+    draw_differences(p_sigma_diff2, p_sigma_diff3, p_sigma_diff4, p_sigma_diff5, p_sigma_diff6, p_sigma_diff_err2, p_sigma_diff_err3, p_sigma_diff_err4, p_sigma_diff_err5, p_sigma_diff_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_ProtonSigmaDiff.png" ).c_str(), "Difference in Proton Sigma", "Momentum [MeV]", "#sigma-#sigma_{Pilot} [keV/cm]", 5e4);
     
     draw_differences(mu_res_diff2, mu_res_diff3, mu_res_diff4, mu_res_diff5, mu_res_diff6, mu_res_diff_err2, mu_res_diff_err3, mu_res_diff_err4, mu_res_diff_err5, mu_res_diff_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonResDiff.png" ).c_str(), "Difference in Muon Resolution", "Momentum [MeV]", "R-R_{Pilot}", 5e4);
     draw_differences(pi_res_diff2, pi_res_diff3, pi_res_diff4, pi_res_diff5, pi_res_diff6, pi_res_diff_err2, pi_res_diff_err3, pi_res_diff_err4, pi_res_diff_err5, pi_res_diff_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionResDiff.png" ).c_str(), "Difference in Pion Resolution", "Momentum [MeV]", "R-R_{Pilot}", 5e4);
     draw_differences(p_res_diff2, p_res_diff3, p_res_diff4, p_res_diff5, p_res_diff6, p_res_diff_err2, p_res_diff_err3, p_res_diff_err4, p_res_diff_err5, p_res_diff_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_ProtonResDiff.png" ).c_str(), "Difference in Proton Resolution", "Momentum [MeV]", "R-R_{Pilot}", 5e4);
     
+    draw_percentages(mu_mean_perc2, mu_mean_perc3, mu_mean_perc4, mu_mean_perc5, mu_mean_perc6, mu_mean_perc_err2, mu_mean_perc_err3, mu_mean_perc_err4, mu_mean_perc_err5, mu_mean_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonMeanDiffPerc.png" ).c_str(), "Difference in Muon Mean dE/dx", "Momentum [MeV]", "(#mu-#mu_{Pilot})/#mu_{Pilot} *100", 5e4);
+    draw_percentages(pi_mean_perc2, pi_mean_perc3, pi_mean_perc4, pi_mean_perc5, pi_mean_perc6, pi_mean_perc_err2, pi_mean_perc_err3, pi_mean_perc_err4, pi_mean_perc_err5, pi_mean_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionMeanDiffPerc.png" ).c_str(), "Difference in Pion Mean dE/dx", "Momentum [MeV]", "(#mu-#mu_{Pilot})/#mu_{Pilot} *100", 5e4);
+    draw_percentages(p_mean_perc2, p_mean_perc3, p_mean_perc4, p_mean_perc5, p_mean_perc6, p_mean_perc_err2, p_mean_perc_err3, p_mean_perc_err4, p_mean_perc_err5, p_mean_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_ProtonMeanDiffPerc.png" ).c_str(), "Difference in Proton Mean dE/dx", "Momentum [MeV]", "(#mu-#mu_{Pilot})/#mu_{Pilot} *100", 5e4);
+
+    draw_percentages(mu_sigma_perc2, mu_sigma_perc3, mu_sigma_perc4, mu_sigma_perc5, mu_sigma_perc6, mu_sigma_perc_err2, mu_sigma_perc_err3, mu_sigma_perc_err4, mu_sigma_perc_err5, mu_sigma_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonSigmaDiffPerc.png" ).c_str(), "Difference in Muon Sigma", "Momentum [MeV]", "(#sigma-#sigma_{Pilot})/#sigma_{Pilot} *100", 5e4);
+    draw_percentages(pi_sigma_perc2, pi_sigma_perc3, pi_sigma_perc4, pi_sigma_perc5, pi_sigma_perc6, pi_sigma_perc_err2, pi_sigma_perc_err3, pi_sigma_perc_err4, pi_sigma_perc_err5, pi_sigma_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionSigmaDiffPerc.png" ).c_str(), "Difference in Pion Sigma", "Momentum [MeV]", "(#sigma-#sigma_{Pilot})/#sigma_{Pilot} *100", 5e4);
+    draw_percentages(p_sigma_perc2, p_sigma_perc3, p_sigma_perc4, p_sigma_perc5, p_sigma_perc6, p_sigma_perc_err2, p_sigma_perc_err3, p_sigma_perc_err4, p_sigma_perc_err5, p_sigma_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_ProtonSigmaDiffPerc.png" ).c_str(), "Difference in Proton Sigma", "Momentum [MeV]", "(#sigma-#sigma_{Pilot})/#sigma_{Pilot} *100", 5e4);
+
     draw_percentages(mu_res_perc2, mu_res_perc3, mu_res_perc4, mu_res_perc5, mu_res_perc6, mu_res_perc_err2, mu_res_perc_err3, mu_res_perc_err4, mu_res_perc_err5, mu_res_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonResDiffPerc.png" ).c_str(), "Difference in Muon Resolution", "Momentum [MeV]", "(R-R_{Pilot})/R_{Pilot} *100", 5e4);
     draw_percentages(pi_res_perc2, pi_res_perc3, pi_res_perc4, pi_res_perc5, pi_res_perc6, pi_res_perc_err2, pi_res_perc_err3, pi_res_perc_err4, pi_res_perc_err5, pi_res_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionResDiffPerc.png" ).c_str(), "Difference in Pion Resolution", "Momentum [MeV]", "(R-R_{Pilot})/R_{Pilot} *100", 5e4);
     draw_percentages(p_res_perc2, p_res_perc3, p_res_perc4, p_res_perc5, p_res_perc6, p_res_perc_err2, p_res_perc_err3, p_res_perc_err4, p_res_perc_err5, p_res_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_ProtonResDiffPerc.png" ).c_str(), "Difference in Proton Resolution", "Momentum [MeV]", "(R-R_{Pilot})/R_{Pilot} *100", 5e4);
+
+    draw_percentages_line(mu_mean_perc2, mu_mean_perc3, mu_mean_perc4, mu_mean_perc5, mu_mean_perc6, mu_mean_perc_err2, mu_mean_perc_err3, mu_mean_perc_err4, mu_mean_perc_err5, mu_mean_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonMeanDiffPercLine.png" ).c_str(), "Difference in Muon Mean dE/dx", "Momentum [MeV]", "(#mu-#mu_{Pilot})/#mu_{Pilot} *100", 5e4);
+    draw_percentages_line(pi_mean_perc2, pi_mean_perc3, pi_mean_perc4, pi_mean_perc5, pi_mean_perc6, pi_mean_perc_err2, pi_mean_perc_err3, pi_mean_perc_err4, pi_mean_perc_err5, pi_mean_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionMeanDiffPercLine.png" ).c_str(), "Difference in Pion Mean dE/dx", "Momentum [MeV]", "(#mu-#mu_{Pilot})/#mu_{Pilot} *100", 5e4);
+    draw_percentages_line(p_mean_perc2, p_mean_perc3, p_mean_perc4, p_mean_perc5, p_mean_perc6, p_mean_perc_err2, p_mean_perc_err3, p_mean_perc_err4, p_mean_perc_err5, p_mean_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_ProtonMeanDiffPercLine.png" ).c_str(), "Difference in Proton Mean dE/dx", "Momentum [MeV]", "(#mu-#mu_{Pilot})/#mu_{Pilot} *100", 5e4);
+
+    draw_percentages_line(mu_sigma_perc2, mu_sigma_perc3, mu_sigma_perc4, mu_sigma_perc5, mu_sigma_perc6, mu_sigma_perc_err2, mu_sigma_perc_err3, mu_sigma_perc_err4, mu_sigma_perc_err5, mu_sigma_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonSigmaDiffPercLine.png" ).c_str(), "Difference in Muon Sigma", "Momentum [MeV]", "(#sigma-#sigma_{Pilot})/#sigma_{Pilot} *100", 5e4);
+    draw_percentages_line(pi_sigma_perc2, pi_sigma_perc3, pi_sigma_perc4, pi_sigma_perc5, pi_sigma_perc6, pi_sigma_perc_err2, pi_sigma_perc_err3, pi_sigma_perc_err4, pi_sigma_perc_err5, pi_sigma_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionSigmaDiffPercLine.png" ).c_str(), "Difference in Pion Sigma", "Momentum [MeV]", "(#sigma-#sigma_{Pilot})/#sigma_{Pilot} *100", 5e4);
+    draw_percentages_line(p_sigma_perc2, p_sigma_perc3, p_sigma_perc4, p_sigma_perc5, p_sigma_perc6, p_sigma_perc_err2, p_sigma_perc_err3, p_sigma_perc_err4, p_sigma_perc_err5, p_sigma_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_ProtonSigmaDiffPercLine.png" ).c_str(), "Difference in Proton Sigma", "Momentum [MeV]", "(#sigma-#sigma_{Pilot})/#sigma_{Pilot} *100", 5e4);
 
     draw_percentages_line(mu_res_perc2, mu_res_perc3, mu_res_perc4, mu_res_perc5, mu_res_perc6, mu_res_perc_err2, mu_res_perc_err3, mu_res_perc_err4, mu_res_perc_err5, mu_res_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonResDiffPercLine.png" ).c_str(), "Difference in Muon Resolution", "Momentum [MeV]", "(R-R_{Pilot})/R_{Pilot} *100", 5e4);
     draw_percentages_line(pi_res_perc2, pi_res_perc3, pi_res_perc4, pi_res_perc5, pi_res_perc6, pi_res_perc_err2, pi_res_perc_err3, pi_res_perc_err4, pi_res_perc_err5, pi_res_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionResDiffPercLine.png" ).c_str(), "Difference in Pion Resolution", "Momentum [MeV]", "(R-R_{Pilot})/R_{Pilot} *100", 5e4);
     draw_percentages_line(p_res_perc2, p_res_perc3, p_res_perc4, p_res_perc5, p_res_perc6, p_res_perc_err2, p_res_perc_err3, p_res_perc_err4, p_res_perc_err5, p_res_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_ProtonResDiffPercLine.png" ).c_str(), "Difference in Proton Resolution", "Momentum [MeV]", "(R-R_{Pilot})/R_{Pilot} *100", 5e4);
 
+    /*
     draw_percentagesWithFit(muPi_perc2, muPi_perc3, muPi_perc4, muPi_perc5, muPi_perc6, muPi_perc_err2, muPi_perc_err3, muPi_perc_err4, muPi_perc_err5, muPi_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonPionSepPowDiffPercWithFit.png" ).c_str(), "Difference in Muon Pion Separation", "Momentum [MeV]", "(S-S_{Pilot})/S_{Pilot} *100", 5e4, true);
     draw_percentagesWithFit(muP_perc2, muP_perc3, muP_perc4, muP_perc5, muP_perc6, muP_perc_err2, muP_perc_err3, muP_perc_err4, muP_perc_err5, muP_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonProtonSepPowDiffPercWithFit.png" ).c_str(), "Difference in Muon Proton Separation", "Momentum [MeV]", "(S-S_{Pilot})/S_{Pilot} *100", 5e4, false);
     draw_percentagesWithFit(piP_perc2, piP_perc3, piP_perc4, piP_perc5, piP_perc6, piP_perc_err2, piP_perc_err3, piP_perc_err4, piP_perc_err5, piP_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionProtonSepPowDiffPercWithFit.png" ).c_str(), "Difference in Pion Proton Separation", "Momentum [MeV]", "(S-S_{Pilot})/S_{Pilot} *100", 5e4, false);
+
+    draw_percentagesWithFit(mu_mean_perc2, mu_mean_perc3, mu_mean_perc4, mu_mean_perc5, mu_mean_perc6, mu_mean_perc_err2, mu_mean_perc_err3, mu_mean_perc_err4, mu_mean_perc_err5, mu_mean_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonMeanDiffPercWithFit.png" ).c_str(), "Difference in Muon Mean dE/dx", "Momentum [MeV]", "(#mu-mu_{Pilot})/mu_{Pilot} *100", 5e4, true);
+    draw_percentagesWithFit(pi_mean_perc2, pi_mean_perc3, pi_mean_perc4, pi_mean_perc5, pi_mean_perc6, pi_mean_perc_err2, pi_mean_perc_err3, pi_mean_perc_err4, pi_mean_perc_err5, pi_mean_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionMeanDiffPercWithFit.png" ).c_str(), "Difference in Pion Mean dE/dx", "Momentum [MeV]", "(#mu-mu_{Pilot})/mu_{Pilot} *100", 5e4, true);
+    draw_percentagesWithFit(p_mean_perc2, p_mean_perc3, p_mean_perc4, p_mean_perc5, p_mean_perc6, p_mean_perc_err2, p_mean_perc_err3, p_mean_perc_err4, p_mean_perc_err5, p_mean_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_ProtonMeanDiffPercWithFit.png" ).c_str(), "Difference in Proton Mean dE/dx", "Momentum [MeV]", "(#mu-mu_{Pilot})/mu_{Pilot} *100", 5e4, false);
+
+    draw_percentagesWithFit(mu_sigma_perc2, mu_sigma_perc3, mu_sigma_perc4, mu_sigma_perc5, mu_sigma_perc6, mu_sigma_perc_err2, mu_sigma_perc_err3, mu_sigma_perc_err4, mu_sigma_perc_err5, mu_sigma_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonSigmaDiffPercWithFit.png" ).c_str(), "Difference in Muon Sigma", "Momentum [MeV]", "(#sigma-sigma_{Pilot})/sigma_{Pilot} *100", 5e4, true);
+    draw_percentagesWithFit(pi_sigma_perc2, pi_sigma_perc3, pi_sigma_perc4, pi_sigma_perc5, pi_sigma_perc6, pi_sigma_perc_err2, pi_sigma_perc_err3, pi_sigma_perc_err4, pi_sigma_perc_err5, pi_sigma_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionSigmaDiffPercWithFit.png" ).c_str(), "Difference in Pion Sigma", "Momentum [MeV]", "(#sigma-sigma_{Pilot})/sigma_{Pilot} *100", 5e4, true);
+    draw_percentagesWithFit(p_sigma_perc2, p_sigma_perc3, p_sigma_perc4, p_sigma_perc5, p_sigma_perc6, p_sigma_perc_err2, p_sigma_perc_err3, p_sigma_perc_err4, p_sigma_perc_err5, p_sigma_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_ProtonSigmaDiffPercWithFit.png" ).c_str(), "Difference in Proton Sigma", "Momentum [MeV]", "(#sigma-sigma_{Pilot})/sigma_{Pilot} *100", 5e4, false);
 
     draw_percentagesWithFit(mu_res_perc2, mu_res_perc3, mu_res_perc4, mu_res_perc5, mu_res_perc6, mu_res_perc_err2, mu_res_perc_err3, mu_res_perc_err4, mu_res_perc_err5, mu_res_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonResDiffPercWithFit.png" ).c_str(), "Difference in Muon Resolution", "Momentum [MeV]", "(R-R_{Pilot})/R_{Pilot} *100", 5e4, true);
     draw_percentagesWithFit(pi_res_perc2, pi_res_perc3, pi_res_perc4, pi_res_perc5, pi_res_perc6, pi_res_perc_err2, pi_res_perc_err3, pi_res_perc_err4, pi_res_perc_err5, pi_res_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionResDiffPercWithFit.png" ).c_str(), "Difference in Pion Resolution", "Momentum [MeV]", "(R-R_{Pilot})/R_{Pilot} *100", 5e4, true);
@@ -4921,10 +6026,18 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
     draw_percentagesFit(muP_perc2, muP_perc3, muP_perc4, muP_perc5, muP_perc6, muP_perc_err2, muP_perc_err3, muP_perc_err4, muP_perc_err5, muP_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonProtonSepPowDiffPercFit.png" ).c_str(), "Difference in Muon Proton Separation", "Momentum [MeV]", "(S-S_{Pilot})/S_{Pilot} *100", 5e4, false);
     draw_percentagesFit(piP_perc2, piP_perc3, piP_perc4, piP_perc5, piP_perc6, piP_perc_err2, piP_perc_err3, piP_perc_err4, piP_perc_err5, piP_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionProtonSepPowDiffPercFit.png" ).c_str(), "Difference in Pion Proton Separation", "Momentum [MeV]", "(S-S_{Pilot})/S_{Pilot} *100", 5e4, false);
 
+    draw_percentagesFit(mu_mean_perc2, mu_mean_perc3, mu_mean_perc4, mu_mean_perc5, mu_mean_perc6, mu_mean_perc_err2, mu_mean_perc_err3, mu_mean_perc_err4, mu_mean_perc_err5, mu_mean_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonMeanDiffPercFit.png" ).c_str(), "Difference in Muon Mean dE/dx", "Momentum [MeV]", "(#mu-mu_{Pilot})/mu_{Pilot} *100", 5e4, true);
+    draw_percentagesFit(pi_mean_perc2, pi_mean_perc3, pi_mean_perc4, pi_mean_perc5, pi_mean_perc6, pi_mean_perc_err2, pi_mean_perc_err3, pi_mean_perc_err4, pi_mean_perc_err5, pi_mean_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionMeanDiffPercFit.png" ).c_str(), "Difference in Pion Mean dE/dx", "Momentum [MeV]", "(#mu-mu_{Pilot})/mu_{Pilot} *100", 5e4, true);
+    draw_percentagesFit(p_mean_perc2, p_mean_perc3, p_mean_perc4, p_mean_perc5, p_mean_perc6, p_mean_perc_err2, p_mean_perc_err3, p_mean_perc_err4, p_mean_perc_err5, p_mean_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_ProtonMeanDiffPercFit.png" ).c_str(), "Difference in Proton Mean dE/dx", "Momentum [MeV]", "(#mu-mu_{Pilot})/mu_{Pilot} *100", 5e4, false);
+
+    draw_percentagesFit(mu_sigma_perc2, mu_sigma_perc3, mu_sigma_perc4, mu_sigma_perc5, mu_sigma_perc6, mu_sigma_perc_err2, mu_sigma_perc_err3, mu_sigma_perc_err4, mu_sigma_perc_err5, mu_sigma_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonSigmaDiffPercFit.png" ).c_str(), "Difference in Muon Sigma", "Momentum [MeV]", "(#sigma-sigma_{Pilot})/sigma_{Pilot} *100", 5e4, true);
+    draw_percentagesFit(pi_sigma_perc2, pi_sigma_perc3, pi_sigma_perc4, pi_sigma_perc5, pi_sigma_perc6, pi_sigma_perc_err2, pi_sigma_perc_err3, pi_sigma_perc_err4, pi_sigma_perc_err5, pi_sigma_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionSigmaDiffPercFit.png" ).c_str(), "Difference in Pion Sigma", "Momentum [MeV]", "(#sigma-sigma_{Pilot})/sigma_{Pilot} *100", 5e4, true);
+    draw_percentagesFit(p_sigma_perc2, p_sigma_perc3, p_sigma_perc4, p_sigma_perc5, p_sigma_perc6, p_sigma_perc_err2, p_sigma_perc_err3, p_sigma_perc_err4, p_sigma_perc_err5, p_sigma_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_ProtonSigmaDiffPercFit.png" ).c_str(), "Difference in Proton Sigma", "Momentum [MeV]", "(#sigma-sigma_{Pilot})/sigma_{Pilot} *100", 5e4, false);
+
     draw_percentagesFit(mu_res_perc2, mu_res_perc3, mu_res_perc4, mu_res_perc5, mu_res_perc6, mu_res_perc_err2, mu_res_perc_err3, mu_res_perc_err4, mu_res_perc_err5, mu_res_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonResDiffPercFit.png" ).c_str(), "Difference in Muon Resolution", "Momentum [MeV]", "(R-R_{Pilot})/R_{Pilot} *100", 5e4, true);
     draw_percentagesFit(pi_res_perc2, pi_res_perc3, pi_res_perc4, pi_res_perc5, pi_res_perc6, pi_res_perc_err2, pi_res_perc_err3, pi_res_perc_err4, pi_res_perc_err5, pi_res_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionResDiffPercFit.png" ).c_str(), "Difference in Pion Resolution", "Momentum [MeV]", "(R-R_{Pilot})/R_{Pilot} *100", 5e4, true);
     draw_percentagesFit(p_res_perc2, p_res_perc3, p_res_perc4, p_res_perc5, p_res_perc6, p_res_perc_err2, p_res_perc_err3, p_res_perc_err4, p_res_perc_err5, p_res_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_ProtonResDiffPercFit.png" ).c_str(), "Difference in Proton Resolution", "Momentum [MeV]", "(R-R_{Pilot})/R_{Pilot} *100", 5e4, false);
-
+*/
 
     draw_graphs(muPi_sep_track1, muPi_sep_track2, muPi_sep_track3, muPi_sep_track4, muPi_sep_track5, muPi_sep_track6, muPi_track_err1, muPi_track_err2, muPi_track_err3, muPi_track_err4, muPi_track_err5, muPi_track_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_track_MuonPionSepPowComp.png" ).c_str(), "Muon Pion Separation Power", "Track Length [cm]", "Separation Power",5e3);
     draw_graphs(muP_sep_track1, muP_sep_track2, muP_sep_track3, muP_sep_track4, muP_sep_track5, muP_sep_track6, muP_track_err1, muP_track_err2, muP_track_err3, muP_track_err4, muP_track_err5, muP_track_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_track_MuonProtonSepPowComp.png" ).c_str(), "Muon Proton Separation Power", "Track Length [cm]", "Separation Power",5e3);
@@ -4958,6 +6071,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
     draw_percentages_line(pi_res_perc_track2, pi_res_perc_track3, pi_res_perc_track4, pi_res_perc_track5, pi_res_perc_track6, pi_res_perc_track_err2, pi_res_perc_track_err3, pi_res_perc_track_err4, pi_res_perc_track_err5, pi_res_perc_track_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_track_PionResDiffPercLine.png" ).c_str(), "Difference in Pion Resolution", "Track Length [cm]", "(R-R_{Pilot})/R_{Pilot} *100", 5e3);
     draw_percentages_line(p_res_perc_track2, p_res_perc_track3, p_res_perc_track4, p_res_perc_track5, p_res_perc_track6, p_res_perc_track_err2, p_res_perc_track_err3, p_res_perc_track_err4, p_res_perc_track_err5, p_res_perc_track_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_track_ProtonResDiffPercLine.png" ).c_str(), "Difference in Proton Resolution", "Track Length [cm]", "(R-R_{Pilot})/R_{Pilot} *100", 5e3);
 
+    /*
     draw_percentagesWithFit(muPi_perc_track2, muPi_perc_track3, muPi_perc_track4, muPi_perc_track5, muPi_perc_track6, muPi_perc_track_err2, muPi_perc_track_err3, muPi_perc_track_err4, muPi_perc_track_err5, muPi_perc_track_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_track_MuonPionSepPowDiffPercWithFit.png" ).c_str(), "Difference in Muon Pion Separation", "Track Length [cm]", "(S-S_{Pilot})/S_{Pilot} *100", 5e3, true);
     draw_percentagesWithFit(muP_perc_track2, muP_perc_track3, muP_perc_track4, muP_perc_track5, muP_perc_track6, muP_perc_track_err2, muP_perc_track_err3, muP_perc_track_err4, muP_perc_track_err5, muP_perc_track_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_track_MuonProtonSepPowDiffPercWithFit.png" ).c_str(), "Difference in Muon Proton Separation", "Track Length [cm]", "(S-S_{Pilot})/S_{Pilot} *100", 5e3, false);
     draw_percentagesWithFit(piP_perc_track2, piP_perc_track3, piP_perc_track4, piP_perc_track5, piP_perc_track6, piP_perc_track_err2, piP_perc_track_err3, piP_perc_track_err4, piP_perc_track_err5, piP_perc_track_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_track_PionProtonSepPowDiffPercWithFit.png" ).c_str(), "Difference in Pion Proton Separation", "Track Length [cm]", "(S-S_{Pilot})/S_{Pilot} *100", 5e3, false);
@@ -4973,7 +6087,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
     draw_percentagesFit(mu_res_perc_track2, mu_res_perc_track3, mu_res_perc_track4, mu_res_perc_track5, mu_res_perc_track6, mu_res_perc_track_err2, mu_res_perc_track_err3, mu_res_perc_track_err4, mu_res_perc_track_err5, mu_res_perc_track_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_track_MuonResDiffPercFit.png" ).c_str(), "Difference in Muon Resolution", "Track Length [cm]", "(R-R_{Pilot})/R_{Pilot} *100", 5e3, true);
     draw_percentagesFit(pi_res_perc_track2, pi_res_perc_track3, pi_res_perc_track4, pi_res_perc_track5, pi_res_perc_track6, pi_res_perc_track_err2, pi_res_perc_track_err3, pi_res_perc_track_err4, pi_res_perc_track_err5, pi_res_perc_track_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_track_PionResDiffPercFit.png" ).c_str(), "Difference in Pion Resolution", "Track Length [cm]", "(R-R_{Pilot})/R_{Pilot} *100", 5e3, true);
     draw_percentagesFit(p_res_perc_track2, p_res_perc_track3, p_res_perc_track4, p_res_perc_track5, p_res_perc_track6, p_res_perc_track_err2, p_res_perc_track_err3, p_res_perc_track_err4, p_res_perc_track_err5, p_res_perc_track_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_track_ProtonResDiffPercFit.png" ).c_str(), "Difference in Proton Resolution", "Track Length [cm]", "(R-R_{Pilot})/R_{Pilot} *100", 5e3, false);
-
+*/
     /*
     for (size_t i = 0; i < nPBins; i++){
         //find momentum ranges

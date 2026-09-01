@@ -53,7 +53,10 @@ using namespace geometry;
 //create graphs for p vs dE/dx
 void draw_graphs(std::map<int, std::vector<double>>& pdg_to_p, std::map<int, std::vector<double>>& pdg_to_dEdx, std::map<int, std::vector<double>>& pdg_to_p_err, std::map<int, std::vector<double>>& pdg_to_dEdx_err, const std::string& outName, const char* title, const char* Xtitle, const char* Ytitle, float x_max, float y_max){
 
-    TCanvas* canvas = new TCanvas("canvas", title, 900, 700);
+    static int canvasCounter = 0;
+
+    TCanvas* canvas = new TCanvas(Form("c_sep_%d", canvasCounter++),title,900,700);
+
     canvas->SetLogx(); //set logarithmic for x-axis
 
     // create legend for p vs. dE/dx graph
@@ -148,7 +151,9 @@ void draw_graphs(std::map<int, std::vector<double>>& pdg_to_p, std::map<int, std
 
 void draw_sepPow(std::vector<Float_t>& mom_vec, std::vector<Float_t>& sep_pow_vec, std::vector<Float_t>& sep_pow_err_vec, std::vector<Float_t>& mom_err_vec, const std::string& outName, const char* title, const char* Xtitle, const char* Ytitle, float x_max, float y_max, bool zoomed){
 
-    TCanvas* canvas = new TCanvas("canvas", title, 900, 700);
+    static int canvasCounter = 0;
+
+    TCanvas* canvas = new TCanvas(Form("c_sep_%d", canvasCounter++),title,900,700);
     canvas->SetLogx(); //set logarithmic for x-axis
 
     // create legend for separation power graph
@@ -184,18 +189,32 @@ void draw_sepPow(std::vector<Float_t>& mom_vec, std::vector<Float_t>& sep_pow_ve
         clean_y_err.push_back(points[i].sigma_y);
     }
 
+    if (clean_x.empty() || clean_y.empty()) {
+        std::cerr << "ERROR in draw_sepPow: no valid points to draw\n";
+        delete canvas;
+        return;
+    }
+
     std::vector<float> err_max, err_min;
     for (size_t i = 0; i < points.size(); i++){
-        float frac_err = clean_y_err[i] / clean_y[i];
+        //float frac_err = clean_y_err[i] / clean_y[i];
         //if (frac_err >= 0.5) continue;
         err_max.push_back(clean_y[i] + clean_y_err[i]);
     }
 
-    
-    float max_y = std::max({
-        *std::max_element(clean_y.begin(), clean_y.end()),
-        *std::max_element(err_max.begin(), err_max.end())
-    });
+    float max_y = 0;
+    if(!err_max.empty()){
+        max_y = std::max({
+            *std::max_element(clean_y.begin(), clean_y.end()),
+            *std::max_element(err_max.begin(), err_max.end())
+        });
+    }
+    else{
+        max_y = std::max({
+            *std::max_element(clean_y.begin(), clean_y.end())
+        });
+    }
+ 
 
     float max_x = std::max({
         *std::max_element(clean_x.begin(), clean_x.end())
@@ -295,7 +314,7 @@ void draw_sepPow(std::vector<Float_t>& mom_vec, std::vector<Float_t>& sep_pow_ve
 
     canvas->SaveAs((outName).c_str());
 
-    delete gr_err;
+    //delete gr_err;
     delete canvas;
 
 }
@@ -305,7 +324,9 @@ void draw_all_sepPow(std::vector<Float_t>& mupi_mom_vec, std::vector<Float_t>& m
     std::vector<Float_t>& pip_mom_vec, std::vector<Float_t>& pip_sep_pow_vec, std::vector<Float_t>& pip_sep_pow_err_vec, std::vector<Float_t>& pip_mom_err_vec,
     const std::string& outName, const char* title, const char* Xtitle, const char* Ytitle){
 
-    TCanvas* canvas = new TCanvas("canvas", title, 900, 700);
+    static int canvasCounter = 0;
+
+    TCanvas* canvas = new TCanvas(Form("c_sep_%d", canvasCounter++),title,900,700);
     canvas->SetLogx(); //set logarithmic for x-axis
 
 
@@ -359,46 +380,112 @@ void draw_all_sepPow(std::vector<Float_t>& mupi_mom_vec, std::vector<Float_t>& m
         pip_y_err.push_back(pip_points[i].sigma_y);
     }
 
+    if ((pip_x.empty() || pip_y.empty()) && (mup_x.empty() || mup_y.empty()) && (mupi_x.empty() || mupi_y.empty())) {
+        std::cerr << "ERROR in draw_sepPow_all: no valid points to draw\n";
+        delete canvas;
+        return;
+    }
+
     std::vector<float> mupi_x_err_max, mupi_y_err_max;
     for (size_t i = 0; i < mupi_points.size(); i++){
-        float frac_err = mupi_y_err[i] / mupi_y[i];
+        //float frac_err = mupi_y_err[i] / mupi_y[i];
         //if (frac_err >= 0.5) continue;
         mupi_x_err_max.push_back(mupi_x[i] + mupi_x_err[i]);
         mupi_y_err_max.push_back(mupi_y[i] + mupi_y_err[i]);
     }
     std::vector<float> mup_x_err_max, mup_y_err_max;
     for (size_t i = 0; i < mup_points.size(); i++){
-        float frac_err = mup_y_err[i] / mup_y[i];
+        //float frac_err = mup_y_err[i] / mup_y[i];
         //if (frac_err >= 0.5) continue;
         mup_x_err_max.push_back(mup_x[i] + mup_x_err[i]);
         mup_y_err_max.push_back(mup_y[i] + mup_y_err[i]);
     }
     std::vector<float> pip_x_err_max, pip_y_err_max;
     for (size_t i = 0; i < pip_points.size(); i++){
-        float frac_err = pip_y_err[i] / pip_y[i];
+        //float frac_err = pip_y_err[i] / pip_y[i];
         //if (frac_err >= 0.5) continue;
         pip_x_err_max.push_back(pip_x[i] + pip_x_err[i]);
         pip_y_err_max.push_back(pip_y[i] + pip_y_err[i]);
     }
 
-    
-    float max_y = std::max({
-        *std::max_element(mupi_y.begin(), mupi_y.end()),
-        *std::max_element(mupi_y_err_max.begin(), mupi_y_err_max.end()),
-        *std::max_element(mup_y.begin(), mup_y.end()),
-        *std::max_element(mup_y_err_max.begin(), mup_y_err_max.end()),
-        *std::max_element(pip_y.begin(), pip_y.end()),
-        *std::max_element(pip_y_err_max.begin(), pip_y_err_max.end())
-    });
+    float max_y = 0;
+    float max_x = 0;
 
-    float max_x = std::max({
-        *std::max_element(mupi_x.begin(), mupi_x.end()),
-        *std::max_element(mupi_x_err_max.begin(), mupi_x_err_max.end()),
-        *std::max_element(mup_x.begin(), mup_x.end()),
-        *std::max_element(mup_x_err_max.begin(), mup_x_err_max.end()),
-        *std::max_element(pip_x.begin(), pip_x.end()),
-        *std::max_element(pip_x_err_max.begin(), pip_x_err_max.end())
-    });
+    if(!mupi_y.empty()){
+        max_y = std::max({
+            max_y,
+            *std::max_element(mupi_y.begin(), mupi_y.end())
+        });
+    }
+    if(!mup_y.empty()){
+        max_y = std::max({
+            max_y,
+            *std::max_element(mup_y.begin(), mup_y.end())
+        });
+    }
+    if(!pip_y.empty()){
+        max_y = std::max({
+            max_y,
+            *std::max_element(pip_y.begin(), pip_y.end())
+        });
+    }
+    if(!mupi_y_err.empty()){
+        max_y = std::max({
+            max_y,
+            *std::max_element(mupi_y_err_max.begin(), mupi_y_err_max.end())
+        });
+    }
+    if(!mup_y_err.empty()){
+        max_y = std::max({
+            max_y,
+            *std::max_element(mup_y_err_max.begin(), mup_y_err_max.end())
+        });
+    }
+    if(!pip_y_err.empty()){
+        max_y = std::max({
+            max_y,
+            *std::max_element(pip_y_err_max.begin(), pip_y_err_max.end())
+        });
+    }
+
+    if(!mupi_x.empty()){
+        max_x = std::max({
+            max_x,
+            *std::max_element(mupi_x.begin(), mupi_x.end())
+        });
+    }
+    if(!mup_x.empty()){
+        max_x = std::max({
+            max_x,
+            *std::max_element(mup_x.begin(), mup_x.end())
+        });
+    }
+    if(!pip_x.empty()){
+        max_x = std::max({
+            max_x,
+            *std::max_element(pip_x.begin(), pip_x.end())
+        });
+    }
+    if(!mupi_x_err.empty()){
+        max_x = std::max({
+            max_x,
+            *std::max_element(mupi_x_err_max.begin(), mupi_x_err_max.end())
+        });
+    }
+    if(!mup_x_err.empty()){
+        max_x = std::max({
+            max_x,
+            *std::max_element(mup_x_err_max.begin(), mup_x_err_max.end())
+        });
+    }
+    if(!pip_x_err.empty()){
+        max_x = std::max({
+            max_x,
+            *std::max_element(pip_x_err_max.begin(), pip_x_err_max.end())
+        });
+    }
+
+    
 
     TH1F* frame = canvas->DrawFrame(
         1,
@@ -447,15 +534,15 @@ void draw_all_sepPow(std::vector<Float_t>& mupi_mom_vec, std::vector<Float_t>& m
     shade->SetLineColor(0);
     shade->Draw("SAME");
     
-    gr_err1->Draw("PL SAME");
-    gr_err2->Draw("PL SAME");
-    gr_err3->Draw("PL SAME");
+    if (!mupi_x.empty() && !mupi_y.empty()) gr_err1->Draw("PL SAME");
+    if (!mup_x.empty() && !mup_y.empty()) gr_err2->Draw("PL SAME");
+    if (!pip_x.empty() && !pip_y.empty()) gr_err3->Draw("PL SAME");
 
     //add legend
     TLegend* leg = new TLegend(0.15, 0.7, 0.4, 0.88);
-    leg->AddEntry(gr_err1, "Muon-Pion", "p");
-    leg->AddEntry(gr_err2, "Muon-Proton", "p");
-    leg->AddEntry(gr_err3, "Pion-Proton", "p");
+    if (!mupi_x.empty() && !mupi_y.empty()) leg->AddEntry(gr_err1, "Muon-Pion", "p");
+    if (!mup_x.empty() && !mup_y.empty()) leg->AddEntry(gr_err2, "Muon-Proton", "p");
+    if (!pip_x.empty() && !pip_y.empty()) leg->AddEntry(gr_err3, "Pion-Proton", "p");
     leg->AddEntry(shade, "<3#sigma");
     leg->Draw();
 
@@ -463,9 +550,9 @@ void draw_all_sepPow(std::vector<Float_t>& mupi_mom_vec, std::vector<Float_t>& m
 
     canvas->SaveAs((outName).c_str());
 
-    delete gr_err1;
-    delete gr_err2;
-    delete gr_err3;
+    //delete gr_err1;
+    //delete gr_err2;
+    //delete gr_err3;
     delete canvas;
 
 
@@ -546,10 +633,26 @@ fit_results calc_res(TH1F* hist){
     double sigma     = fr->Parameter(2);
     double sigma_err = fr->ParError(2);
 
+    /*
     double sigma_frac = sigma_err/sigma;
     double mean_frac = mean_err/mean;
 
     if(sigma_frac > 0.25 || mean_frac > 0.25){
+        return {0, 0, 0, 0, 0, 0, 0};
+    }*/
+
+
+    double chi2ndf = 0;
+
+    if (fr->Ndf() != 0) chi2ndf = fr->Chi2() / fr->Ndf();
+    /*
+    if(chi2ndf > 5.0){
+        return {0, 0, 0, 0, 0, 0, 0};
+    }*/
+    
+    double prob = fr->Prob();
+
+    if (prob < 0.01 && chi2ndf > 5.0) {
         return {0, 0, 0, 0, 0, 0, 0};
     }
 
@@ -609,10 +712,26 @@ fit_results calc_res_land(TH1F* hist){
     double sigma     = fr->Parameter(2);
     double sigma_err = fr->ParError(2);
 
+    /*
     double sigma_frac = sigma_err/sigma;
     double mean_frac = mean_err/mean;
 
     if(sigma_frac > 0.25 || mean_frac > 0.25){
+        return {0, 0, 0, 0, 0, 0, 0};
+    }*/
+
+    
+    double chi2ndf = 0;
+
+    if (fr->Ndf() != 0) chi2ndf = fr->Chi2() / fr->Ndf();
+    /*
+    if(chi2ndf > 5.0){
+        return {0, 0, 0, 0, 0, 0, 0};
+    }*/
+
+    double prob = fr->Prob();
+
+    if (prob < 0.01 && chi2ndf > 5.0) {
         return {0, 0, 0, 0, 0, 0, 0};
     }
 
@@ -653,7 +772,9 @@ fit_results calc_res_iqr(TH1F* hist){
 
 void draw_gaussian_fit(TH1F* hist, const char* title, const std::string& outName){
 
-    TCanvas* canvas = new TCanvas("canvas", title, 800, 600);
+    static int canvasCounter = 0;
+
+    TCanvas* canvas = new TCanvas(Form("c_sep_%d", canvasCounter++),title,900,700);
     
     // Set style options for statistics box and fit parameters
     gStyle->SetOptStat(1111);
@@ -699,7 +820,34 @@ void draw_gaussian_fit(TH1F* hist, const char* title, const std::string& outName
     fit.SetParLimits(1, iqr_results.mean - 2 * iqr_results.sigma, iqr_results.mean + 2 * iqr_results.sigma);
     fit.SetParLimits(2, 0, 5 * iqr_results.sigma);
 
-    hist->Fit(&fit);
+    //find fit
+    TFitResultPtr r = hist->Fit(&fit, "QRS");
+
+    TFitResult* fr = r.Get();
+
+    // Check fit validity
+    if (!fr || fr->Status() != 0 || fr->Ndf() <= 0) {
+        delete canvas;
+        return;
+    }
+
+    double chi2ndf = 0;
+
+    if (fr->Ndf() != 0) chi2ndf = fr->Chi2() / static_cast<double>(fr->Ndf());
+
+    // Reject poor fits
+    /*
+    if (chi2ndf > 5.0) {
+        delete canvas;
+        return;
+    }*/
+
+    double prob = fr->Prob();
+
+    if (prob < 0.01 && chi2ndf > 5.0) {
+        delete canvas;
+        return;
+    }
 
     // Force pad update so stats box appears
     gPad->Modified();
@@ -732,7 +880,9 @@ void draw_gaussian_fit(TH1F* hist, const char* title, const std::string& outName
 
 void draw_landau_fit(TH1F* hist, const char* title, const std::string& outName){
 
-    TCanvas* canvas = new TCanvas("canvas", title, 800, 600);
+    static int canvasCounter = 0;
+
+    TCanvas* canvas = new TCanvas(Form("c_sep_%d", canvasCounter++),title,900,700);
     
     // Set style options for statistics box and fit parameters
     gStyle->SetOptStat(1111);
@@ -779,7 +929,35 @@ void draw_landau_fit(TH1F* hist, const char* title, const std::string& outName){
     //constrain the mean and sigma to be within range
     fit.SetParLimits(1, m - 2 * s, m + 2 * s);
     fit.SetParLimits(2, 0, 5 * s);
-    hist->Fit(&fit);
+    
+    //find fit
+    TFitResultPtr r = hist->Fit(&fit, "QRS");
+
+    TFitResult* fr = r.Get();
+
+    // Check fit validity
+    if (!fr || fr->Status() != 0 || fr->Ndf() <= 0) {
+        delete canvas;
+        return;
+    }
+
+    double chi2ndf = 0;
+
+    if (fr->Ndf() != 0) chi2ndf = fr->Chi2() / static_cast<double>(fr->Ndf());
+
+    // Reject poor fits
+    /*
+    if (chi2ndf > 5.0) {
+        delete canvas;
+        return;
+    }*/
+
+    double prob = fr->Prob();
+
+    if (prob < 0.01 && (chi2ndf > 5.0 || chi2ndf == 0.)) {
+        delete canvas;
+        return;
+    }
 
     // Force pad update so stats box appears
     gPad->Modified();
@@ -1013,13 +1191,13 @@ void particle_dEdx(const std::string& inputFileNameMuon, const std::string& inpu
     //constants
     const float p_min = 70.0; // MeV
     const float p_max = 5e3; // MeV
-    const int nPBins = 100; // number of momentum bins for p vs dE/dx graph
+    const int nPBins = 140; // number of momentum bins for p vs dE/dx graph; ~3% log bins
     const float p_interval = (p_max - p_min) / nPBins; // MeV
     float p_bin_min = std::log10(p_min); // MeV
     float p_bin_max = std::log10(p_max); // MeV
     const float l_min = 10.0; // cm
     const float l_max = 2000; // cm
-    const int nLBins = 100; // number of track length bins for l vs dE/dx graph
+    const int nLBins = 60; // number of track length bins for l vs dE/dx graph
     const float l_interval = (l_max - l_min) / nLBins; // cm
     float l_bin_min = std::log10(l_min); // cm
     float l_bin_max = std::log10(l_max); // cm
@@ -1121,9 +1299,9 @@ void particle_dEdx(const std::string& inputFileNameMuon, const std::string& inpu
         //float p_bin_high = p_min + (i + 1) * p_interval;
         float p_bin_low = std::pow(10, p_bin_min + i * (p_bin_max - p_bin_min) / nPBins);
         float p_bin_high = std::pow(10, p_bin_min + (i + 1) * (p_bin_max - p_bin_min) / nPBins);
-        hMuon[i] = new TH1F(Form("hMuon_p%0.2f-%0.2f", p_bin_low, p_bin_high), Form("Muon dE/dx for p=%0.2f-%0.2f cm; dE/dx [keV/cm]; Counts", p_bin_low, p_bin_high), 90, 0, 200);
-        hPion[i] = new TH1F(Form("hPion_p%0.2f-%0.2f", p_bin_low, p_bin_high), Form("Pion dE/dx for p=%0.2f-%0.2f cm; dE/dx [keV/cm]; Counts", p_bin_low, p_bin_high), 90, 0, 200);
-        hProton[i] = new TH1F(Form("hProton_p%0.2f-%0.2f", p_bin_low, p_bin_high), Form("Proton dE/dx for p=%0.2f-%0.2f cm; dE/dx [keV/cm]; Counts", p_bin_low, p_bin_high), 190, 0, 500);
+        hMuon[i] = new TH1F(Form("hMuon_p%0.2f-%0.2f", p_bin_low, p_bin_high), Form("Muon dE/dx for p=%0.2f-%0.2f cm; dE/dx [keV/cm]; Counts", p_bin_low, p_bin_high), 1200, 0, 300);
+        hPion[i] = new TH1F(Form("hPion_p%0.2f-%0.2f", p_bin_low, p_bin_high), Form("Pion dE/dx for p=%0.2f-%0.2f cm; dE/dx [keV/cm]; Counts", p_bin_low, p_bin_high), 1200, 0, 300);
+        hProton[i] = new TH1F(Form("hProton_p%0.2f-%0.2f", p_bin_low, p_bin_high), Form("Proton dE/dx for p=%0.2f-%0.2f cm; dE/dx [keV/cm]; Counts", p_bin_low, p_bin_high), 1200, 0, 300);
     }
 
     for (int i = 0; i < nLBins; i++) {
@@ -1131,9 +1309,9 @@ void particle_dEdx(const std::string& inputFileNameMuon, const std::string& inpu
         //float l_bin_high = l_min + (i + 1) * l_interval;
         float l_bin_low = std::pow(10, l_bin_min + i * (l_bin_max - l_bin_min) / nLBins);
         float l_bin_high = std::pow(10, l_bin_min + (i + 1) * (l_bin_max - l_bin_min) / nLBins);
-        hMuonL[i] = new TH1F(Form("hMuon_l%0.2f-%0.2f", l_bin_low, l_bin_high), Form("Muon dE/dx for l=%0.2f-%0.2f MeV/c; dE/dx [keV/cm]; Counts", l_bin_low, l_bin_high), 90, 0, 200);
-        hPionL[i] = new TH1F(Form("hPion_l%0.2f-%0.2f", l_bin_low, l_bin_high), Form("Pion dE/dx for l=%0.2f-%0.2f MeV/c; dE/dx [keV/cm]; Counts", l_bin_low, l_bin_high), 90, 0, 200);
-        hProtonL[i] = new TH1F(Form("hProton_l%0.2f-%0.2f", l_bin_low, l_bin_high), Form("Proton dE/dx for l=%0.2f-%0.2f MeV/c; dE/dx [keV/cm]; Counts", l_bin_low, l_bin_high), 190, 0, 500);
+        hMuonL[i] = new TH1F(Form("hMuon_l%0.2f-%0.2f", l_bin_low, l_bin_high), Form("Muon dE/dx for l=%0.2f-%0.2f MeV/c; dE/dx [keV/cm]; Counts", l_bin_low, l_bin_high), 75, 0, 300);
+        hPionL[i] = new TH1F(Form("hPion_l%0.2f-%0.2f", l_bin_low, l_bin_high), Form("Pion dE/dx for l=%0.2f-%0.2f MeV/c; dE/dx [keV/cm]; Counts", l_bin_low, l_bin_high), 75, 0, 300);
+        hProtonL[i] = new TH1F(Form("hProton_l%0.2f-%0.2f", l_bin_low, l_bin_high), Form("Proton dE/dx for l=%0.2f-%0.2f MeV/c; dE/dx [keV/cm]; Counts", l_bin_low, l_bin_high), 75, 0, 300);
     }
 
     //histogram to find momentum of 1m tracks
@@ -1306,11 +1484,15 @@ void particle_dEdx(const std::string& inputFileNameMuon, const std::string& inpu
         //float p_bin_center = p_min + (i + 0.5) * p_interval;
         //float p_bin_err = p_interval;
 
+        fit_results mu_fit = {0,0,0,0,0,0,0};
+        fit_results pi_fit = {0,0,0,0,0,0,0};
+        fit_results p_fit  = {0,0,0,0,0,0,0};
+
         if (hMuon[i]->GetEntries() > 300){
             //float m = hMuon[i]->GetMean();
             //float s = hMuon[i]->GetRMS();
             //hMuon[i]->Fit("gaus", "Q", "", m - 2*s, m + 2*s);
-            fit_results mu_fit = calc_res(hMuon[i]); //get fit parameters
+            mu_fit = calc_res(hMuon[i]); //get fit parameters
             if (mu_fit.sigma > 0 && mu_fit.mean > 0){ //skip if fit failed
                 pdg_to_p[13].push_back(p_bin_center);
                 pdg_to_mean[13].push_back(mu_fit.mean);
@@ -1334,7 +1516,7 @@ void particle_dEdx(const std::string& inputFileNameMuon, const std::string& inpu
             //float m = hPion[i]->GetMean();
             //float s = hPion[i]->GetRMS();
             //hPion[i]->Fit("gaus", "Q", "", m - 2*s, m + 2*s);
-            fit_results pi_fit = calc_res(hPion[i]); //get fit parameters
+            pi_fit = calc_res(hPion[i]); //get fit parameters
             if (pi_fit.sigma > 0 && pi_fit.mean > 0){//skip if fit failed
                 pdg_to_p[211].push_back(p_bin_center);
                 pdg_to_mean[211].push_back(pi_fit.mean);
@@ -1358,7 +1540,7 @@ void particle_dEdx(const std::string& inputFileNameMuon, const std::string& inpu
             //float m = hProton[i]->GetMean();
             //float s = hProton[i]->GetRMS();
             //hProton[i]->Fit("gaus", "Q", "", m - 2*s, m + 2*s);
-            fit_results p_fit = calc_res(hProton[i]); //get fit parameters
+            p_fit = calc_res(hProton[i]); //get fit parameters
             if (p_fit.sigma > 0 && p_fit.mean > 0) { //skip if fit failed
                 pdg_to_p[2212].push_back(p_bin_center);
                 pdg_to_mean[2212].push_back(p_fit.mean);
@@ -1381,20 +1563,6 @@ void particle_dEdx(const std::string& inputFileNameMuon, const std::string& inpu
 
         //muon pion separation power
         if (hMuon[i]->GetEntries() > 300 && hPion[i]->GetEntries() > 300){ //only do this if onw of the particles has enough stats
-            //float m_mu = hMuon[i]->GetMean();
-            //float s_mu = hMuon[i]->GetRMS();
-            //hMuon[i]->Fit("gaus", "Q", "", m_mu - 2*s_mu, m_mu + 2*s_mu);
-            fit_results mu_fit = calc_res(hMuon[i]); //get fit parameters
-            //float m_pi = hPion[i]->GetMean();
-            //float s_pi = hPion[i]->GetRMS();
-            //hPion[i]->Fit("gaus", "Q", "", m_pi - 2*s_pi, m_pi + 2*s_pi);
-            fit_results pi_fit = calc_res(hPion[i]); //get fit parameters
-            /*
-            float frac_err_mu = mu_fit.mean_err / mu_fit.mean;
-            float frac_err_pi = pi_fit.mean_err / pi_fit.mean;
-            float frac_err_sigma_mu = mu_fit.sigma_err / mu_fit.sigma;
-            float frac_err_sigma_pi = pi_fit.sigma_err / pi_fit.sigma;
-            */
             if((mu_fit.sigma > 0 && mu_fit.mean > 0) && (pi_fit.sigma > 0 && pi_fit.mean > 0)){// && (frac_err_mu < 0.5) && (frac_err_pi < 0.5) && (frac_err_sigma_mu < 0.5) && (frac_err_sigma_pi < 0.5)){ //skip if either fail
                 float denominator = std::sqrt(mu_fit.sigma * mu_fit.sigma + pi_fit.sigma * pi_fit.sigma);
                 float numerator = std::abs(mu_fit.mean - pi_fit.mean);
@@ -1423,20 +1591,6 @@ void particle_dEdx(const std::string& inputFileNameMuon, const std::string& inpu
 
         //muon proton separation power
         if (hMuon[i]->GetEntries() > 300 && hProton[i]->GetEntries() > 300){ //only do this if onw of the particles has enough stats
-            //float m_mu = hMuon[i]->GetMean();
-            //float s_mu = hMuon[i]->GetRMS();
-            //hMuon[i]->Fit("gaus", "Q", "", m_mu - 2*s_mu, m_mu + 2*s_mu);
-            fit_results mu_fit = calc_res(hMuon[i]); //get fit parameters
-            //float m_p = hProton[i]->GetMean();
-            //float s_p = hProton[i]->GetRMS();
-            //hProton[i]->Fit("gaus", "Q", "", m_p - 2*s_p, m_p + 2*s_p);
-            fit_results p_fit = calc_res(hProton[i]); //get fit parameters
-            /*
-            float frac_err_mu = mu_fit.mean_err / mu_fit.mean;
-            float frac_err_p = p_fit.mean_err / p_fit.mean;
-            float frac_err_sigma_mu = mu_fit.sigma_err / mu_fit.sigma;
-            float frac_err_sigma_p = p_fit.sigma_err / p_fit.sigma;
-            */
             if((mu_fit.sigma > 0 && mu_fit.mean > 0) && (p_fit.sigma > 0 && p_fit.mean > 0)){// && (frac_err_mu < 0.5) && (frac_err_p < 0.5) && (frac_err_sigma_mu < 0.5) && (frac_err_sigma_p < 0.5)){ //skip if either fail
                 float denominator = std::sqrt(mu_fit.sigma * mu_fit.sigma + p_fit.sigma * p_fit.sigma);
                 float numerator = std::abs(mu_fit.mean - p_fit.mean);
@@ -1465,20 +1619,6 @@ void particle_dEdx(const std::string& inputFileNameMuon, const std::string& inpu
 
         //pion proton separation power
         if (hPion[i]->GetEntries() > 300 && hProton[i]->GetEntries() > 300){ //only do this if onw of the particles has enough stats
-            //float m_pi = hPion[i]->GetMean();
-            //float s_pi = hPion[i]->GetRMS();
-            //hPion[i]->Fit("gaus", "Q", "", m_pi - 2*s_pi, m_pi + 2*s_pi);
-            fit_results pi_fit = calc_res(hPion[i]); //get fit parameters
-            //float m_p = hProton[i]->GetMean();
-            //float s_p = hProton[i]->GetRMS();
-            //hProton[i]->Fit("gaus", "Q", "", m_p - 2*s_p, m_p + 2*s_p);
-            fit_results p_fit = calc_res(hProton[i]); //get fit parameters
-            /*
-            float frac_err_pi = pi_fit.mean_err / pi_fit.mean;
-            float frac_err_p = p_fit.mean_err / p_fit.mean;
-            float frac_err_sigma_pi = pi_fit.sigma_err / pi_fit.sigma;
-            float frac_err_sigma_p = p_fit.sigma_err / p_fit.sigma;
-            */
             if((pi_fit.sigma > 0 && pi_fit.mean > 0) && (p_fit.sigma > 0 && p_fit.mean > 0)){// && (frac_err_pi < 0.5) && (frac_err_p < 0.5) && (frac_err_sigma_pi < 0.5) && (frac_err_sigma_p < 0.5)){ //skip if either fail
                 float denominator = std::sqrt(pi_fit.sigma * pi_fit.sigma + p_fit.sigma * p_fit.sigma);
                 float numerator = std::abs(pi_fit.mean - p_fit.mean);
@@ -1517,11 +1657,15 @@ void particle_dEdx(const std::string& inputFileNameMuon, const std::string& inpu
         //float l_bin_center = l_min + (i + 0.5) * l_interval;
         //float l_bin_err = l_interval;
 
+        fit_results mu_fit = {0,0,0,0,0,0,0};
+        fit_results pi_fit = {0,0,0,0,0,0,0};
+        fit_results p_fit  = {0,0,0,0,0,0,0};
+
         if (hMuonL[i]->GetEntries() > 300){
             //float m = hMuon[i]->GetMean();
             //float s = hMuon[i]->GetRMS();
             //hMuon[i]->Fit("gaus", "Q", "", m - 2*s, m + 2*s);
-            fit_results mu_fit = calc_res_land(hMuonL[i]); //get fit parameters
+            mu_fit = calc_res_land(hMuonL[i]); //get fit parameters
             if (mu_fit.sigma > 0 && mu_fit.mean > 0){ //skip if fit failed
                 pdg_to_l[13].push_back(l_bin_center);
                 pdg_to_mean_l[13].push_back(mu_fit.mean);
@@ -1545,7 +1689,7 @@ void particle_dEdx(const std::string& inputFileNameMuon, const std::string& inpu
             //float m = hPion[i]->GetMean();
             //float s = hPion[i]->GetRMS();
             //hPion[i]->Fit("gaus", "Q", "", m - 2*s, m + 2*s);
-            fit_results pi_fit = calc_res_land(hPionL[i]); //get fit parameters
+            pi_fit = calc_res_land(hPionL[i]); //get fit parameters
             if (pi_fit.sigma > 0 && pi_fit.mean > 0){//skip if fit failed
                 pdg_to_l[211].push_back(l_bin_center);
                 pdg_to_mean_l[211].push_back(pi_fit.mean);
@@ -1569,7 +1713,7 @@ void particle_dEdx(const std::string& inputFileNameMuon, const std::string& inpu
             //float m = hProton[i]->GetMean();
             //float s = hProton[i]->GetRMS();
             //hProton[i]->Fit("gaus", "Q", "", m - 2*s, m + 2*s);
-            fit_results p_fit = calc_res_land(hProtonL[i]); //get fit parameters
+            p_fit = calc_res_land(hProtonL[i]); //get fit parameters
             if (p_fit.sigma > 0 && p_fit.mean > 0) { //skip if fit failed
                 pdg_to_l[2212].push_back(l_bin_center);
                 pdg_to_mean_l[2212].push_back(p_fit.mean);
@@ -1592,20 +1736,6 @@ void particle_dEdx(const std::string& inputFileNameMuon, const std::string& inpu
 
         //muon pion separation power
         if (hMuonL[i]->GetEntries() > 300 && hPionL[i]->GetEntries() > 300){ //only do this if onw of the particles has enough stats
-            //float m_mu = hMuon[i]->GetMean();
-            //float s_mu = hMuon[i]->GetRMS();
-            //hMuon[i]->Fit("gaus", "Q", "", m_mu - 2*s_mu, m_mu + 2*s_mu);
-            fit_results mu_fit = calc_res_land(hMuonL[i]); //get fit parameters
-            //float m_pi = hPion[i]->GetMean();
-            //float s_pi = hPion[i]->GetRMS();
-            //hPion[i]->Fit("gaus", "Q", "", m_pi - 2*s_pi, m_pi + 2*s_pi);
-            fit_results pi_fit = calc_res_land(hPionL[i]); //get fit parameters
-            /*
-            float frac_err_mu = mu_fit.mean_err / mu_fit.mean;
-            float frac_err_pi = pi_fit.mean_err / pi_fit.mean;
-            float frac_err_sigma_mu = mu_fit.sigma_err / mu_fit.sigma;
-            float frac_err_sigma_pi = pi_fit.sigma_err / pi_fit.sigma;
-            */
             if((mu_fit.sigma > 0 && mu_fit.mean > 0) && (pi_fit.sigma > 0 && pi_fit.mean > 0)){// && (frac_err_mu < 0.5) && (frac_err_pi < 0.5) && (frac_err_sigma_mu < 0.5) && (frac_err_sigma_pi < 0.5)){ //skip if either fail
                 float denominator = std::sqrt(mu_fit.sigma * mu_fit.sigma + pi_fit.sigma * pi_fit.sigma);
                 float numerator = std::abs(mu_fit.mean - pi_fit.mean);
@@ -1634,20 +1764,6 @@ void particle_dEdx(const std::string& inputFileNameMuon, const std::string& inpu
 
         //muon proton separation power
         if (hMuonL[i]->GetEntries() > 300 && hProtonL[i]->GetEntries() > 300){ //only do this if onw of the particles has enough stats
-            //float m_mu = hMuon[i]->GetMean();
-            //float s_mu = hMuon[i]->GetRMS();
-            //hMuon[i]->Fit("gaus", "Q", "", m_mu - 2*s_mu, m_mu + 2*s_mu);
-            fit_results mu_fit = calc_res_land(hMuonL[i]); //get fit parameters
-            //float m_p = hProton[i]->GetMean();
-            //float s_p = hProton[i]->GetRMS();
-            //hProton[i]->Fit("gaus", "Q", "", m_p - 2*s_p, m_p + 2*s_p);
-            fit_results p_fit = calc_res_land(hProtonL[i]); //get fit parameters
-            /*
-            float frac_err_mu = mu_fit.mean_err / mu_fit.mean;
-            float frac_err_p = p_fit.mean_err / p_fit.mean;
-            float frac_err_sigma_mu = mu_fit.sigma_err / mu_fit.sigma;
-            float frac_err_sigma_p = p_fit.sigma_err / p_fit.sigma;
-            */
             if((mu_fit.sigma > 0 && mu_fit.mean > 0) && (p_fit.sigma > 0 && p_fit.mean > 0)){// && (frac_err_mu < 0.5) && (frac_err_p < 0.5) && (frac_err_sigma_mu < 0.5) && (frac_err_sigma_p < 0.5)){ //skip if either fail
                 float denominator = std::sqrt(mu_fit.sigma * mu_fit.sigma + p_fit.sigma * p_fit.sigma);
                 float numerator = std::abs(mu_fit.mean - p_fit.mean);
@@ -1676,20 +1792,6 @@ void particle_dEdx(const std::string& inputFileNameMuon, const std::string& inpu
 
         //pion proton separation power
         if (hPionL[i]->GetEntries() > 300 && hProtonL[i]->GetEntries() > 300){ //only do this if onw of the particles has enough stats
-            //float m_pi = hPion[i]->GetMean();
-            //float s_pi = hPion[i]->GetRMS();
-            //hPion[i]->Fit("gaus", "Q", "", m_pi - 2*s_pi, m_pi + 2*s_pi);
-            fit_results pi_fit = calc_res_land(hPion[i]); //get fit parameters
-            //float m_p = hProton[i]->GetMean();
-            //float s_p = hProton[i]->GetRMS();
-            //hProton[i]->Fit("gaus", "Q", "", m_p - 2*s_p, m_p + 2*s_p);
-            fit_results p_fit = calc_res_land(hProton[i]); //get fit parameters
-            /*
-            float frac_err_pi = pi_fit.mean_err / pi_fit.mean;
-            float frac_err_p = p_fit.mean_err / p_fit.mean;
-            float frac_err_sigma_pi = pi_fit.sigma_err / pi_fit.sigma;
-            float frac_err_sigma_p = p_fit.sigma_err / p_fit.sigma;
-            */
             if((pi_fit.sigma > 0 && pi_fit.mean > 0) && (p_fit.sigma > 0 && p_fit.mean > 0)){// && (frac_err_pi < 0.5) && (frac_err_p < 0.5) && (frac_err_sigma_pi < 0.5) && (frac_err_sigma_p < 0.5)){ //skip if either fail
                 float denominator = std::sqrt(pi_fit.sigma * pi_fit.sigma + p_fit.sigma * p_fit.sigma);
                 float numerator = std::abs(pi_fit.mean - p_fit.mean);
