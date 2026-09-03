@@ -1191,7 +1191,7 @@ void particle_dEdx(const std::string& inputFileNameMuon, const std::string& inpu
     //constants
     const float p_min = 70.0; // MeV
     const float p_max = 5e3; // MeV
-    const int nPBins = 140; // number of momentum bins for p vs dE/dx graph; ~3% log bins
+    const int nPBins = 120; // number of momentum bins for p vs dE/dx graph; ~3% log bins
     const float p_interval = (p_max - p_min) / nPBins; // MeV
     float p_bin_min = std::log10(p_min); // MeV
     float p_bin_max = std::log10(p_max); // MeV
@@ -1299,9 +1299,9 @@ void particle_dEdx(const std::string& inputFileNameMuon, const std::string& inpu
         //float p_bin_high = p_min + (i + 1) * p_interval;
         float p_bin_low = std::pow(10, p_bin_min + i * (p_bin_max - p_bin_min) / nPBins);
         float p_bin_high = std::pow(10, p_bin_min + (i + 1) * (p_bin_max - p_bin_min) / nPBins);
-        hMuon[i] = new TH1F(Form("hMuon_p%0.2f-%0.2f", p_bin_low, p_bin_high), Form("Muon dE/dx for p=%0.2f-%0.2f cm; dE/dx [keV/cm]; Counts", p_bin_low, p_bin_high), 1200, 0, 300);
-        hPion[i] = new TH1F(Form("hPion_p%0.2f-%0.2f", p_bin_low, p_bin_high), Form("Pion dE/dx for p=%0.2f-%0.2f cm; dE/dx [keV/cm]; Counts", p_bin_low, p_bin_high), 1200, 0, 300);
-        hProton[i] = new TH1F(Form("hProton_p%0.2f-%0.2f", p_bin_low, p_bin_high), Form("Proton dE/dx for p=%0.2f-%0.2f cm; dE/dx [keV/cm]; Counts", p_bin_low, p_bin_high), 1200, 0, 300);
+        hMuon[i] = new TH1F(Form("hMuon_p%0.2f-%0.2f", p_bin_low, p_bin_high), Form("Muon dE/dx for p=%0.2f-%0.2f cm; dE/dx [keV/cm]; Counts", p_bin_low, p_bin_high),150, 0, 300);
+        hPion[i] = new TH1F(Form("hPion_p%0.2f-%0.2f", p_bin_low, p_bin_high), Form("Pion dE/dx for p=%0.2f-%0.2f cm; dE/dx [keV/cm]; Counts", p_bin_low, p_bin_high), 150, 0, 300);
+        hProton[i] = new TH1F(Form("hProton_p%0.2f-%0.2f", p_bin_low, p_bin_high), Form("Proton dE/dx for p=%0.2f-%0.2f cm; dE/dx [keV/cm]; Counts", p_bin_low, p_bin_high), 150, 0, 300);
     }
 
     for (int i = 0; i < nLBins; i++) {
@@ -1309,9 +1309,9 @@ void particle_dEdx(const std::string& inputFileNameMuon, const std::string& inpu
         //float l_bin_high = l_min + (i + 1) * l_interval;
         float l_bin_low = std::pow(10, l_bin_min + i * (l_bin_max - l_bin_min) / nLBins);
         float l_bin_high = std::pow(10, l_bin_min + (i + 1) * (l_bin_max - l_bin_min) / nLBins);
-        hMuonL[i] = new TH1F(Form("hMuon_l%0.2f-%0.2f", l_bin_low, l_bin_high), Form("Muon dE/dx for l=%0.2f-%0.2f MeV/c; dE/dx [keV/cm]; Counts", l_bin_low, l_bin_high), 75, 0, 300);
-        hPionL[i] = new TH1F(Form("hPion_l%0.2f-%0.2f", l_bin_low, l_bin_high), Form("Pion dE/dx for l=%0.2f-%0.2f MeV/c; dE/dx [keV/cm]; Counts", l_bin_low, l_bin_high), 75, 0, 300);
-        hProtonL[i] = new TH1F(Form("hProton_l%0.2f-%0.2f", l_bin_low, l_bin_high), Form("Proton dE/dx for l=%0.2f-%0.2f MeV/c; dE/dx [keV/cm]; Counts", l_bin_low, l_bin_high), 75, 0, 300);
+        hMuonL[i] = new TH1F(Form("hMuon_l%0.2f-%0.2f", l_bin_low, l_bin_high), Form("Muon dE/dx for l=%0.2f-%0.2f MeV/c; dE/dx [keV/cm]; Counts", l_bin_low, l_bin_high), 150, 0, 300);
+        hPionL[i] = new TH1F(Form("hPion_l%0.2f-%0.2f", l_bin_low, l_bin_high), Form("Pion dE/dx for l=%0.2f-%0.2f MeV/c; dE/dx [keV/cm]; Counts", l_bin_low, l_bin_high), 150, 0, 300);
+        hProtonL[i] = new TH1F(Form("hProton_l%0.2f-%0.2f", l_bin_low, l_bin_high), Form("Proton dE/dx for l=%0.2f-%0.2f MeV/c; dE/dx [keV/cm]; Counts", l_bin_low, l_bin_high), 150, 0, 300);
     }
 
     //histogram to find momentum of 1m tracks

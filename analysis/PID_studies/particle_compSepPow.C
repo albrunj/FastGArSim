@@ -151,38 +151,38 @@ void draw_graphs(std::vector<std::pair<float, float>> points1, std::vector<std::
     std::vector<Float_t> err_min1, err_min2, err_min3, err_min4, err_min5, err_min6;
 
     for (size_t i = 0; i < group1.size(); i++){
-        //float frac_err = err_y1[i] / clean_y1[i];
-        //if (frac_err >= 0.5) continue;
+        float frac_err = err_y1[i] / clean_y1[i];
+        if (frac_err >= 0.5) continue;
         err_max1.push_back(clean_y1[i] + err_y1[i]);
         err_min1.push_back(clean_y1[i] - err_y1[i]);
     }
     for (size_t i = 0; i < group2.size(); i++){
-        //float frac_err = err_y2[i] / clean_y2[i];
-        //if (frac_err >= 0.5) continue;
+        float frac_err = err_y2[i] / clean_y2[i];
+        if (frac_err >= 0.5) continue;
         err_max2.push_back(clean_y2[i] + err_y2[i]);
         err_min2.push_back(clean_y2[i] - err_y2[i]);
     }
     for (size_t i = 0; i < group3.size(); i++){
-        //float frac_err = err_y3[i] / clean_y3[i];
-        //if (frac_err >= 0.5) continue;
+        float frac_err = err_y3[i] / clean_y3[i];
+        if (frac_err >= 0.5) continue;
         err_max3.push_back(clean_y3[i] + err_y3[i]);
         err_min3.push_back(clean_y3[i] - err_y3[i]);
     }
     for (size_t i = 0; i < group4.size(); i++){
-        //float frac_err = err_y4[i] / clean_y4[i];
-        //if (frac_err >= 0.5) continue;
+        float frac_err = err_y4[i] / clean_y4[i];
+        if (frac_err >= 0.5) continue;
         err_max4.push_back(clean_y4[i] + err_y4[i]);
         err_min4.push_back(clean_y4[i] - err_y4[i]);
     }
     for (size_t i = 0; i < group5.size(); i++){
-        //float frac_err = err_y5[i] / clean_y5[i];
-        //if (frac_err >= 0.5) continue;
+        float frac_err = err_y5[i] / clean_y5[i];
+        if (frac_err >= 0.5) continue;
         err_max5.push_back(clean_y5[i] + err_y5[i]);
         err_min5.push_back(clean_y5[i] - err_y5[i]);
     }
     for (size_t i = 0; i < group6.size(); i++){
-        //float frac_err = err_y6[i] / clean_y6[i];
-        //if (frac_err >= 0.5) continue;
+        float frac_err = err_y6[i] / clean_y6[i];
+        if (frac_err >= 0.5) continue;
         err_max6.push_back(clean_y6[i] + err_y6[i]);
         err_min6.push_back(clean_y6[i] - err_y6[i]);
     }
@@ -258,7 +258,6 @@ void draw_graphs(std::vector<std::pair<float, float>> points1, std::vector<std::
     frame->GetXaxis()->SetTitle(Xtitle);
     frame->GetYaxis()->SetTitle(Ytitle);
 
-    
     TGraphErrors* gr1 = new TGraphErrors(clean_x1.size(), clean_x1.data(), clean_y1.data(), err_x1.data(), err_y1.data());
     //gr1->GetXaxis()->SetLimits(1,x_max*1.2);
     //gr1->SetMinimum(0);
@@ -271,28 +270,11 @@ void draw_graphs(std::vector<std::pair<float, float>> points1, std::vector<std::
     //gr1->GetYaxis()->SetTitle(Ytitle);
     gr1->Draw("PL SAME");
 
-    /*
-    //add smoothing
-    TGraphSmooth* gs1 = new TGraphSmooth();
-    TGraph* gr_smooth1 = gs1->SmoothLowess(gr1, "", 0.3);
-    gr_smooth1->SetLineColor(kRed);
-    gr_smooth1->SetLineWidth(2);
-    gr_smooth1->Draw("L SAME");
-    */
-
     TGraphErrors* gr2 = new TGraphErrors(clean_x2.size(), clean_x2.data(), clean_y2.data(), err_x2.data(), err_y2.data());
     gr2->SetMarkerStyle(20);
     gr2->SetMarkerColor(kBlue);
     gr2->SetLineColor(kBlue);
     gr2->Draw("PL SAME");
-
-    /*
-    TGraphSmooth* gs2 = new TGraphSmooth();
-    TGraph* gr_smooth2 = gs2->SmoothLowess(gr2, "", 0.3);
-    gr_smooth2->SetLineColor(kBlue);
-    gr_smooth2->SetLineWidth(2);
-    gr_smooth2->Draw("L SAME");
-    */
 
     TGraphErrors* gr3 = new TGraphErrors(clean_x3.size(), clean_x3.data(), clean_y3.data(), err_x3.data(), err_y3.data());
     gr3->SetMarkerStyle(20);
@@ -300,27 +282,11 @@ void draw_graphs(std::vector<std::pair<float, float>> points1, std::vector<std::
     gr3->SetLineColor(kGreen);
     gr3->Draw("PL SAME");
 
-    /*
-    TGraphSmooth* gs3 = new TGraphSmooth();
-    TGraph* gr_smooth3 = gs3->SmoothLowess(gr3, "", 0.3);
-    gr_smooth3->SetLineColor(kGreen);
-    gr_smooth3->SetLineWidth(2);
-    gr_smooth3->Draw("L SAME");
-    */
-
     TGraphErrors* gr4 = new TGraphErrors(clean_x4.size(), clean_x4.data(), clean_y4.data(), err_x4.data(), err_y4.data());
     gr4->SetMarkerStyle(20);
     gr4->SetMarkerColor(kOrange);
     gr4->SetLineColor(kOrange);
     gr4->Draw("PL SAME");
-
-    /*
-    TGraphSmooth* gs4 = new TGraphSmooth();
-    TGraph* gr_smooth4 = gs4->SmoothLowess(gr4, "", 0.1);
-    gr_smooth4->SetLineColor(kOrange);
-    gr_smooth4->SetLineWidth(2);
-    gr_smooth4->Draw("L SAME");
-    */
 
     TGraphErrors* gr5 = new TGraphErrors(clean_x5.size(), clean_x5.data(), clean_y5.data(), err_x5.data(), err_y5.data());
     gr5->SetMarkerStyle(20);
@@ -333,6 +299,48 @@ void draw_graphs(std::vector<std::pair<float, float>> points1, std::vector<std::
     gr6->SetMarkerColor(kCyan-5);
     gr6->SetLineColor(kCyan-5);
     gr6->Draw("PL SAME");
+
+    /*
+    //add smoothing
+    TGraphSmooth* gs1 = new TGraphSmooth();
+    TGraph* gr_smooth1 = gs1->SmoothLowess(gr1, "", 0.3);
+    gr_smooth1->SetLineColor(kRed);
+    gr_smooth1->SetLineWidth(2);
+    gr_smooth1->Draw("L SAME");
+    */
+
+    
+
+    /*
+    TGraphSmooth* gs2 = new TGraphSmooth();
+    TGraph* gr_smooth2 = gs2->SmoothLowess(gr2, "", 0.3);
+    gr_smooth2->SetLineColor(kBlue);
+    gr_smooth2->SetLineWidth(2);
+    gr_smooth2->Draw("L SAME");
+    */
+
+    
+
+    /*
+    TGraphSmooth* gs3 = new TGraphSmooth();
+    TGraph* gr_smooth3 = gs3->SmoothLowess(gr3, "", 0.3);
+    gr_smooth3->SetLineColor(kGreen);
+    gr_smooth3->SetLineWidth(2);
+    gr_smooth3->Draw("L SAME");
+    */
+
+    
+    /*
+    TGraphSmooth* gs4 = new TGraphSmooth();
+    TGraph* gr_smooth4 = gs4->SmoothLowess(gr4, "", 0.1);
+    gr_smooth4->SetLineColor(kOrange);
+    gr_smooth4->SetLineWidth(2);
+    gr_smooth4->Draw("L SAME");
+    */
+
+    
+
+    
 
     // Create legend
     TLegend* legend = new TLegend(0.15, 0.75, 0.3, 0.9);
@@ -450,32 +458,32 @@ void draw_differences(std::vector<std::pair<float, float>> diff2, std::vector<st
     std::vector<float> err_min2, err_min3, err_min4, err_min5, err_min6;
 
     for (size_t i = 0; i < group2.size(); i++){
-        //float frac_err = err_y2[i] / clean_y2[i];
-        //if (frac_err >= 0.5) continue;
+        float frac_err = err_y2[i] / clean_y2[i];
+        if (frac_err >= 0.5) continue;
         err_max2.push_back(clean_y2[i] + err_y2[i]);
         err_min2.push_back(clean_y2[i] - err_y2[i]);
     }
     for (size_t i = 0; i < group3.size(); i++){
-        //float frac_err = err_y3[i] / clean_y3[i];
-        //if (frac_err >= 0.5) continue;
+        float frac_err = err_y3[i] / clean_y3[i];
+        if (frac_err >= 0.5) continue;
         err_max3.push_back(clean_y3[i] + err_y3[i]);
         err_min3.push_back(clean_y3[i] - err_y3[i]);
     }
     for (size_t i = 0; i < group4.size(); i++){
-        //float frac_err = err_y4[i] / clean_y4[i];
-        //if (frac_err >= 0.5) continue;
+        float frac_err = err_y4[i] / clean_y4[i];
+        if (frac_err >= 0.5) continue;
         err_max4.push_back(clean_y4[i] + err_y4[i]);
         err_min4.push_back(clean_y4[i] - err_y4[i]);
     }
     for (size_t i = 0; i < group5.size(); i++){
-        //float frac_err = err_y5[i] / clean_y5[i];
-        //if (frac_err >= 0.5) continue;
+        float frac_err = err_y5[i] / clean_y5[i];
+        if (frac_err >= 0.5) continue;
         err_max5.push_back(clean_y5[i] + err_y5[i]);
         err_min5.push_back(clean_y5[i] - err_y5[i]);
     }
     for (size_t i = 0; i < group6.size(); i++){
-        //float frac_err = err_y6[i] / clean_y6[i];
-        //if (frac_err >= 0.5) continue;
+        float frac_err = err_y6[i] / clean_y6[i];
+        if (frac_err >= 0.5) continue;
         err_max6.push_back(clean_y6[i] + err_y6[i]);
         err_min6.push_back(clean_y6[i] - err_y6[i]);
     }
@@ -550,12 +558,23 @@ void draw_differences(std::vector<std::pair<float, float>> diff2, std::vector<st
     frame->GetXaxis()->SetTitle(Xtitle);
     frame->GetYaxis()->SetTitle(Ytitle);
 
-    TGraphErrors* gr2 = new TGraphErrors(clean_x2.size(), clean_x2.data(), clean_y2.data(), err_x2.data(), err_y2.data());
-    gr2->SetMarkerStyle(20);
-    gr2->SetMarkerColor(kBlue);
-    gr2->SetLineColor(kBlue);
-    gr2->Draw("P SAME");
+    TGraphErrors* gr6 = new TGraphErrors(clean_x6.size(), clean_x6.data(), clean_y6.data(), err_x6.data(), err_y6.data());
+    gr6->SetMarkerStyle(20);
+    gr6->SetMarkerColor(kCyan-5);
+    gr6->SetLineColor(kCyan-5);
+    gr6->Draw("P SAME");
 
+    TGraphErrors* gr5 = new TGraphErrors(clean_x5.size(), clean_x5.data(), clean_y5.data(), err_x5.data(), err_y5.data());
+    gr5->SetMarkerStyle(20);
+    gr5->SetMarkerColor(kMagenta);
+    gr5->SetLineColor(kMagenta);
+    gr5->Draw("P SAME");
+    
+    TGraphErrors* gr4 = new TGraphErrors(clean_x4.size(), clean_x4.data(), clean_y4.data(), err_x4.data(), err_y4.data());
+    gr4->SetMarkerStyle(20);
+    gr4->SetMarkerColor(kOrange);
+    gr4->SetLineColor(kOrange);
+    gr4->Draw("P SAME");
 
     TGraphErrors* gr3 = new TGraphErrors(clean_x3.size(), clean_x3.data(), clean_y3.data(), err_x3.data(), err_y3.data());
     gr3->SetMarkerStyle(20);
@@ -563,24 +582,11 @@ void draw_differences(std::vector<std::pair<float, float>> diff2, std::vector<st
     gr3->SetLineColor(kGreen);
     gr3->Draw("P SAME");
 
-    TGraphErrors* gr4 = new TGraphErrors(clean_x4.size(), clean_x4.data(), clean_y4.data(), err_x4.data(), err_y4.data());
-    gr4->SetMarkerStyle(20);
-    gr4->SetMarkerColor(kOrange);
-    gr4->SetLineColor(kOrange);
-    gr4->Draw("P SAME");
-
-    TGraphErrors* gr5 = new TGraphErrors(clean_x5.size(), clean_x5.data(), clean_y5.data(), err_x5.data(), err_y5.data());
-    gr5->SetMarkerStyle(20);
-    gr5->SetMarkerColor(kMagenta);
-    gr5->SetLineColor(kMagenta);
-    gr5->Draw("P SAME");
-
-    TGraphErrors* gr6 = new TGraphErrors(clean_x6.size(), clean_x6.data(), clean_y6.data(), err_x6.data(), err_y6.data());
-    gr6->SetMarkerStyle(20);
-    gr6->SetMarkerColor(kCyan-5);
-    gr6->SetLineColor(kCyan-5);
-    gr6->Draw("P SAME");
-
+    TGraphErrors* gr2 = new TGraphErrors(clean_x2.size(), clean_x2.data(), clean_y2.data(), err_x2.data(), err_y2.data());
+    gr2->SetMarkerStyle(20);
+    gr2->SetMarkerColor(kBlue);
+    gr2->SetLineColor(kBlue);
+    gr2->Draw("P SAME");
 
     TLine* CDR = new TLine(0.8*x_min,0, 1.2*x_max, 0);
     CDR->SetLineStyle(2);
@@ -616,7 +622,7 @@ void draw_differences(std::vector<std::pair<float, float>> diff2, std::vector<st
 void draw_percentages(std::vector<std::pair<float, float>> perc2, std::vector<std::pair<float, float>> perc3, std::vector<std::pair<float, float>> perc4, std::vector<std::pair<float, float>> perc5, std::vector<std::pair<float, float>> perc6,
     std::vector<std::pair<float, float>> err_points2,std::vector<std::pair<float, float>> err_points3, std::vector<std::pair<float, float>> err_points4, std::vector<std::pair<float, float>> err_points5, std::vector<std::pair<float, float>> err_points6,
     const std::string& name2, const std::string& name3, const std::string& name4, const std::string& name5, const std::string& name6,
-    const std::string& outName, const char* title, const char* Xtitle, const char* Ytitle, float x_lim){
+    const std::string& outName, const char* title, const char* Xtitle, const char* Ytitle, float x_lim, bool zoom = false){
 
     TCanvas* canvas = new TCanvas("canvas", title, 900, 700);
     canvas->SetLogx();
@@ -628,274 +634,26 @@ void draw_percentages(std::vector<std::pair<float, float>> perc2, std::vector<st
 
     std::vector<point> group2, group3, group4, group5, group6;
 
+    float perc_tol = 1;
+
     for(size_t i = 0; i < perc2.size(); i++){
+        if(std::abs(perc2[i].second + 100) < perc_tol && zoom) continue; //skip points where whole sample of smaller radius is missing
         group2.push_back({perc2[i].first, perc2[i].second, err_points2[i].first, err_points2[i].second});
     }
     for(size_t i = 0; i < perc3.size(); i++){
+        if(std::abs(perc3[i].second + 100) < perc_tol && zoom) continue; //skip points where whole sample of smaller radius is missing
         group3.push_back({perc3[i].first, perc3[i].second, err_points3[i].first, err_points3[i].second});
     }
     for(size_t i = 0; i < perc4.size(); i++){
+        if(std::abs(perc4[i].second + 100) < perc_tol && zoom) continue; //skip points where whole sample of smaller radius is missing
         group4.push_back({perc4[i].first, perc4[i].second, err_points4[i].first, err_points4[i].second});
     }
     for(size_t i = 0; i < perc5.size(); i++){
+        if(std::abs(perc5[i].second + 100) < perc_tol && zoom) continue; //skip points where whole sample of smaller radius is missing
         group5.push_back({perc5[i].first, perc5[i].second, err_points5[i].first, err_points5[i].second});
     }
     for(size_t i = 0; i < perc6.size(); i++){
-        group6.push_back({perc6[i].first, perc6[i].second, err_points6[i].first, err_points6[i].second});
-    }
-
-    std::sort(group2.begin(), group2.end(), [](const auto& a, const auto& b) {
-        return a.x < b.x;
-    });
-    std::sort(group3.begin(), group3.end(), [](const auto& a, const auto& b) {
-        return a.x < b.x;
-    });
-    std::sort(group4.begin(), group4.end(), [](const auto& a, const auto& b) {
-        return a.x < b.x;
-    });
-    std::sort(group5.begin(), group5.end(), [](const auto& a, const auto& b) {
-        return a.x < b.x;
-    });
-    std::sort(group6.begin(), group6.end(), [](const auto& a, const auto& b) {
-        return a.x < b.x;
-    });
-
-    std::vector<float> clean_x2, clean_y2, clean_x3, clean_y3, clean_x4, clean_y4, clean_x5, clean_y5, clean_x6, clean_y6;
-    std::vector<float> err_x2, err_y2, err_x3, err_y3, err_x4, err_y4, err_x5, err_y5, err_x6, err_y6;
-
-    for (size_t i = 0; i < group2.size(); i++){
-        //if (i > 0 && std::abs(points2[i].first - points2[i-1].first) < 1e-6) continue; // skip if x values are too close
-        clean_x2.push_back(group2[i].x);
-        clean_y2.push_back(group2[i].y);
-        err_x2.push_back(group2[i].sigma_x);
-        err_y2.push_back(group2[i].sigma_y);
-    }
-    for (size_t i = 0; i < group3.size(); i++){
-        //if (i > 0 && std::abs(points2[i].first - points2[i-1].first) < 1e-6) continue; // skip if x values are too close
-        clean_x3.push_back(group3[i].x);
-        clean_y3.push_back(group3[i].y);
-        err_x3.push_back(group3[i].sigma_x);
-        err_y3.push_back(group3[i].sigma_y);
-    }
-    for (size_t i = 0; i < group4.size(); i++){
-        //if (i > 0 && std::abs(points2[i].first - points2[i-1].first) < 1e-6) continue; // skip if x values are too close
-        clean_x4.push_back(group4[i].x);
-        clean_y4.push_back(group4[i].y);
-        err_x4.push_back(group4[i].sigma_x);
-        err_y4.push_back(group4[i].sigma_y);
-    }
-    for (size_t i = 0; i < group5.size(); i++){
-        //if (i > 0 && std::abs(points2[i].first - points2[i-1].first) < 1e-6) continue; // skip if x values are too close
-        clean_x5.push_back(group5[i].x);
-        clean_y5.push_back(group5[i].y);
-        err_x5.push_back(group5[i].sigma_x);
-        err_y5.push_back(group5[i].sigma_y);
-    }
-    for (size_t i = 0; i < group6.size(); i++){
-        //if (i > 0 && std::abs(points2[i].first - points2[i-1].first) < 1e-6) continue; // skip if x values are too close
-        clean_x6.push_back(group6[i].x);
-        clean_y6.push_back(group6[i].y);
-        err_x6.push_back(group6[i].sigma_x);
-        err_y6.push_back(group6[i].sigma_y);
-    }
-
-    std::vector<float> err_max2, err_max3, err_max4, err_max5, err_max6;
-    std::vector<float> err_min2, err_min3, err_min4, err_min5, err_min6;
-
-    for (size_t i = 0; i < group2.size(); i++){
-        //float frac_err = err_y2[i] / clean_y2[i];
-        //if (frac_err >= 0.5) continue;
-        err_max2.push_back(clean_y2[i] + err_y2[i]);
-        err_min2.push_back(clean_y2[i] - err_y2[i]);
-    }
-    for (size_t i = 0; i < group3.size(); i++){
-        //float frac_err = err_y3[i] / clean_y3[i];
-        //if (frac_err >= 0.5) continue;
-        err_max3.push_back(clean_y3[i] + err_y3[i]);
-        err_min3.push_back(clean_y3[i] - err_y3[i]);
-    }
-    for (size_t i = 0; i < group4.size(); i++){
-        //float frac_err = err_y4[i] / clean_y4[i];
-        //if (frac_err >= 0.5) continue;
-        err_max4.push_back(clean_y4[i] + err_y4[i]);
-        err_min4.push_back(clean_y4[i] - err_y4[i]);
-    }
-    for (size_t i = 0; i < group5.size(); i++){
-        //float frac_err = err_y5[i] / clean_y5[i];
-        //if (frac_err >= 0.5) continue;
-        err_max5.push_back(clean_y5[i] + err_y5[i]);
-        err_min5.push_back(clean_y5[i] - err_y5[i]);
-    }
-    for (size_t i = 0; i < group6.size(); i++){
-        //float frac_err = err_y6[i] / clean_y6[i];
-        //if (frac_err >= 0.5) continue;
-        err_max6.push_back(clean_y6[i] + err_y6[i]);
-        err_min6.push_back(clean_y6[i] - err_y6[i]);
-    }
-
-    float y_max = 0;
-    float y_min = 0;
-    float x_max = 0;
-    float x_min = 0;
-
-    if (clean_y2.size() > 0) y_max = std::max(y_max, *std::max_element(clean_y2.begin(), clean_y2.end()));
-    if (clean_y3.size() > 0) y_max = std::max(y_max, *std::max_element(clean_y3.begin(), clean_y3.end()));
-    if (clean_y4.size() > 0) y_max = std::max(y_max, *std::max_element(clean_y4.begin(), clean_y4.end()));
-    if (clean_y5.size() > 0) y_max = std::max(y_max, *std::max_element(clean_y5.begin(), clean_y5.end()));
-    if( clean_y6.size() > 0) y_max = std::max(y_max, *std::max_element(clean_y6.begin(), clean_y6.end()));  
-    if( err_max2.size() > 0) y_max = std::max(y_max, *std::max_element(err_max2.begin(), err_max2.end()));
-    if( err_max3.size() > 0) y_max = std::max(y_max, *std::max_element(err_max3.begin(), err_max3.end()));
-    if( err_max4.size() > 0) y_max = std::max(y_max, *std::max_element(err_max4.begin(), err_max4.end()));
-    if( err_max5.size() > 0) y_max = std::max(y_max, *std::max_element(err_max5.begin(), err_max5.end()));
-    if( err_max6.size() > 0) y_max = std::max(y_max, *std::max_element(err_max6.begin(), err_max6.end()));
-
-    if (clean_y2.size() > 0) y_min = std::min(y_min, *std::min_element(clean_y2.begin(), clean_y2.end()));
-    if (clean_y3.size() > 0) y_min = std::min(y_min, *std::min_element(clean_y3.begin(), clean_y3.end()));
-    if (clean_y4.size() > 0) y_min = std::min(y_min, *std::min_element(clean_y4.begin(), clean_y4.end()));
-    if (clean_y5.size() > 0) y_min = std::min(y_min, *std::min_element(clean_y5.begin(), clean_y5.end()));
-    if( clean_y6.size() > 0) y_min = std::min(y_min, *std::min_element(clean_y6.begin(), clean_y6.end()));  
-    if( err_min2.size() > 0) y_min = std::min(y_min, *std::min_element(err_min2.begin(), err_min2.end()));
-    if( err_min3.size() > 0) y_min = std::min(y_min, *std::min_element(err_min3.begin(), err_min3.end()));
-    if( err_min4.size() > 0) y_min = std::min(y_min, *std::min_element(err_min4.begin(), err_min4.end()));
-    if( err_min5.size() > 0) y_min = std::min(y_min, *std::min_element(err_min5.begin(), err_min5.end()));
-    if( err_min6.size() > 0) y_min = std::min(y_min, *std::min_element(err_min6.begin(), err_min6.end()));
-
-    if (clean_x2.size() > 0) x_max = std::max(x_max, *std::max_element(clean_x2.begin(), clean_x2.end()));
-    if (clean_x3.size() > 0) x_max = std::max(x_max, *std::max_element(clean_x3.begin(), clean_x3.end()));
-    if (clean_x4.size() > 0) x_max = std::max(x_max, *std::max_element(clean_x4.begin(), clean_x4.end()));
-    if (clean_x5.size() > 0) x_max = std::max(x_max, *std::max_element(clean_x5.begin(), clean_x5.end()));
-    if( clean_x6.size() > 0) x_max = std::max(x_max, *std::max_element(clean_x6.begin(), clean_x6.end()));  
-
-    if (clean_x2.size() > 0) x_min = std::min(x_min, *std::min_element(clean_x2.begin(), clean_x2.end()));
-    if (clean_x3.size() > 0) x_min = std::min(x_min, *std::min_element(clean_x3.begin(), clean_x3.end()));
-    if (clean_x4.size() > 0) x_min = std::min(x_min, *std::min_element(clean_x4.begin(), clean_x4.end()));
-    if (clean_x5.size() > 0) x_min = std::min(x_min, *std::min_element(clean_x5.begin(), clean_x5.end()));
-    if( clean_x6.size() > 0) x_min = std::min(x_min, *std::min_element(clean_x6.begin(), clean_x6.end()));  
-
-
-    if (y_min > -0.1) y_min = -0.1;
-    if (y_max < 25) y_max = 25; //make sure legend doesnt cover points
-    if (y_min < -100) y_min = -100;
-    if (y_max > 100) y_max = 100;
-    if (x_max<1e3) x_max = 1e3;
-    if (x_min>7.0e1) x_min = 7.0e1;
-
-    TH1F* frame = canvas->DrawFrame(
-        0.8*x_min,
-        1.2*y_min,
-        1.2*x_max,
-        1.2*y_max
-    );
-
-    TLatex dune;
-    dune.SetNDC();
-    dune.SetTextFont(62);     // Bold Helvetica
-    dune.SetTextSize(0.045);
-    dune.DrawLatex(0.12, 0.93, "DUNE");
-
-    TLatex prelim;
-    prelim.SetNDC();
-    prelim.SetTextFont(42);   // Regular Helvetica
-    prelim.SetTextSize(0.040);
-    prelim.DrawLatex(0.215, 0.93, "Simulation Preliminary");
-
-    //frame->SetTitle(title);
-    frame->GetXaxis()->SetTitle(Xtitle);
-    frame->GetYaxis()->SetTitle(Ytitle);
-
-    TGraphErrors* gr2 = new TGraphErrors(clean_x2.size(), clean_x2.data(), clean_y2.data(), err_x2.data(), err_y2.data());
-    gr2->SetMarkerStyle(20);
-    gr2->SetMarkerColor(kBlue);
-    gr2->SetLineColor(kBlue);
-    gr2->Draw("P SAME");
-
-
-
-    TGraphErrors* gr3 = new TGraphErrors(clean_x3.size(), clean_x3.data(), clean_y3.data(), err_x3.data(), err_y3.data());
-    gr3->SetMarkerStyle(20);
-    gr3->SetMarkerColor(kGreen);
-    gr3->SetLineColor(kGreen);
-    gr3->Draw("P SAME");
-
-
-    TGraphErrors* gr4 = new TGraphErrors(clean_x4.size(), clean_x4.data(), clean_y4.data(), err_x4.data(), err_y4.data());
-    gr4->SetMarkerStyle(20);
-    gr4->SetMarkerColor(kOrange);
-    gr4->SetLineColor(kOrange);
-    gr4->Draw("P SAME");
-
-    TGraphErrors* gr5 = new TGraphErrors(clean_x5.size(), clean_x5.data(), clean_y5.data(), err_x5.data(), err_y5.data());
-    gr5->SetMarkerStyle(20);
-    gr5->SetMarkerColor(kMagenta);
-    gr5->SetLineColor(kMagenta);
-    gr5->Draw("P SAME");
-
-    TGraphErrors* gr6 = new TGraphErrors(clean_x6.size(), clean_x6.data(), clean_y6.data(), err_x6.data(), err_y6.data());
-    gr6->SetMarkerStyle(20);
-    gr6->SetMarkerColor(kCyan-5);
-    gr6->SetLineColor(kCyan-5);
-    gr6->Draw("P SAME");
-
-
-    TLine* CDR = new TLine(0.8*x_min,0, 1.2*x_max, 0);
-    CDR->SetLineStyle(2);
-    CDR->SetLineWidth(2);
-    //CDR->SetLineColor(kRed);
-    CDR->Draw("SAME");
-
-    // Create legend
-    TLegend *legend = new TLegend(0.85, 0.74, 1, 0.94);
-    legend->AddEntry(gr2, name2.c_str(), "p");
-    legend->AddEntry(gr3, name3.c_str(), "p");
-    legend->AddEntry(gr4, name4.c_str(), "p");
-    legend->AddEntry(gr5, name5.c_str(), "p");
-    legend->AddEntry(gr6, name6.c_str(), "p");
-    legend->Draw();    
-
-    canvas->SaveAs((outName).c_str());
-
-    delete gr2;
-    delete gr3;
-    delete gr4;
-    delete gr5;
-    delete gr6;
-    //delete gs2;
-    //delete gs3;
-    //delete gs4;
-    delete CDR;
-    delete canvas;
-
-}
-
-//draw differences in separation power to CDR
-void draw_percentages_line(std::vector<std::pair<float, float>> perc2, std::vector<std::pair<float, float>> perc3, std::vector<std::pair<float, float>> perc4, std::vector<std::pair<float, float>> perc5, std::vector<std::pair<float, float>> perc6,
-    std::vector<std::pair<float, float>> err_points2,std::vector<std::pair<float, float>> err_points3, std::vector<std::pair<float, float>> err_points4, std::vector<std::pair<float, float>> err_points5, std::vector<std::pair<float, float>> err_points6,
-    const std::string& name2, const std::string& name3, const std::string& name4, const std::string& name5, const std::string& name6,
-    const std::string& outName, const char* title, const char* Xtitle, const char* Ytitle, float x_lim){
-
-    TCanvas* canvas = new TCanvas("canvas", title, 900, 700);
-    canvas->SetLogx();
-    canvas->SetLeftMargin(0.15);
-
-    struct point{
-        double x, y, sigma_x, sigma_y;
-    };
-
-    std::vector<point> group2, group3, group4, group5, group6;
-
-    for(size_t i = 0; i < perc2.size(); i++){
-        group2.push_back({perc2[i].first, perc2[i].second, err_points2[i].first, err_points2[i].second});
-    }
-    for(size_t i = 0; i < perc3.size(); i++){
-        group3.push_back({perc3[i].first, perc3[i].second, err_points3[i].first, err_points3[i].second});
-    }
-    for(size_t i = 0; i < perc4.size(); i++){
-        group4.push_back({perc4[i].first, perc4[i].second, err_points4[i].first, err_points4[i].second});
-    }
-    for(size_t i = 0; i < perc5.size(); i++){
-        group5.push_back({perc5[i].first, perc5[i].second, err_points5[i].first, err_points5[i].second});
-    }
-    for(size_t i = 0; i < perc6.size(); i++){
+        if(std::abs(perc6[i].second + 100) < perc_tol && zoom) continue; //skip points where whole sample of smaller radius is missing
         group6.push_back({perc6[i].first, perc6[i].second, err_points6[i].first, err_points6[i].second});
     }
 
@@ -1029,11 +787,279 @@ void draw_percentages_line(std::vector<std::pair<float, float>> perc2, std::vect
 
 
     if (y_min > -0.1) y_min = -0.1;
-    if (y_max < 25) y_max = 25; //make sure legend doesnt cover points
+    if (y_max < 30) y_max = 30; //make sure legend doesnt cover points
     if (y_min < -100) y_min = -100;
     if (y_max > 100) y_max = 100;
     if (x_max<1e3) x_max = 1e3;
-    if (x_min>7.0e1) x_min = 7.0e1;
+    //if (x_min>7.0e1) x_min = 7.0e1;
+
+    TH1F* frame = canvas->DrawFrame(
+        0.8*x_min,
+        1.2*y_min,
+        1.2*x_max,
+        1.2*y_max
+    );
+
+    TLatex dune;
+    dune.SetNDC();
+    dune.SetTextFont(62);     // Bold Helvetica
+    dune.SetTextSize(0.045);
+    dune.DrawLatex(0.12, 0.93, "DUNE");
+
+    TLatex prelim;
+    prelim.SetNDC();
+    prelim.SetTextFont(42);   // Regular Helvetica
+    prelim.SetTextSize(0.040);
+    prelim.DrawLatex(0.215, 0.93, "Simulation Preliminary");
+
+    //frame->SetTitle(title);
+    frame->GetXaxis()->SetTitle(Xtitle);
+    frame->GetYaxis()->SetTitle(Ytitle);
+
+    TGraphErrors* gr6 = new TGraphErrors(clean_x6.size(), clean_x6.data(), clean_y6.data(), err_x6.data(), err_y6.data());
+    gr6->SetMarkerStyle(20);
+    gr6->SetMarkerColor(kCyan-5);
+    gr6->SetLineColor(kCyan-5);
+    
+    TGraphErrors* gr5 = new TGraphErrors(clean_x5.size(), clean_x5.data(), clean_y5.data(), err_x5.data(), err_y5.data());
+    gr5->SetMarkerStyle(20);
+    gr5->SetMarkerColor(kMagenta);
+    gr5->SetLineColor(kMagenta);
+
+    TGraphErrors* gr4 = new TGraphErrors(clean_x4.size(), clean_x4.data(), clean_y4.data(), err_x4.data(), err_y4.data());
+    gr4->SetMarkerStyle(20);
+    gr4->SetMarkerColor(kOrange);
+    gr4->SetLineColor(kOrange);
+
+    TGraphErrors* gr3 = new TGraphErrors(clean_x3.size(), clean_x3.data(), clean_y3.data(), err_x3.data(), err_y3.data());
+    gr3->SetMarkerStyle(20);
+    gr3->SetMarkerColor(kGreen);
+    gr3->SetLineColor(kGreen);
+
+    TGraphErrors* gr2 = new TGraphErrors(clean_x2.size(), clean_x2.data(), clean_y2.data(), err_x2.data(), err_y2.data());
+    gr2->SetMarkerStyle(20);
+    gr2->SetMarkerColor(kBlue);
+    gr2->SetLineColor(kBlue);
+
+    if(zoom){
+        gr6->Draw("P SAME");
+        gr5->Draw("P SAME");
+        gr4->Draw("P SAME");
+        gr3->Draw("P SAME");
+        gr2->Draw("P SAME");
+    }
+    else{
+        gr2->Draw("P SAME");
+        gr3->Draw("P SAME");
+        gr4->Draw("P SAME");
+        gr5->Draw("P SAME");
+        gr6->Draw("P SAME");
+    }
+
+    TLine* CDR = new TLine(0.8*x_min,0, 1.2*x_max, 0);
+    CDR->SetLineStyle(2);
+    CDR->SetLineWidth(2);
+    //CDR->SetLineColor(kRed);
+    CDR->Draw("SAME");
+
+    // Create legend
+    TLegend *legend = new TLegend(0.17, 0.72, 0.38, 0.92);
+    legend->AddEntry(gr2, name2.c_str(), "p");
+    legend->AddEntry(gr3, name3.c_str(), "p");
+    legend->AddEntry(gr4, name4.c_str(), "p");
+    legend->AddEntry(gr5, name5.c_str(), "p");
+    legend->AddEntry(gr6, name6.c_str(), "p");
+    legend->Draw();    
+
+    canvas->SaveAs((outName).c_str());
+
+    delete gr2;
+    delete gr3;
+    delete gr4;
+    delete gr5;
+    delete gr6;
+    //delete gs2;
+    //delete gs3;
+    //delete gs4;
+    delete CDR;
+    delete canvas;
+
+}
+
+//draw differences in separation power to CDR
+void draw_percentages_line(std::vector<std::pair<float, float>> perc2, std::vector<std::pair<float, float>> perc3, std::vector<std::pair<float, float>> perc4, std::vector<std::pair<float, float>> perc5, std::vector<std::pair<float, float>> perc6,
+    std::vector<std::pair<float, float>> err_points2,std::vector<std::pair<float, float>> err_points3, std::vector<std::pair<float, float>> err_points4, std::vector<std::pair<float, float>> err_points5, std::vector<std::pair<float, float>> err_points6,
+    const std::string& name2, const std::string& name3, const std::string& name4, const std::string& name5, const std::string& name6,
+    const std::string& outName, const char* title, const char* Xtitle, const char* Ytitle, float x_lim){
+
+    TCanvas* canvas = new TCanvas("canvas", title, 900, 700);
+    canvas->SetLogx();
+    canvas->SetLeftMargin(0.15);
+
+    struct point{
+        double x, y, sigma_x, sigma_y;
+    };
+
+    std::vector<point> group2, group3, group4, group5, group6;
+
+    float perc_tol = 1;
+
+    for(size_t i = 0; i < perc2.size(); i++){
+        if(std::abs(perc2[i].second + 100) < perc_tol) continue; //skip points where whole sample of smaller radius is missing
+        group2.push_back({perc2[i].first, perc2[i].second, err_points2[i].first, err_points2[i].second});
+    }
+    for(size_t i = 0; i < perc3.size(); i++){
+        if(std::abs(perc3[i].second + 100) < perc_tol) continue; //skip points where whole sample of smaller radius is missing
+        group3.push_back({perc3[i].first, perc3[i].second, err_points3[i].first, err_points3[i].second});
+    }
+    for(size_t i = 0; i < perc4.size(); i++){
+        if(std::abs(perc4[i].second + 100) < perc_tol) continue; //skip points where whole sample of smaller radius is missing
+        group4.push_back({perc4[i].first, perc4[i].second, err_points4[i].first, err_points4[i].second});
+    }
+    for(size_t i = 0; i < perc5.size(); i++){
+        if(std::abs(perc5[i].second + 100) < perc_tol) continue; //skip points where whole sample of smaller radius is missing
+        group5.push_back({perc5[i].first, perc5[i].second, err_points5[i].first, err_points5[i].second});
+    }
+    for(size_t i = 0; i < perc6.size(); i++){
+        if(std::abs(perc6[i].second + 100) < perc_tol) continue; //skip points where whole sample of smaller radius is missing
+        group6.push_back({perc6[i].first, perc6[i].second, err_points6[i].first, err_points6[i].second});
+    }
+
+    std::sort(group2.begin(), group2.end(), [](const auto& a, const auto& b) {
+        return a.x < b.x;
+    });
+    std::sort(group3.begin(), group3.end(), [](const auto& a, const auto& b) {
+        return a.x < b.x;
+    });
+    std::sort(group4.begin(), group4.end(), [](const auto& a, const auto& b) {
+        return a.x < b.x;
+    });
+    std::sort(group5.begin(), group5.end(), [](const auto& a, const auto& b) {
+        return a.x < b.x;
+    });
+    std::sort(group6.begin(), group6.end(), [](const auto& a, const auto& b) {
+        return a.x < b.x;
+    });
+
+    std::vector<float> clean_x2, clean_y2, clean_x3, clean_y3, clean_x4, clean_y4, clean_x5, clean_y5, clean_x6, clean_y6;
+    std::vector<float> err_x2, err_y2, err_x3, err_y3, err_x4, err_y4, err_x5, err_y5, err_x6, err_y6;
+
+    for (size_t i = 0; i < group2.size(); i++){
+        //if (i > 0 && std::abs(points2[i].first - points2[i-1].first) < 1e-6) continue; // skip if x values are too close
+        clean_x2.push_back(group2[i].x);
+        clean_y2.push_back(group2[i].y);
+        err_x2.push_back(group2[i].sigma_x);
+        err_y2.push_back(group2[i].sigma_y);
+    }
+    for (size_t i = 0; i < group3.size(); i++){
+        //if (i > 0 && std::abs(points2[i].first - points2[i-1].first) < 1e-6) continue; // skip if x values are too close
+        clean_x3.push_back(group3[i].x);
+        clean_y3.push_back(group3[i].y);
+        err_x3.push_back(group3[i].sigma_x);
+        err_y3.push_back(group3[i].sigma_y);
+    }
+    for (size_t i = 0; i < group4.size(); i++){
+        //if (i > 0 && std::abs(points2[i].first - points2[i-1].first) < 1e-6) continue; // skip if x values are too close
+        clean_x4.push_back(group4[i].x);
+        clean_y4.push_back(group4[i].y);
+        err_x4.push_back(group4[i].sigma_x);
+        err_y4.push_back(group4[i].sigma_y);
+    }
+    for (size_t i = 0; i < group5.size(); i++){
+        //if (i > 0 && std::abs(points2[i].first - points2[i-1].first) < 1e-6) continue; // skip if x values are too close
+        clean_x5.push_back(group5[i].x);
+        clean_y5.push_back(group5[i].y);
+        err_x5.push_back(group5[i].sigma_x);
+        err_y5.push_back(group5[i].sigma_y);
+    }
+    for (size_t i = 0; i < group6.size(); i++){
+        //if (i > 0 && std::abs(points2[i].first - points2[i-1].first) < 1e-6) continue; // skip if x values are too close
+        clean_x6.push_back(group6[i].x);
+        clean_y6.push_back(group6[i].y);
+        err_x6.push_back(group6[i].sigma_x);
+        err_y6.push_back(group6[i].sigma_y);
+    }
+
+    std::vector<float> err_max2, err_max3, err_max4, err_max5, err_max6;
+    std::vector<float> err_min2, err_min3, err_min4, err_min5, err_min6;
+
+    for (size_t i = 0; i < group2.size(); i++){
+        float frac_err = err_y2[i] / clean_y2[i];
+        if (frac_err >= 0.5) continue;
+        err_max2.push_back(clean_y2[i] + err_y2[i]);
+        err_min2.push_back(clean_y2[i] - err_y2[i]);
+    }
+    for (size_t i = 0; i < group3.size(); i++){
+        float frac_err = err_y3[i] / clean_y3[i];
+        if (frac_err >= 0.5) continue;
+        err_max3.push_back(clean_y3[i] + err_y3[i]);
+        err_min3.push_back(clean_y3[i] - err_y3[i]);
+    }
+    for (size_t i = 0; i < group4.size(); i++){
+        float frac_err = err_y4[i] / clean_y4[i];
+        if (frac_err >= 0.5) continue;
+        err_max4.push_back(clean_y4[i] + err_y4[i]);
+        err_min4.push_back(clean_y4[i] - err_y4[i]);
+    }
+    for (size_t i = 0; i < group5.size(); i++){
+        float frac_err = err_y5[i] / clean_y5[i];
+        if (frac_err >= 0.5) continue;
+        err_max5.push_back(clean_y5[i] + err_y5[i]);
+        err_min5.push_back(clean_y5[i] - err_y5[i]);
+    }
+    for (size_t i = 0; i < group6.size(); i++){
+        float frac_err = err_y6[i] / clean_y6[i];
+        if (frac_err >= 0.5) continue;
+        err_max6.push_back(clean_y6[i] + err_y6[i]);
+        err_min6.push_back(clean_y6[i] - err_y6[i]);
+    }
+
+    float y_max = 0;
+    float y_min = 0;
+    float x_max = 0;
+    float x_min = 0;
+
+    if (clean_y2.size() > 0) y_max = std::max(y_max, *std::max_element(clean_y2.begin(), clean_y2.end()));
+    if (clean_y3.size() > 0) y_max = std::max(y_max, *std::max_element(clean_y3.begin(), clean_y3.end()));
+    if (clean_y4.size() > 0) y_max = std::max(y_max, *std::max_element(clean_y4.begin(), clean_y4.end()));
+    if (clean_y5.size() > 0) y_max = std::max(y_max, *std::max_element(clean_y5.begin(), clean_y5.end()));
+    if( clean_y6.size() > 0) y_max = std::max(y_max, *std::max_element(clean_y6.begin(), clean_y6.end()));  
+    if( err_max2.size() > 0) y_max = std::max(y_max, *std::max_element(err_max2.begin(), err_max2.end()));
+    if( err_max3.size() > 0) y_max = std::max(y_max, *std::max_element(err_max3.begin(), err_max3.end()));
+    if( err_max4.size() > 0) y_max = std::max(y_max, *std::max_element(err_max4.begin(), err_max4.end()));
+    if( err_max5.size() > 0) y_max = std::max(y_max, *std::max_element(err_max5.begin(), err_max5.end()));
+    if( err_max6.size() > 0) y_max = std::max(y_max, *std::max_element(err_max6.begin(), err_max6.end()));
+
+    if (clean_y2.size() > 0) y_min = std::min(y_min, *std::min_element(clean_y2.begin(), clean_y2.end()));
+    if (clean_y3.size() > 0) y_min = std::min(y_min, *std::min_element(clean_y3.begin(), clean_y3.end()));
+    if (clean_y4.size() > 0) y_min = std::min(y_min, *std::min_element(clean_y4.begin(), clean_y4.end()));
+    if (clean_y5.size() > 0) y_min = std::min(y_min, *std::min_element(clean_y5.begin(), clean_y5.end()));
+    if( clean_y6.size() > 0) y_min = std::min(y_min, *std::min_element(clean_y6.begin(), clean_y6.end()));  
+    if( err_min2.size() > 0) y_min = std::min(y_min, *std::min_element(err_min2.begin(), err_min2.end()));
+    if( err_min3.size() > 0) y_min = std::min(y_min, *std::min_element(err_min3.begin(), err_min3.end()));
+    if( err_min4.size() > 0) y_min = std::min(y_min, *std::min_element(err_min4.begin(), err_min4.end()));
+    if( err_min5.size() > 0) y_min = std::min(y_min, *std::min_element(err_min5.begin(), err_min5.end()));
+    if( err_min6.size() > 0) y_min = std::min(y_min, *std::min_element(err_min6.begin(), err_min6.end()));
+
+    if (clean_x2.size() > 0) x_max = std::max(x_max, *std::max_element(clean_x2.begin(), clean_x2.end()));
+    if (clean_x3.size() > 0) x_max = std::max(x_max, *std::max_element(clean_x3.begin(), clean_x3.end()));
+    if (clean_x4.size() > 0) x_max = std::max(x_max, *std::max_element(clean_x4.begin(), clean_x4.end()));
+    if (clean_x5.size() > 0) x_max = std::max(x_max, *std::max_element(clean_x5.begin(), clean_x5.end()));
+    if( clean_x6.size() > 0) x_max = std::max(x_max, *std::max_element(clean_x6.begin(), clean_x6.end()));  
+
+    if (clean_x2.size() > 0) x_min = std::min(x_min, *std::min_element(clean_x2.begin(), clean_x2.end()));
+    if (clean_x3.size() > 0) x_min = std::min(x_min, *std::min_element(clean_x3.begin(), clean_x3.end()));
+    if (clean_x4.size() > 0) x_min = std::min(x_min, *std::min_element(clean_x4.begin(), clean_x4.end()));
+    if (clean_x5.size() > 0) x_min = std::min(x_min, *std::min_element(clean_x5.begin(), clean_x5.end()));
+    if( clean_x6.size() > 0) x_min = std::min(x_min, *std::min_element(clean_x6.begin(), clean_x6.end()));  
+
+
+    if (y_min > -0.1) y_min = -0.1;
+    if (y_max < 30) y_max = 30; //make sure legend doesnt cover points
+    if (y_min < -100) y_min = -100;
+    if (y_max > 100) y_max = 100;
+    if (x_max<1e3) x_max = 1e3;
+    //if (x_min>7.0e1) x_min = 7.0e1;
 
     TH1F* frame = canvas->DrawFrame(
         0.8*x_min,
@@ -1065,15 +1091,12 @@ void draw_percentages_line(std::vector<std::pair<float, float>> perc2, std::vect
     gr2->SetLineWidth(5);
     gr2->Draw("L SAME");
 
-
-
     TGraphErrors* gr3 = new TGraphErrors(clean_x3.size(), clean_x3.data(), clean_y3.data(), err_x3.data(), err_y3.data());
     gr3->SetMarkerStyle(20);
     gr3->SetMarkerColor(kGreen);
     gr3->SetLineColor(kGreen);
     gr3->SetLineWidth(5);
     gr3->Draw("L SAME");
-
 
     TGraphErrors* gr4 = new TGraphErrors(clean_x4.size(), clean_x4.data(), clean_y4.data(), err_x4.data(), err_y4.data());
     gr4->SetMarkerStyle(20);
@@ -1095,7 +1118,6 @@ void draw_percentages_line(std::vector<std::pair<float, float>> perc2, std::vect
     gr6->SetLineColor(kCyan-5);
     gr6->SetLineWidth(5);
     gr6->Draw("L SAME");
-
 
     TLine* CDR = new TLine(0.8*x_min,0, 1.2*x_max, 0);
     CDR->SetLineStyle(2);
@@ -1383,11 +1405,11 @@ void draw_percentagesWithFit(std::vector<std::pair<float, float>> perc2, std::ve
 
 
     if (y_min > -0.1) y_min = -0.1;
-    if (y_max < 25) y_max = 25; //make sure legend doesnt cover points
+    if (y_max < 30) y_max = 30; //make sure legend doesnt cover points
     if (y_min < -100) y_min = -100;
     if (y_max > 100) y_max = 100;
     if (x_max<1e3) x_max = 1e3;
-    if (x_min>7.0e1) x_min = 7.0e1;
+    //if (x_min>7.0e1) x_min = 7.0e1;
 
     TH1F* frame = canvas->DrawFrame(
         0.8*x_min,
@@ -1644,11 +1666,11 @@ void draw_percentagesFit(std::vector<std::pair<float, float>> perc2, std::vector
 
 
     if (y_min > -0.1) y_min = -0.1;
-    if (y_max < 25) y_max = 25; //make sure legend doesnt cover points
+    if (y_max < 30) y_max = 30; //make sure legend doesnt cover points
     if (y_min < -100) y_min = -100;
     if (y_max > 100) y_max = 100;
     if (x_max<1e3) x_max = 1e3;
-    if (x_min>7.0e1) x_min = 7.0e1;
+    //if (x_min>7.0e1) x_min = 7.0e1;
 
     TH1F* frame = canvas->DrawFrame(
         0.8*x_min,
@@ -2722,7 +2744,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
     const float p_min = 70.0; // MeV
     const float p_max = 5e3; // MeV
     //const float p_interval = (p_max - p_min) / nPBins; // MeV
-    const int nPBins = 140; // number of momentum bins for p vs dE/dx graph
+    const int nPBins = 120; // number of momentum bins for p vs dE/dx graph
     float p_bin_min = std::log10(p_min); // MeV
     float p_bin_max = std::log10(p_max); // MeV
 
@@ -4331,7 +4353,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
         const double tol = 0.01; // Tolerance for floating-point comparison
 
         //calculate difference to CDR if one is non-zero
-        if ((this_muPi_2 > 0 || this_muPi_CDR > 0)){// && (p_bin_center < 460 || p_bin_center > 555)){
+        if ((this_muPi_2 > 0 || this_muPi_CDR > 0) && (p_bin_center < 469 || p_bin_center > 561)){
             float this_muPi_diff2 = this_muPi_2 - this_muPi_CDR;
             float this_muPi_diff_err2 = std::sqrt(this_muPi_err_2*this_muPi_err_2 + this_muPi_err_CDR*this_muPi_err_CDR);
             float this_muPi_perc2 = 0;
@@ -4346,7 +4368,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
             muPi_diff_err2.emplace_back(p_bin_err, this_muPi_diff_err2);
             muPi_perc_err2.emplace_back(p_bin_err, this_muPi_perc_err2);
         }
-        if((this_muP_2 > 0 || this_muP_CDR > 0)){// && std::abs(p_bin_center - 1756.999) > tol){
+        if((this_muP_2 > 0 || this_muP_CDR > 0) && (p_bin_center < 1689 || p_bin_center > 1751)){
             float this_muP_diff2 = this_muP_2 - this_muP_CDR;
             float this_muP_diff_err2 = std::sqrt(this_muP_err_2*this_muP_err_2 + this_muP_err_CDR*this_muP_err_CDR);
             float this_muP_perc2 = 0;
@@ -4360,7 +4382,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
             muP_diff_err2.emplace_back(p_bin_err, this_muP_diff_err2);
             muP_perc_err2.emplace_back(p_bin_err, this_muP_perc_err2);
         }
-        if((this_piP_2 > 0 || this_piP_CDR > 0)){// && std::abs(p_bin_center - 1756.999) > tol){
+        if((this_piP_2 > 0 || this_piP_CDR > 0) && (p_bin_center < 1814 || p_bin_center > 1815)){
             float this_piP_diff2 = this_piP_2 - this_piP_CDR;
             float this_piP_diff_err2 = std::sqrt(this_piP_err_2*this_piP_err_2 + this_piP_err_CDR*this_piP_err_CDR);
             float this_piP_perc2 = 0;
@@ -4375,7 +4397,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
             piP_perc_err2.emplace_back(p_bin_err, this_piP_perc_err2);
         }
 
-        if ((this_muPi_3 > 0 || this_muPi_CDR > 0)){// && (p_bin_center < 460 || p_bin_center > 555)){
+        if ((this_muPi_3 > 0 || this_muPi_CDR > 0) && (p_bin_center < 469 || p_bin_center > 561)){
             float this_muPi_diff3 = this_muPi_3 - this_muPi_CDR;
             float this_muPi_diff_err3 = std::sqrt(this_muPi_err_3*this_muPi_err_3 + this_muPi_err_CDR*this_muPi_err_CDR);
             float this_muPi_perc3 = 0;
@@ -4389,7 +4411,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
             muPi_diff_err3.emplace_back(p_bin_err, this_muPi_diff_err3);
             muPi_perc_err3.emplace_back(p_bin_err, this_muPi_perc_err3);
         }
-        if((this_muP_3 > 0 || this_muP_CDR > 0)){// && std::abs(p_bin_center - 1756.999) > tol){
+        if((this_muP_3 > 0 || this_muP_CDR > 0) && (p_bin_center < 1689 || p_bin_center > 1751)){// && std::abs(p_bin_center - 1756.999) > tol){
             float this_muP_diff3 = this_muP_3 - this_muP_CDR;
             float this_muP_diff_err3 = std::sqrt(this_muP_err_3*this_muP_err_3 + this_muP_err_CDR*this_muP_err_CDR);
             float this_muP_perc3 = 0;
@@ -4403,7 +4425,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
             muP_diff_err3.emplace_back(p_bin_err, this_muP_diff_err3);
             muP_perc_err3.emplace_back(p_bin_err, this_muP_perc_err3);
         }
-        if((this_piP_3 > 0 || this_piP_CDR > 0)){// && std::abs(p_bin_center - 1756.999) > tol){
+        if((this_piP_3 > 0 || this_piP_CDR > 0) && (p_bin_center < 1814 || p_bin_center > 1815)){// && std::abs(p_bin_center - 1756.999) > tol){
             float this_piP_diff3 = this_piP_3 - this_piP_CDR;
             float this_piP_diff_err3 = std::sqrt(this_piP_err_3*this_piP_err_3 + this_piP_err_CDR*this_piP_err_CDR);
             float this_piP_perc3 = 0;
@@ -4418,7 +4440,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
             piP_perc_err3.emplace_back(p_bin_err, this_piP_perc_err3);
         }
 
-        if ((this_muPi_4 > 0 || this_muPi_CDR > 0)){// && (p_bin_center < 460 || p_bin_center > 555)){
+        if ((this_muPi_4 > 0 || this_muPi_CDR > 0) && (p_bin_center < 469 || p_bin_center > 561)){// && (p_bin_center < 460 || p_bin_center > 555)){
             float this_muPi_diff4 = this_muPi_4 - this_muPi_CDR;
             float this_muPi_diff_err4 = std::sqrt(this_muPi_err_4*this_muPi_err_4 + this_muPi_err_CDR*this_muPi_err_CDR);
             float this_muPi_perc4 = 0;
@@ -4432,7 +4454,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
             muPi_diff_err4.emplace_back(p_bin_err, this_muPi_diff_err4);
             muPi_perc_err4.emplace_back(p_bin_err, this_muPi_perc_err4);
         }
-        if((this_muP_4 > 0 || this_muP_CDR > 0)){// && std::abs(p_bin_center - 1756.999) > tol){
+        if((this_muP_4 > 0 || this_muP_CDR > 0) && (p_bin_center < 1689 || p_bin_center > 1751)){// && std::abs(p_bin_center - 1756.999) > tol){
             float this_muP_diff4 = this_muP_4 - this_muP_CDR;
             float this_muP_diff_err4 = std::sqrt(this_muP_err_4*this_muP_err_4 + this_muP_err_CDR*this_muP_err_CDR);
             float this_muP_perc4 = 0;
@@ -4446,7 +4468,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
             muP_diff_err4.emplace_back(p_bin_err, this_muP_diff_err4);
             muP_perc_err4.emplace_back(p_bin_err, this_muP_perc_err4);
         }
-        if((this_piP_4 > 0 || this_piP_CDR > 0)){// && std::abs(p_bin_center - 1756.999) > tol){
+        if((this_piP_4 > 0 || this_piP_CDR > 0) && (p_bin_center < 1814 || p_bin_center > 1815)){
             float this_piP_diff4 = this_piP_4 - this_piP_CDR;
             float this_piP_diff_err4 = std::sqrt(this_piP_err_4*this_piP_err_4 + this_piP_err_CDR*this_piP_err_CDR);
             float this_piP_perc4 = 0;
@@ -4461,7 +4483,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
             piP_perc_err4.emplace_back(p_bin_err, this_piP_perc_err4);
         }
 
-        if ((this_muPi_5 > 0 || this_muPi_CDR > 0)){// && (p_bin_center < 460 || p_bin_center > 555)){
+        if ((this_muPi_5 > 0 || this_muPi_CDR > 0) && (p_bin_center < 469 || p_bin_center > 561)){
             float this_muPi_diff5 = this_muPi_5 - this_muPi_CDR;
             float this_muPi_diff_err5 = std::sqrt(this_muPi_err_5*this_muPi_err_5 + this_muPi_err_CDR*this_muPi_err_CDR);
             float this_muPi_perc5 = 0;
@@ -4476,7 +4498,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
             muPi_perc_err5.emplace_back(p_bin_err, this_muPi_perc_err5);
         }
 
-        if((this_muP_5 > 0 || this_muP_CDR > 0)){// && std::abs(p_bin_center - 1756.999) > tol){
+        if((this_muP_5 > 0 || this_muP_CDR > 0) && (p_bin_center < 1689 || p_bin_center > 1751)){// && std::abs(p_bin_center - 1756.999) > tol){
             float this_muP_diff5 = this_muP_5 - this_muP_CDR;
             float this_muP_diff_err5 = std::sqrt(this_muP_err_5*this_muP_err_5 + this_muP_err_CDR*this_muP_err_CDR);
             float this_muP_perc5 = 0;
@@ -4490,7 +4512,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
             muP_diff_err5.emplace_back(p_bin_err, this_muP_diff_err5);
             muP_perc_err5.emplace_back(p_bin_err, this_muP_perc_err5);
         }
-        if((this_piP_5 > 0 || this_piP_CDR > 0)){// && std::abs(p_bin_center - 1756.999) > tol){
+        if((this_piP_5 > 0 || this_piP_CDR > 0) && (p_bin_center < 1814 || p_bin_center > 1815)){// && std::abs(p_bin_center - 1756.999) > tol){
             float this_piP_diff5 = this_piP_5 - this_piP_CDR;
             float this_piP_diff_err5 = std::sqrt(this_piP_err_5*this_piP_err_5 + this_piP_err_CDR*this_piP_err_CDR);
             float this_piP_perc5 = 0;
@@ -4505,7 +4527,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
             piP_perc_err5.emplace_back(p_bin_err, this_piP_perc_err5);
         }
 
-        if ((this_muPi_6 > 0 || this_muPi_CDR > 0)){// && (p_bin_center < 460 || p_bin_center > 555)){
+        if ((this_muPi_6 > 0 || this_muPi_CDR > 0) && (p_bin_center < 469 || p_bin_center > 561)){
             float this_muPi_diff6 = this_muPi_6 - this_muPi_CDR;
             float this_muPi_diff_err6 = std::sqrt(this_muPi_err_6*this_muPi_err_6 + this_muPi_err_CDR*this_muPi_err_CDR);
             float this_muPi_perc6 = 0;
@@ -4519,7 +4541,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
             muPi_diff_err6.emplace_back(p_bin_err, this_muPi_diff_err6);
             muPi_perc_err6.emplace_back(p_bin_err, this_muPi_perc_err6);
         }
-        if((this_muP_6 > 0 || this_muP_CDR > 0)){// && std::abs(p_bin_center - 1756.999) > tol){
+        if((this_muP_6 > 0 || this_muP_CDR > 0) && (p_bin_center < 1689 || p_bin_center > 1751)){
             float this_muP_diff6 = this_muP_6 - this_muP_CDR;
             float this_muP_diff_err6 = std::sqrt(this_muP_err_6*this_muP_err_6 + this_muP_err_CDR*this_muP_err_CDR);
             float this_muP_perc6 = 0;
@@ -4533,7 +4555,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
             muP_perc_err6.emplace_back(p_bin_err, this_muP_perc_err6);
             muP_diff_err6.emplace_back(p_bin_err, this_muP_diff_err6);
         }
-        if((this_piP_6 > 0 || this_piP_CDR > 0)){// && std::abs(p_bin_center - 1756.999) > tol){
+        if((this_piP_6 > 0 || this_piP_CDR > 0) && (p_bin_center < 1814 || p_bin_center > 1815)){// && std::abs(p_bin_center - 1756.999) > tol){
             float this_piP_diff6 = this_piP_6 - this_piP_CDR;
             float this_piP_diff_err6 = std::sqrt(this_piP_err_6*this_piP_err_6 + this_piP_err_CDR*this_piP_err_CDR);
             float this_piP_perc6 = 0;
@@ -5953,6 +5975,10 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
     draw_percentages(muP_perc2, muP_perc3, muP_perc4, muP_perc5, muP_perc6, muP_perc_err2, muP_perc_err3, muP_perc_err4, muP_perc_err5, muP_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonProtonSepPowDiffPerc.png" ).c_str(), "Difference in Muon Proton Separation", "Momentum [MeV]", "(S-S_{Pilot})/S_{Pilot} *100", 5e4);
     draw_percentages(piP_perc2, piP_perc3, piP_perc4, piP_perc5, piP_perc6, piP_perc_err2, piP_perc_err3, piP_perc_err4, piP_perc_err5, piP_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionProtonSepPowDiffPerc.png" ).c_str(), "Difference in Pion Proton Separation", "Momentum [MeV]", "(S-S_{Pilot})/S_{Pilot} *100", 5e4);
 
+    draw_percentages(muPi_perc2, muPi_perc3, muPi_perc4, muPi_perc5, muPi_perc6, muPi_perc_err2, muPi_perc_err3, muPi_perc_err4, muPi_perc_err5, muPi_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonPionSepPowDiffPercZoom.png" ).c_str(), "Difference in Muon Pion Separation", "Momentum [MeV]", "(S-S_{Pilot})/S_{Pilot} *100", 5e4, true);
+    draw_percentages(muP_perc2, muP_perc3, muP_perc4, muP_perc5, muP_perc6, muP_perc_err2, muP_perc_err3, muP_perc_err4, muP_perc_err5, muP_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonProtonSepPowDiffPercZoom.png" ).c_str(), "Difference in Muon Proton Separation", "Momentum [MeV]", "(S-S_{Pilot})/S_{Pilot} *100", 5e4, true);
+    draw_percentages(piP_perc2, piP_perc3, piP_perc4, piP_perc5, piP_perc6, piP_perc_err2, piP_perc_err3, piP_perc_err4, piP_perc_err5, piP_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionProtonSepPowDiffPercZoom.png" ).c_str(), "Difference in Pion Proton Separation", "Momentum [MeV]", "(S-S_{Pilot})/S_{Pilot} *100", 5e4, true);
+
     draw_percentages_line(muPi_perc2, muPi_perc3, muPi_perc4, muPi_perc5, muPi_perc6, muPi_perc_err2, muPi_perc_err3, muPi_perc_err4, muPi_perc_err5, muPi_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonPionSepPowDiffPercLine.png" ).c_str(), "Difference in Muon Pion Separation", "Momentum [MeV]", "(S-S_{Pilot})/S_{Pilot} *100", 5e4);
     draw_percentages_line(muP_perc2, muP_perc3, muP_perc4, muP_perc5, muP_perc6, muP_perc_err2, muP_perc_err3, muP_perc_err4, muP_perc_err5, muP_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonProtonSepPowDiffPercLine.png" ).c_str(), "Difference in Muon Proton Separation", "Momentum [MeV]", "(S-S_{Pilot})/S_{Pilot} *100", 5e4);
     draw_percentages_line(piP_perc2, piP_perc3, piP_perc4, piP_perc5, piP_perc6, piP_perc_err2, piP_perc_err3, piP_perc_err4, piP_perc_err5, piP_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionProtonSepPowDiffPercLine.png" ).c_str(), "Difference in Pion Proton Separation", "Momentum [MeV]", "(S-S_{Pilot})/S_{Pilot} *100", 5e4);
@@ -5992,6 +6018,18 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
     draw_percentages(mu_res_perc2, mu_res_perc3, mu_res_perc4, mu_res_perc5, mu_res_perc6, mu_res_perc_err2, mu_res_perc_err3, mu_res_perc_err4, mu_res_perc_err5, mu_res_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonResDiffPerc.png" ).c_str(), "Difference in Muon Resolution", "Momentum [MeV]", "(R-R_{Pilot})/R_{Pilot} *100", 5e4);
     draw_percentages(pi_res_perc2, pi_res_perc3, pi_res_perc4, pi_res_perc5, pi_res_perc6, pi_res_perc_err2, pi_res_perc_err3, pi_res_perc_err4, pi_res_perc_err5, pi_res_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionResDiffPerc.png" ).c_str(), "Difference in Pion Resolution", "Momentum [MeV]", "(R-R_{Pilot})/R_{Pilot} *100", 5e4);
     draw_percentages(p_res_perc2, p_res_perc3, p_res_perc4, p_res_perc5, p_res_perc6, p_res_perc_err2, p_res_perc_err3, p_res_perc_err4, p_res_perc_err5, p_res_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_ProtonResDiffPerc.png" ).c_str(), "Difference in Proton Resolution", "Momentum [MeV]", "(R-R_{Pilot})/R_{Pilot} *100", 5e4);
+
+    draw_percentages(mu_mean_perc2, mu_mean_perc3, mu_mean_perc4, mu_mean_perc5, mu_mean_perc6, mu_mean_perc_err2, mu_mean_perc_err3, mu_mean_perc_err4, mu_mean_perc_err5, mu_mean_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonMeanDiffPercZoom.png" ).c_str(), "Difference in Muon Mean dE/dx", "Momentum [MeV]", "(#mu-#mu_{Pilot})/#mu_{Pilot} *100", 5e4, true);
+    draw_percentages(pi_mean_perc2, pi_mean_perc3, pi_mean_perc4, pi_mean_perc5, pi_mean_perc6, pi_mean_perc_err2, pi_mean_perc_err3, pi_mean_perc_err4, pi_mean_perc_err5, pi_mean_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionMeanDiffPercZoom.png" ).c_str(), "Difference in Pion Mean dE/dx", "Momentum [MeV]", "(#mu-#mu_{Pilot})/#mu_{Pilot} *100", 5e4, true);
+    draw_percentages(p_mean_perc2, p_mean_perc3, p_mean_perc4, p_mean_perc5, p_mean_perc6, p_mean_perc_err2, p_mean_perc_err3, p_mean_perc_err4, p_mean_perc_err5, p_mean_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_ProtonMeanDiffPercZoom.png" ).c_str(), "Difference in Proton Mean dE/dx", "Momentum [MeV]", "(#mu-#mu_{Pilot})/#mu_{Pilot} *100", 5e4, true);
+
+    draw_percentages(mu_sigma_perc2, mu_sigma_perc3, mu_sigma_perc4, mu_sigma_perc5, mu_sigma_perc6, mu_sigma_perc_err2, mu_sigma_perc_err3, mu_sigma_perc_err4, mu_sigma_perc_err5, mu_sigma_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonSigmaDiffPercZoom.png" ).c_str(), "Difference in Muon Sigma", "Momentum [MeV]", "(#sigma-#sigma_{Pilot})/#sigma_{Pilot} *100", 5e4, true);
+    draw_percentages(pi_sigma_perc2, pi_sigma_perc3, pi_sigma_perc4, pi_sigma_perc5, pi_sigma_perc6, pi_sigma_perc_err2, pi_sigma_perc_err3, pi_sigma_perc_err4, pi_sigma_perc_err5, pi_sigma_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionSigmaDiffPercZoom.png" ).c_str(), "Difference in Pion Sigma", "Momentum [MeV]", "(#sigma-#sigma_{Pilot})/#sigma_{Pilot} *100", 5e4, true);
+    draw_percentages(p_sigma_perc2, p_sigma_perc3, p_sigma_perc4, p_sigma_perc5, p_sigma_perc6, p_sigma_perc_err2, p_sigma_perc_err3, p_sigma_perc_err4, p_sigma_perc_err5, p_sigma_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_ProtonSigmaDiffPercZoom.png" ).c_str(), "Difference in Proton Sigma", "Momentum [MeV]", "(#sigma-#sigma_{Pilot})/#sigma_{Pilot} *100", 5e4, true);
+
+    draw_percentages(mu_res_perc2, mu_res_perc3, mu_res_perc4, mu_res_perc5, mu_res_perc6, mu_res_perc_err2, mu_res_perc_err3, mu_res_perc_err4, mu_res_perc_err5, mu_res_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonResDiffPercZoom.png" ).c_str(), "Difference in Muon Resolution", "Momentum [MeV]", "(R-R_{Pilot})/R_{Pilot} *100", 5e4, true);
+    draw_percentages(pi_res_perc2, pi_res_perc3, pi_res_perc4, pi_res_perc5, pi_res_perc6, pi_res_perc_err2, pi_res_perc_err3, pi_res_perc_err4, pi_res_perc_err5, pi_res_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionResDiffPercZoom.png" ).c_str(), "Difference in Pion Resolution", "Momentum [MeV]", "(R-R_{Pilot})/R_{Pilot} *100", 5e4, true);
+    draw_percentages(p_res_perc2, p_res_perc3, p_res_perc4, p_res_perc5, p_res_perc6, p_res_perc_err2, p_res_perc_err3, p_res_perc_err4, p_res_perc_err5, p_res_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_ProtonResDiffPercZoom.png" ).c_str(), "Difference in Proton Resolution", "Momentum [MeV]", "(R-R_{Pilot})/R_{Pilot} *100", 5e4, true);
 
     draw_percentages_line(mu_mean_perc2, mu_mean_perc3, mu_mean_perc4, mu_mean_perc5, mu_mean_perc6, mu_mean_perc_err2, mu_mean_perc_err3, mu_mean_perc_err4, mu_mean_perc_err5, mu_mean_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonMeanDiffPercLine.png" ).c_str(), "Difference in Muon Mean dE/dx", "Momentum [MeV]", "(#mu-#mu_{Pilot})/#mu_{Pilot} *100", 5e4);
     draw_percentages_line(pi_mean_perc2, pi_mean_perc3, pi_mean_perc4, pi_mean_perc5, pi_mean_perc6, pi_mean_perc_err2, pi_mean_perc_err3, pi_mean_perc_err4, pi_mean_perc_err5, pi_mean_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionMeanDiffPercLine.png" ).c_str(), "Difference in Pion Mean dE/dx", "Momentum [MeV]", "(#mu-#mu_{Pilot})/#mu_{Pilot} *100", 5e4);
@@ -6051,6 +6089,10 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
     draw_percentages(muP_perc_track2, muP_perc_track3, muP_perc_track4, muP_perc_track5, muP_perc_track6, muP_perc_track_err2, muP_perc_track_err3, muP_perc_track_err4, muP_perc_track_err5, muP_perc_track_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_track_MuonProtonSepPowDiffPerc.png" ).c_str(), "Difference in Muon Proton Separation", "Track Length [cm]", "(S-S_{Pilot})/S_{Pilot} *100", 5e3);
     draw_percentages(piP_perc_track2, piP_perc_track3, piP_perc_track4, piP_perc_track5, piP_perc_track6, piP_perc_track_err2, piP_perc_track_err3, piP_perc_track_err4, piP_perc_track_err5, piP_perc_track_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_track_PionProtonSepPowDiffPerc.png" ).c_str(), "Difference in Pion Proton Separation", "Track Length [cm]", "(S-S_{Pilot})/S_{Pilot} *100", 5e3);
 
+    draw_percentages(muPi_perc_track2, muPi_perc_track3, muPi_perc_track4, muPi_perc_track5, muPi_perc_track6, muPi_perc_track_err2, muPi_perc_track_err3, muPi_perc_track_err4, muPi_perc_track_err5, muPi_perc_track_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_track_MuonPionSepPowDiffPercZoom.png" ).c_str(), "Difference in Muon Pion Separation", "Track Length [cm]", "(S-S_{Pilot})/S_{Pilot} *100", 5e3, true);
+    draw_percentages(muP_perc_track2, muP_perc_track3, muP_perc_track4, muP_perc_track5, muP_perc_track6, muP_perc_track_err2, muP_perc_track_err3, muP_perc_track_err4, muP_perc_track_err5, muP_perc_track_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_track_MuonProtonSepPowDiffPercZoom.png" ).c_str(), "Difference in Muon Proton Separation", "Track Length [cm]", "(S-S_{Pilot})/S_{Pilot} *100", 5e3, true);
+    draw_percentages(piP_perc_track2, piP_perc_track3, piP_perc_track4, piP_perc_track5, piP_perc_track6, piP_perc_track_err2, piP_perc_track_err3, piP_perc_track_err4, piP_perc_track_err5, piP_perc_track_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_track_PionProtonSepPowDiffPercZoom.png" ).c_str(), "Difference in Pion Proton Separation", "Track Length [cm]", "(S-S_{Pilot})/S_{Pilot} *100", 5e3, true);
+
     draw_percentages_line(muPi_perc_track2, muPi_perc_track3, muPi_perc_track4, muPi_perc_track5, muPi_perc_track6, muPi_perc_track_err2, muPi_perc_track_err3, muPi_perc_track_err4, muPi_perc_track_err5, muPi_perc_track_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_track_MuonPionSepPowDiffPercLine.png" ).c_str(), "Difference in Muon Pion Separation", "Track Length [cm]", "(S-S_{Pilot})/S_{Pilot} *100", 5e3);
     draw_percentages_line(muP_perc_track2, muP_perc_track3, muP_perc_track4, muP_perc_track5, muP_perc_track6, muP_perc_track_err2, muP_perc_track_err3, muP_perc_track_err4, muP_perc_track_err5, muP_perc_track_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_track_MuonProtonSepPowDiffPercLine.png" ).c_str(), "Difference in Muon Proton Separation", "Track Length [cm]", "(S-S_{Pilot})/S_{Pilot} *100", 5e3);
     draw_percentages_line(piP_perc_track2, piP_perc_track3, piP_perc_track4, piP_perc_track5, piP_perc_track6, piP_perc_track_err2, piP_perc_track_err3, piP_perc_track_err4, piP_perc_track_err5, piP_perc_track_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_track_PionProtonSepPowDiffPercLine.png" ).c_str(), "Difference in Pion Proton Separation", "Track Length [cm]", "(S-S_{Pilot})/S_{Pilot} *100", 5e3);
@@ -6066,6 +6108,10 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
     draw_percentages(mu_res_perc_track2, mu_res_perc_track3, mu_res_perc_track4, mu_res_perc_track5, mu_res_perc_track6, mu_res_perc_track_err2, mu_res_perc_track_err3, mu_res_perc_track_err4, mu_res_perc_track_err5, mu_res_perc_track_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_track_MuonResDiffPerc.png" ).c_str(), "Difference in Muon Resolution", "Track Length [cm]", "(R-R_{Pilot})/R_{Pilot} *100", 5e3);
     draw_percentages(pi_res_perc_track2, pi_res_perc_track3, pi_res_perc_track4, pi_res_perc_track5, pi_res_perc_track6, pi_res_perc_track_err2, pi_res_perc_track_err3, pi_res_perc_track_err4, pi_res_perc_track_err5, pi_res_perc_track_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_track_PionResDiffPerc.png" ).c_str(), "Difference in Pion Resolution", "Track Length [cm]", "(R-R_{Pilot})/R_{Pilot} *100", 5e3);
     draw_percentages(p_res_perc_track2, p_res_perc_track3, p_res_perc_track4, p_res_perc_track5, p_res_perc_track6, p_res_perc_track_err2, p_res_perc_track_err3, p_res_perc_track_err4, p_res_perc_track_err5, p_res_perc_track_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_track_ProtonResDiffPerc.png" ).c_str(), "Difference in Proton Resolution", "Track Length [cm]", "(R-R_{Pilot})/R_{Pilot} *100", 5e3);
+
+    draw_percentages(mu_res_perc_track2, mu_res_perc_track3, mu_res_perc_track4, mu_res_perc_track5, mu_res_perc_track6, mu_res_perc_track_err2, mu_res_perc_track_err3, mu_res_perc_track_err4, mu_res_perc_track_err5, mu_res_perc_track_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_track_MuonResDiffPercZoom.png" ).c_str(), "Difference in Muon Resolution", "Track Length [cm]", "(R-R_{Pilot})/R_{Pilot} *100", 5e3, true);
+    draw_percentages(pi_res_perc_track2, pi_res_perc_track3, pi_res_perc_track4, pi_res_perc_track5, pi_res_perc_track6, pi_res_perc_track_err2, pi_res_perc_track_err3, pi_res_perc_track_err4, pi_res_perc_track_err5, pi_res_perc_track_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_track_PionResDiffPercZoom.png" ).c_str(), "Difference in Pion Resolution", "Track Length [cm]", "(R-R_{Pilot})/R_{Pilot} *100", 5e3, true);
+    draw_percentages(p_res_perc_track2, p_res_perc_track3, p_res_perc_track4, p_res_perc_track5, p_res_perc_track6, p_res_perc_track_err2, p_res_perc_track_err3, p_res_perc_track_err4, p_res_perc_track_err5, p_res_perc_track_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_track_ProtonResDiffPercZoom.png" ).c_str(), "Difference in Proton Resolution", "Track Length [cm]", "(R-R_{Pilot})/R_{Pilot} *100", 5e3, true);
 
     draw_percentages_line(mu_res_perc_track2, mu_res_perc_track3, mu_res_perc_track4, mu_res_perc_track5, mu_res_perc_track6, mu_res_perc_track_err2, mu_res_perc_track_err3, mu_res_perc_track_err4, mu_res_perc_track_err5, mu_res_perc_track_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_track_MuonResDiffPercLine.png" ).c_str(), "Difference in Muon Resolution", "Track Length [cm]", "(R-R_{Pilot})/R_{Pilot} *100", 5e3);
     draw_percentages_line(pi_res_perc_track2, pi_res_perc_track3, pi_res_perc_track4, pi_res_perc_track5, pi_res_perc_track6, pi_res_perc_track_err2, pi_res_perc_track_err3, pi_res_perc_track_err4, pi_res_perc_track_err5, pi_res_perc_track_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_track_PionResDiffPercLine.png" ).c_str(), "Difference in Pion Resolution", "Track Length [cm]", "(R-R_{Pilot})/R_{Pilot} *100", 5e3);
