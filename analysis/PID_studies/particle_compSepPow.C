@@ -189,8 +189,8 @@ void draw_graphs(std::vector<std::pair<float, float>> points1, std::vector<std::
 
     float x_max = 0;
     float y_max = 0;
-    float x_min = 0;
-    float y_min = 0;
+    float x_min = 1000;
+    float y_min = 1000;
 
     if (clean_x1.size() > 0) x_max = std::max(x_max, *std::max_element(clean_x1.begin(), clean_x1.end()));
     if (clean_x2.size() > 0) x_max = std::max(x_max, *std::max_element(clean_x2.begin(), clean_x2.end()));
@@ -233,7 +233,7 @@ void draw_graphs(std::vector<std::pair<float, float>> points1, std::vector<std::
     if (clean_x5.size() > 0) x_min = std::min(x_min, *std::min_element(clean_x5.begin(), clean_x5.end()));
     if( clean_x6.size() > 0) x_min = std::min(x_min, *std::min_element(clean_x6.begin(), clean_x6.end()));  
 
-    if (x_max<1e3) x_max = 1e3;
+    //if (x_max<1e3) x_max = 1e3;
 
     TH1F* frame = canvas->DrawFrame(
         0.8*x_min,
@@ -489,9 +489,9 @@ void draw_differences(std::vector<std::pair<float, float>> diff2, std::vector<st
     }
 
     float y_max = 0;
-    float y_min = 0;
+    float y_min = 1000;
     float x_max = 0;
-    float x_min = 0;
+    float x_min = 1000;
 
     if (clean_y2.size() > 0) y_max = std::max(y_max, *std::max_element(clean_y2.begin(), clean_y2.end()));
     if (clean_y3.size() > 0) y_max = std::max(y_max, *std::max_element(clean_y3.begin(), clean_y3.end()));
@@ -532,7 +532,7 @@ void draw_differences(std::vector<std::pair<float, float>> diff2, std::vector<st
     if (y_max < 0.1) y_max = 0.1;
     if (y_min < -100) y_min = -100;
     if (y_max > 100) y_max = 100;
-    if (x_max<1e3) x_max = 1e3;
+    //if (x_max<1e3) x_max = 1e3;
 
     TH1F* frame = canvas->DrawFrame(
         0.8*x_min,
@@ -622,11 +622,16 @@ void draw_differences(std::vector<std::pair<float, float>> diff2, std::vector<st
 void draw_percentages(std::vector<std::pair<float, float>> perc2, std::vector<std::pair<float, float>> perc3, std::vector<std::pair<float, float>> perc4, std::vector<std::pair<float, float>> perc5, std::vector<std::pair<float, float>> perc6,
     std::vector<std::pair<float, float>> err_points2,std::vector<std::pair<float, float>> err_points3, std::vector<std::pair<float, float>> err_points4, std::vector<std::pair<float, float>> err_points5, std::vector<std::pair<float, float>> err_points6,
     const std::string& name2, const std::string& name3, const std::string& name4, const std::string& name5, const std::string& name6,
-    const std::string& outName, const char* title, const char* Xtitle, const char* Ytitle, float x_lim, bool zoom = false){
+    const std::string& outName, const char* title, const char* Xtitle, const char* Ytitle, float x_lim, bool zoom = false, bool logy = false){
 
-    TCanvas* canvas = new TCanvas("canvas", title, 900, 700);
+    TCanvas* canvas = new TCanvas("canvas", title, 1100, 700);
     canvas->SetLogx();
-    canvas->SetLeftMargin(0.15);
+    if(logy) canvas->SetLogy();
+    
+    canvas->SetLeftMargin(0.13);
+    canvas->SetRightMargin(0.25);   // reserve space for legend
+    canvas->SetTopMargin(0.10);
+    canvas->SetBottomMargin(0.12);
 
     struct point{
         double x, y, sigma_x, sigma_y;
@@ -747,9 +752,9 @@ void draw_percentages(std::vector<std::pair<float, float>> perc2, std::vector<st
     }
 
     float y_max = 0;
-    float y_min = 0;
+    float y_min = 10000;
     float x_max = 0;
-    float x_min = 0;
+    float x_min = 10000;
 
     if (clean_y2.size() > 0) y_max = std::max(y_max, *std::max_element(clean_y2.begin(), clean_y2.end()));
     if (clean_y3.size() > 0) y_max = std::max(y_max, *std::max_element(clean_y3.begin(), clean_y3.end()));
@@ -787,10 +792,9 @@ void draw_percentages(std::vector<std::pair<float, float>> perc2, std::vector<st
 
 
     if (y_min > -0.1) y_min = -0.1;
-    if (y_max < 30) y_max = 30; //make sure legend doesnt cover points
     if (y_min < -100) y_min = -100;
     if (y_max > 100) y_max = 100;
-    if (x_max<1e3) x_max = 1e3;
+    //if (x_max<1e3) x_max = 1e3;
     //if (x_min>7.0e1) x_min = 7.0e1;
 
     TH1F* frame = canvas->DrawFrame(
@@ -863,12 +867,18 @@ void draw_percentages(std::vector<std::pair<float, float>> perc2, std::vector<st
     CDR->Draw("SAME");
 
     // Create legend
-    TLegend *legend = new TLegend(0.17, 0.72, 0.38, 0.92);
+    // Legend completely outside plotting area, in right canvas margin
+    TLegend *legend = new TLegend(0.77, 0.55, 0.98, 0.85);
+
     legend->AddEntry(gr2, name2.c_str(), "p");
     legend->AddEntry(gr3, name3.c_str(), "p");
     legend->AddEntry(gr4, name4.c_str(), "p");
     legend->AddEntry(gr5, name5.c_str(), "p");
     legend->AddEntry(gr6, name6.c_str(), "p");
+
+    legend->SetBorderSize(0);
+    legend->SetFillStyle(0);
+
     legend->Draw();    
 
     canvas->SaveAs((outName).c_str());
@@ -890,11 +900,15 @@ void draw_percentages(std::vector<std::pair<float, float>> perc2, std::vector<st
 void draw_percentages_line(std::vector<std::pair<float, float>> perc2, std::vector<std::pair<float, float>> perc3, std::vector<std::pair<float, float>> perc4, std::vector<std::pair<float, float>> perc5, std::vector<std::pair<float, float>> perc6,
     std::vector<std::pair<float, float>> err_points2,std::vector<std::pair<float, float>> err_points3, std::vector<std::pair<float, float>> err_points4, std::vector<std::pair<float, float>> err_points5, std::vector<std::pair<float, float>> err_points6,
     const std::string& name2, const std::string& name3, const std::string& name4, const std::string& name5, const std::string& name6,
-    const std::string& outName, const char* title, const char* Xtitle, const char* Ytitle, float x_lim){
+    const std::string& outName, const char* title, const char* Xtitle, const char* Ytitle, float x_lim, bool logy = false){
 
-    TCanvas* canvas = new TCanvas("canvas", title, 900, 700);
+    TCanvas* canvas = new TCanvas("canvas", title, 1100, 700);
     canvas->SetLogx();
-    canvas->SetLeftMargin(0.15);
+    if(logy) canvas->SetLogy();
+    canvas->SetLeftMargin(0.13);
+    canvas->SetRightMargin(0.25);
+    canvas->SetTopMargin(0.10);
+    canvas->SetBottomMargin(0.12);
 
     struct point{
         double x, y, sigma_x, sigma_y;
@@ -1015,9 +1029,9 @@ void draw_percentages_line(std::vector<std::pair<float, float>> perc2, std::vect
     }
 
     float y_max = 0;
-    float y_min = 0;
+    float y_min = 10000;
     float x_max = 0;
-    float x_min = 0;
+    float x_min = 10000;
 
     if (clean_y2.size() > 0) y_max = std::max(y_max, *std::max_element(clean_y2.begin(), clean_y2.end()));
     if (clean_y3.size() > 0) y_max = std::max(y_max, *std::max_element(clean_y3.begin(), clean_y3.end()));
@@ -1055,10 +1069,9 @@ void draw_percentages_line(std::vector<std::pair<float, float>> perc2, std::vect
 
 
     if (y_min > -0.1) y_min = -0.1;
-    if (y_max < 30) y_max = 30; //make sure legend doesnt cover points
     if (y_min < -100) y_min = -100;
     if (y_max > 100) y_max = 100;
-    if (x_max<1e3) x_max = 1e3;
+    //if (x_max<1e3) x_max = 1e3;
     //if (x_min>7.0e1) x_min = 7.0e1;
 
     TH1F* frame = canvas->DrawFrame(
@@ -1126,12 +1139,18 @@ void draw_percentages_line(std::vector<std::pair<float, float>> perc2, std::vect
     CDR->Draw("SAME");
 
     // Create legend
-    TLegend *legend = new TLegend(0.85, 0.74, 1, 0.94);
+    // Legend completely outside plotting area, in right canvas margin
+    TLegend *legend = new TLegend(0.77, 0.55, 0.98, 0.85);
+
     legend->AddEntry(gr2, name2.c_str(), "l");
     legend->AddEntry(gr3, name3.c_str(), "l");
     legend->AddEntry(gr4, name4.c_str(), "l");
     legend->AddEntry(gr5, name5.c_str(), "l");
     legend->AddEntry(gr6, name6.c_str(), "l");
+
+    legend->SetBorderSize(0);
+    legend->SetFillStyle(0);
+
     legend->Draw();    
 
     canvas->SaveAs((outName).c_str());
@@ -1249,9 +1268,12 @@ void draw_percentagesWithFit(std::vector<std::pair<float, float>> perc2, std::ve
     const std::string& name2, const std::string& name3, const std::string& name4, const std::string& name5, const std::string& name6,
     const std::string& outName, const char* title, const char* Xtitle, const char* Ytitle, float x_lim, bool useQuad){
 
-    TCanvas* canvas = new TCanvas("canvas", title, 900, 700);
+    TCanvas* canvas = new TCanvas("canvas", title, 1100, 700);
     canvas->SetLogx();
-    canvas->SetLeftMargin(0.15);
+    canvas->SetLeftMargin(0.13);
+    canvas->SetRightMargin(0.25);
+    canvas->SetTopMargin(0.10);
+    canvas->SetBottomMargin(0.12);
 
     struct point{
         double x, y, sigma_x, sigma_y;
@@ -1365,9 +1387,9 @@ void draw_percentagesWithFit(std::vector<std::pair<float, float>> perc2, std::ve
     }
 
     float y_max = 0;
-    float y_min = 0;
+    float y_min = 1000;
     float x_max = 0;
-    float x_min = 0;
+    float x_min = 10000;
 
     if (clean_y2.size() > 0) y_max = std::max(y_max, *std::max_element(clean_y2.begin(), clean_y2.end()));
     if (clean_y3.size() > 0) y_max = std::max(y_max, *std::max_element(clean_y3.begin(), clean_y3.end()));
@@ -1405,10 +1427,9 @@ void draw_percentagesWithFit(std::vector<std::pair<float, float>> perc2, std::ve
 
 
     if (y_min > -0.1) y_min = -0.1;
-    if (y_max < 30) y_max = 30; //make sure legend doesnt cover points
     if (y_min < -100) y_min = -100;
     if (y_max > 100) y_max = 100;
-    if (x_max<1e3) x_max = 1e3;
+    //if (x_max<1e3) x_max = 1e3;
     //if (x_min>7.0e1) x_min = 7.0e1;
 
     TH1F* frame = canvas->DrawFrame(
@@ -1481,12 +1502,18 @@ void draw_percentagesWithFit(std::vector<std::pair<float, float>> perc2, std::ve
     CDR->Draw("SAME");
 
     // Create legend
-    TLegend *legend = new TLegend(0.85, 0.74, 1, 0.94);
+    // Legend completely outside plotting area, in right canvas margin
+    TLegend *legend = new TLegend(0.77, 0.55, 0.98, 0.85);
+    
     legend->AddEntry(gr2, name2.c_str(), "p");
     legend->AddEntry(gr3, name3.c_str(), "p");
     legend->AddEntry(gr4, name4.c_str(), "p");
     legend->AddEntry(gr5, name5.c_str(), "p");
     legend->AddEntry(gr6, name6.c_str(), "p");
+    
+    legend->SetBorderSize(0);
+    legend->SetFillStyle(0);
+    
     legend->Draw();    
 
     canvas->SaveAs((outName).c_str());
@@ -1510,9 +1537,12 @@ void draw_percentagesFit(std::vector<std::pair<float, float>> perc2, std::vector
     const std::string& name2, const std::string& name3, const std::string& name4, const std::string& name5, const std::string& name6,
     const std::string& outName, const char* title, const char* Xtitle, const char* Ytitle, float x_lim, bool useQuad){
 
-    TCanvas* canvas = new TCanvas("canvas", title, 900, 700);
+    TCanvas* canvas = new TCanvas("canvas", title, 1100, 700);
     canvas->SetLogx();
-    canvas->SetLeftMargin(0.15);
+    canvas->SetLeftMargin(0.13);
+    canvas->SetRightMargin(0.25);
+    canvas->SetTopMargin(0.10);
+    canvas->SetBottomMargin(0.12);
 
     struct point{
         double x, y, sigma_x, sigma_y;
@@ -1626,9 +1656,9 @@ void draw_percentagesFit(std::vector<std::pair<float, float>> perc2, std::vector
     }
 
     float y_max = 0;
-    float y_min = 0;
+    float y_min = 1000;
     float x_max = 0;
-    float x_min = 0;
+    float x_min = 1000;
 
     if (clean_y2.size() > 0) y_max = std::max(y_max, *std::max_element(clean_y2.begin(), clean_y2.end()));
     if (clean_y3.size() > 0) y_max = std::max(y_max, *std::max_element(clean_y3.begin(), clean_y3.end()));
@@ -1666,10 +1696,9 @@ void draw_percentagesFit(std::vector<std::pair<float, float>> perc2, std::vector
 
 
     if (y_min > -0.1) y_min = -0.1;
-    if (y_max < 30) y_max = 30; //make sure legend doesnt cover points
     if (y_min < -100) y_min = -100;
     if (y_max > 100) y_max = 100;
-    if (x_max<1e3) x_max = 1e3;
+    //if (x_max<1e3) x_max = 1e3;
     //if (x_min>7.0e1) x_min = 7.0e1;
 
     TH1F* frame = canvas->DrawFrame(
@@ -1748,12 +1777,18 @@ void draw_percentagesFit(std::vector<std::pair<float, float>> perc2, std::vector
     CDR->Draw("SAME");
 
     // Create legend
-    TLegend *legend = new TLegend(0.85, 0.74, 1, 0.94);
+    // Legend completely outside plotting area, in right canvas margin
+    TLegend *legend = new TLegend(0.77, 0.55, 0.98, 0.85);
+    
     legend->AddEntry(gr2, name2.c_str(), "p");
     legend->AddEntry(gr3, name3.c_str(), "p");
     legend->AddEntry(gr4, name4.c_str(), "p");
     legend->AddEntry(gr5, name5.c_str(), "p");
     legend->AddEntry(gr6, name6.c_str(), "p");
+    
+    legend->SetBorderSize(0);
+    legend->SetFillStyle(0);
+    
     legend->Draw();    
 
     canvas->SaveAs((outName).c_str());
@@ -2012,6 +2047,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
     std::vector<Float_t>* muP_6_err = nullptr;
     std::vector<Float_t>* piP_6_err = nullptr;
 
+    /*
     std::vector<Float_t>* muPi_track_1 = nullptr;
     std::vector<Float_t>* muP_track_1 = nullptr;
     std::vector<Float_t>* piP_track_1 = nullptr;
@@ -2084,7 +2120,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
     std::vector<Float_t>* muPi_track_6_err = nullptr;
     std::vector<Float_t>* muP_track_6_err = nullptr;
     std::vector<Float_t>* piP_track_6_err = nullptr;
-    
+    */
 
     std::vector<int>*     muon_size_1 = nullptr;
     std::vector<int>*     pion_size_1 = nullptr;
@@ -2250,6 +2286,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
     std::vector<double>* p_res_err5 = nullptr;
     std::vector<double>* p_res_err6 = nullptr;
 
+    /*
     std::vector<double>* mu_l1 = nullptr;
     std::vector<double>* mu_l2 = nullptr;
     std::vector<double>* mu_l3 = nullptr;
@@ -2322,6 +2359,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
     std::vector<double>* p_res_track_err4 = nullptr;
     std::vector<double>* p_res_track_err5 = nullptr;
     std::vector<double>* p_res_track_err6 = nullptr;
+    */
 
     //set branch address
     inputTree1->SetBranchAddress("muon_pion_sep", &muPi_1);
@@ -2364,6 +2402,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
     inputTree1->SetBranchAddress("pr_res", &p_res1);
     inputTree1->SetBranchAddress("pr_res_err", &p_res_err1);
 
+    /*
     inputTree1->SetBranchAddress("muon_pion_sep_l", &muPi_track_1);
     inputTree1->SetBranchAddress("muon_proton_sep_l", &muP_track_1);
     inputTree1->SetBranchAddress("pion_proton_sep_l", &piP_track_1);
@@ -2388,6 +2427,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
     inputTree1->SetBranchAddress("pr_l_err", &p_l_err1);
     inputTree1->SetBranchAddress("pr_res_l", &p_res_track1);
     inputTree1->SetBranchAddress("pr_res_l_err", &p_res_track_err1);
+    */
 
 
     inputTree2->SetBranchAddress("muon_pion_sep", &muPi_2);
@@ -2431,6 +2471,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
     inputTree2->SetBranchAddress("pr_res", &p_res2);
     inputTree2->SetBranchAddress("pr_res_err", &p_res_err2);
 
+    /*
     inputTree2->SetBranchAddress("muon_pion_sep_l", &muPi_track_2);
     inputTree2->SetBranchAddress("muon_proton_sep_l", &muP_track_2);
     inputTree2->SetBranchAddress("pion_proton_sep_l", &piP_track_2);
@@ -2455,6 +2496,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
     inputTree2->SetBranchAddress("pr_l_err", &p_l_err2);
     inputTree2->SetBranchAddress("pr_res_l", &p_res_track2);
     inputTree2->SetBranchAddress("pr_res_l_err", &p_res_track_err2);
+    */
 
 
     inputTree3->SetBranchAddress("muon_pion_sep", &muPi_3);
@@ -2497,6 +2539,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
     inputTree3->SetBranchAddress("pr_res", &p_res3);
     inputTree3->SetBranchAddress("pr_res_err", &p_res_err3);
 
+    /*
     inputTree3->SetBranchAddress("muon_pion_sep_l", &muPi_track_3);
     inputTree3->SetBranchAddress("muon_proton_sep_l", &muP_track_3);
     inputTree3->SetBranchAddress("pion_proton_sep_l", &piP_track_3);
@@ -2521,6 +2564,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
     inputTree3->SetBranchAddress("pr_l_err", &p_l_err3);
     inputTree3->SetBranchAddress("pr_res_l", &p_res_track3);
     inputTree3->SetBranchAddress("pr_res_l_err", &p_res_track_err3);
+    */
 
 
     inputTree4->SetBranchAddress("muon_pion_sep", &muPi_4);
@@ -2563,6 +2607,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
     inputTree4->SetBranchAddress("pr_res", &p_res4);
     inputTree4->SetBranchAddress("pr_res_err", &p_res_err4);
 
+    /*
     inputTree4->SetBranchAddress("muon_pion_sep_l", &muPi_track_4);
     inputTree4->SetBranchAddress("muon_proton_sep_l", &muP_track_4);
     inputTree4->SetBranchAddress("pion_proton_sep_l", &piP_track_4);
@@ -2587,6 +2632,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
     inputTree4->SetBranchAddress("pr_l_err", &p_l_err4);
     inputTree4->SetBranchAddress("pr_res_l", &p_res_track4);
     inputTree4->SetBranchAddress("pr_res_l_err", &p_res_track_err4);
+    */
 
 
     inputTree5->SetBranchAddress("muon_pion_sep", &muPi_5);
@@ -2629,6 +2675,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
     inputTree5->SetBranchAddress("pr_res", &p_res5);
     inputTree5->SetBranchAddress("pr_res_err", &p_res_err5);
 
+    /*
     inputTree5->SetBranchAddress("muon_pion_sep_l", &muPi_track_5);
     inputTree5->SetBranchAddress("muon_proton_sep_l", &muP_track_5);
     inputTree5->SetBranchAddress("pion_proton_sep_l", &piP_track_5);
@@ -2653,6 +2700,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
     inputTree5->SetBranchAddress("pr_l_err", &p_l_err5);
     inputTree5->SetBranchAddress("pr_res_l", &p_res_track5);
     inputTree5->SetBranchAddress("pr_res_l_err", &p_res_track_err5);
+    */
 
 
     inputTree6->SetBranchAddress("muon_pion_sep", &muPi_6);
@@ -2695,6 +2743,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
     inputTree6->SetBranchAddress("pr_res", &p_res6);
     inputTree6->SetBranchAddress("pr_res_err", &p_res_err6);
 
+    /*
     inputTree6->SetBranchAddress("muon_pion_sep_l", &muPi_track_6);
     inputTree6->SetBranchAddress("muon_proton_sep_l", &muP_track_6);
     inputTree6->SetBranchAddress("pion_proton_sep_l", &piP_track_6);
@@ -2719,6 +2768,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
     inputTree6->SetBranchAddress("pr_l_err", &p_l_err6);
     inputTree6->SetBranchAddress("pr_res_l", &p_res_track6);
     inputTree6->SetBranchAddress("pr_res_l_err", &p_res_track_err6);
+    */
 
 
     //get entries
@@ -2744,7 +2794,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
     const float p_min = 70.0; // MeV
     const float p_max = 5e3; // MeV
     //const float p_interval = (p_max - p_min) / nPBins; // MeV
-    const int nPBins = 120; // number of momentum bins for p vs dE/dx graph
+    const int nPBins = 45; // number of momentum bins for p vs dE/dx graph
     float p_bin_min = std::log10(p_min); // MeV
     float p_bin_max = std::log10(p_max); // MeV
 
@@ -2763,12 +2813,12 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
     std::vector<TH1F*> hMuon5(nPBins, nullptr), hPion5(nPBins, nullptr), hProton5(nPBins, nullptr);
     std::vector<TH1F*> hMuon6(nPBins, nullptr), hPion6(nPBins, nullptr), hProton6(nPBins, nullptr);
 
-    std::vector<TH1F*> hMuonL1(nPBins, nullptr), hPionL1(nPBins, nullptr), hProtonL1(nPBins, nullptr);
-    std::vector<TH1F*> hMuonL2(nPBins, nullptr), hPionL2(nPBins, nullptr), hProtonL2(nPBins, nullptr);
-    std::vector<TH1F*> hMuonL3(nPBins, nullptr), hPionL3(nPBins, nullptr), hProtonL3(nPBins, nullptr);
-    std::vector<TH1F*> hMuonL4(nPBins, nullptr), hPionL4(nPBins, nullptr), hProtonL4(nPBins, nullptr);
-    std::vector<TH1F*> hMuonL5(nPBins, nullptr), hPionL5(nPBins, nullptr), hProtonL5(nPBins, nullptr);
-    std::vector<TH1F*> hMuonL6(nPBins, nullptr), hPionL6(nPBins, nullptr), hProtonL6(nPBins, nullptr);
+    std::vector<TH1F*> hMuonL1(nLBins, nullptr), hPionL1(nLBins, nullptr), hProtonL1(nLBins, nullptr);
+    std::vector<TH1F*> hMuonL2(nLBins, nullptr), hPionL2(nLBins, nullptr), hProtonL2(nLBins, nullptr);
+    std::vector<TH1F*> hMuonL3(nLBins, nullptr), hPionL3(nLBins, nullptr), hProtonL3(nLBins, nullptr);
+    std::vector<TH1F*> hMuonL4(nLBins, nullptr), hPionL4(nLBins, nullptr), hProtonL4(nLBins, nullptr);
+    std::vector<TH1F*> hMuonL5(nLBins, nullptr), hPionL5(nLBins, nullptr), hProtonL5(nLBins, nullptr);
+    std::vector<TH1F*> hMuonL6(nLBins, nullptr), hPionL6(nLBins, nullptr), hProtonL6(nLBins, nullptr);
 
     //get histograms from files
     for (size_t i = 0; i < nPBins; i++){
@@ -2821,6 +2871,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
         hProton6[i] = dynamic_cast<TH1F*>(hPr6->Clone(Form("hProton6_p%.2f-%.2f", p_bin_low, p_bin_high)));
     }
 
+    /*
     for (size_t i = 0; i < nLBins; i++){
 
         //define momentum edges for histogram names
@@ -2869,7 +2920,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
         hProtonL4[i] = dynamic_cast<TH1F*>(hPr4->Clone(Form("hProton4_l%.2f-%.2f", l_bin_low, l_bin_high)));
         hProtonL5[i] = dynamic_cast<TH1F*>(hPr5->Clone(Form("hProton5_l%.2f-%.2f", l_bin_low, l_bin_high)));
         hProtonL6[i] = dynamic_cast<TH1F*>(hPr6->Clone(Form("hProton6_l%.2f-%.2f", l_bin_low, l_bin_high)));
-    }
+    }*/
 
     //get vectors
     std::vector<std::pair<float, float>> muPi_sep1, muP_sep1, piP_sep1;
@@ -2935,6 +2986,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
     std::vector<std::pair<float, float>> mu_res_vec_err5, pi_res_vec_err5, p_res_vec_err5;
     std::vector<std::pair<float, float>> mu_res_vec_err6, pi_res_vec_err6, p_res_vec_err6;
 
+    /*
     std::vector<std::pair<float, float>> muPi_sep_track1, muP_sep_track1, piP_sep_track1;
     std::vector<std::pair<float, float>> muPi_sep_track2, muP_sep_track2, piP_sep_track2;
     std::vector<std::pair<float, float>> muPi_sep_track3, muP_sep_track3, piP_sep_track3;
@@ -2962,7 +3014,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
     std::vector<std::pair<float, float>> mu_res_track_vec_err4, pi_res_track_vec_err4, p_res_track_vec_err4;
     std::vector<std::pair<float, float>> mu_res_track_vec_err5, pi_res_track_vec_err5, p_res_track_vec_err5;
     std::vector<std::pair<float, float>> mu_res_track_vec_err6, pi_res_track_vec_err6, p_res_track_vec_err6;
-
+*/
 
     //get entries and fill vectors tree 1
     for (Long64_t entry = 0; entry < nEntries1; entry++){
@@ -2990,6 +3042,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
             p_size1.emplace_back(proton_size_1->at(i));
         }
 
+        /*
         for (size_t i = 0; i < track_muPi_1->size(); i++) {
             muPi_sep_track1.emplace_back(track_muPi_1->at(i), muPi_track_1->at(i));
             muPi_track_err1.emplace_back(mpi_track_err_1->at(i), muPi_track_1_err->at(i));
@@ -3003,7 +3056,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
         for (size_t i = 0; i < track_piP_1->size(); i++) {
             piP_sep_track1.emplace_back(track_piP_1->at(i), piP_track_1->at(i));
             piP_track_err1.emplace_back(pp_track_err_1->at(i), piP_track_1_err->at(i));
-        }
+        }*/
 
         //get resolution, mean and sigma and fill vectors
         for (size_t i = 0; i < mu_p1->size(); i++) {
@@ -3031,6 +3084,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
             p_res_vec_err1.emplace_back(p_p_err1->at(i), p_res_err1->at(i));
         }
 
+        /*
         for (size_t i = 0; i < mu_l1->size(); i++) {
             mu_res_track_vec1.emplace_back(mu_l1->at(i), mu_res_track1->at(i));
             mu_res_track_vec_err1.emplace_back(mu_l_err1->at(i), mu_res_track_err1->at(i));
@@ -3042,7 +3096,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
         for (size_t i = 0; i < p_l1->size(); i++) {
             p_res_track_vec1.emplace_back(p_l1->at(i), p_res_track1->at(i));
             p_res_track_vec_err1.emplace_back(p_l_err1->at(i), p_res_track_err1->at(i));
-        }
+        }*/
 
     }
 
@@ -3072,6 +3126,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
             p_size2.emplace_back(proton_size_2->at(i));
         }
 
+        /*
         for (size_t i = 0; i < track_muPi_2->size(); i++) {
             muPi_sep_track2.emplace_back(track_muPi_2->at(i), muPi_track_2->at(i));
             muPi_track_err2.emplace_back(mpi_track_err_2->at(i), muPi_track_2_err->at(i));
@@ -3085,7 +3140,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
         for (size_t i = 0; i < track_piP_2->size(); i++) {
             piP_sep_track2.emplace_back(track_piP_2->at(i), piP_track_2->at(i));
             piP_track_err2.emplace_back(pp_track_err_2->at(i), piP_track_2_err->at(i));
-        }
+        }*/
 
         //get resolution and fill vectors
         for (size_t i = 0; i < mu_p2->size(); i++) {
@@ -3113,6 +3168,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
             p_res_vec_err2.emplace_back(p_p_err2->at(i), p_res_err2->at(i));
         }
 
+        /*
         for (size_t i = 0; i < mu_l2->size(); i++) {
             mu_res_track_vec2.emplace_back(mu_l2->at(i), mu_res_track2->at(i));
             mu_res_track_vec_err2.emplace_back(mu_l_err2->at(i), mu_res_track_err2->at(i));
@@ -3124,7 +3180,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
         for (size_t i = 0; i < p_l2->size(); i++) {
             p_res_track_vec2.emplace_back(p_l2->at(i), p_res_track2->at(i));
             p_res_track_vec_err2.emplace_back(p_l_err2->at(i), p_res_track_err2->at(i));
-        }
+        }*/
     }
 
     //load entries tree 3 and fill vectors
@@ -3153,6 +3209,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
             p_size3.emplace_back(proton_size_3->at(i));
         }
 
+        /*
         for (size_t i = 0; i < track_muPi_3->size(); i++) {
             muPi_sep_track3.emplace_back(track_muPi_3->at(i), muPi_track_3->at(i));
             muPi_track_err3.emplace_back(mpi_track_err_3->at(i), muPi_track_3_err->at(i));
@@ -3166,7 +3223,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
         for (size_t i = 0; i < track_piP_3->size(); i++) {
             piP_sep_track3.emplace_back(track_piP_3->at(i), piP_track_3->at(i));
             piP_track_err3.emplace_back(pp_track_err_3->at(i), piP_track_3_err->at(i));
-        }
+        }*/
 
         //get resolution and fill vectors
         for (size_t i = 0; i < mu_p3->size(); i++) {
@@ -3194,6 +3251,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
             p_res_vec_err3.emplace_back(p_p_err3->at(i), p_res_err3->at(i));
         }
 
+        /*
         for (size_t i = 0; i < mu_l3->size(); i++) {
             mu_res_track_vec3.emplace_back(mu_l3->at(i), mu_res_track3->at(i));
             mu_res_track_vec_err3.emplace_back(mu_l_err3->at(i), mu_res_track_err3->at(i));
@@ -3205,7 +3263,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
         for (size_t i = 0; i < p_l3->size(); i++) {
             p_res_track_vec3.emplace_back(p_l3->at(i), p_res_track3->at(i));
             p_res_track_vec_err3.emplace_back(p_l_err3->at(i), p_res_track_err3->at(i));
-        }
+        }*/
     }
 
     //load entries tree 4 and fill vectors
@@ -3234,6 +3292,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
             p_size4.emplace_back(proton_size_4->at(i));
         }
 
+        /*
         for (size_t i = 0; i < track_muPi_4->size(); i++) {
             muPi_sep_track4.emplace_back(track_muPi_4->at(i), muPi_track_4->at(i));
             muPi_track_err4.emplace_back(mpi_track_err_4->at(i), muPi_track_4_err->at(i));
@@ -3247,7 +3306,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
         for (size_t i = 0; i < track_piP_4->size(); i++) {
             piP_sep_track4.emplace_back(track_piP_4->at(i), piP_track_4->at(i));
             piP_track_err4.emplace_back(pp_track_err_4->at(i), piP_track_4_err->at(i));
-        }
+        }*/
 
         //get resolution and fill vectors
         for (size_t i = 0; i < mu_p4->size(); i++) {
@@ -3275,6 +3334,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
             p_res_vec_err4.emplace_back(p_p_err4->at(i), p_res_err4->at(i));
         }
 
+        /*
         for (size_t i = 0; i < mu_l4->size(); i++) {
             mu_res_track_vec4.emplace_back(mu_l4->at(i), mu_res_track4->at(i));
             mu_res_track_vec_err4.emplace_back(mu_l_err4->at(i), mu_res_track_err4->at(i));
@@ -3286,7 +3346,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
         for (size_t i = 0; i < p_l4->size(); i++) {
             p_res_track_vec4.emplace_back(p_l4->at(i), p_res_track4->at(i));
             p_res_track_vec_err4.emplace_back(p_l_err4->at(i), p_res_track_err4->at(i));
-        }
+        }*/
 
     }
 
@@ -3317,6 +3377,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
             p_size5.emplace_back(proton_size_5->at(i));
         }
 
+        /*
         for (size_t i = 0; i < track_muPi_5->size(); i++) {
             muPi_sep_track5.emplace_back(track_muPi_5->at(i), muPi_track_5->at(i));
             muPi_track_err5.emplace_back(mpi_track_err_5->at(i), muPi_track_5_err->at(i));
@@ -3330,7 +3391,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
         for (size_t i = 0; i < track_piP_5->size(); i++) {
             piP_sep_track5.emplace_back(track_piP_5->at(i), piP_track_5->at(i));
             piP_track_err5.emplace_back(pp_track_err_5->at(i), piP_track_5_err->at(i));
-        }
+        }*/
 
         //get resolution and fill vectors
         for (size_t i = 0; i < mu_p5->size(); i++) {
@@ -3358,6 +3419,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
             p_res_vec_err5.emplace_back(p_p_err5->at(i), p_res_err5->at(i));
         }
 
+        /*
         for (size_t i = 0; i < mu_l5->size(); i++) {
             mu_res_track_vec5.emplace_back(mu_l5->at(i), mu_res_track5->at(i));
             mu_res_track_vec_err5.emplace_back(mu_l_err5->at(i), mu_res_track_err5->at(i));
@@ -3369,7 +3431,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
         for (size_t i = 0; i < p_l5->size(); i++) {
             p_res_track_vec5.emplace_back(p_l5->at(i), p_res_track5->at(i));
             p_res_track_vec_err5.emplace_back(p_l_err5->at(i), p_res_track_err5->at(i));
-        }
+        }*/
     }
 
     //load entries tree 6 and fill vectors
@@ -3398,6 +3460,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
             p_size6.emplace_back(proton_size_6->at(i));
         }
 
+        /*
         for (size_t i = 0; i < track_muPi_6->size(); i++) {
             muPi_sep_track6.emplace_back(track_muPi_6->at(i), muPi_track_6->at(i));
             muPi_track_err6.emplace_back(mpi_track_err_6->at(i), muPi_track_6_err->at(i));
@@ -3411,7 +3474,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
         for (size_t i = 0; i < track_piP_6->size(); i++) {
             piP_sep_track6.emplace_back(track_piP_6->at(i), piP_track_6->at(i));
             piP_track_err6.emplace_back(pp_track_err_6->at(i), piP_track_6_err->at(i));
-        }
+        }*/
 
         //get resolution and fill vectors
         for (size_t i = 0; i < mu_p6->size(); i++) {
@@ -3439,6 +3502,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
             p_res_vec_err6.emplace_back(p_p_err6->at(i), p_res_err6->at(i));
         }
 
+        /*
         for (size_t i = 0; i < mu_l6->size(); i++) {
             mu_res_track_vec6.emplace_back(mu_l6->at(i), mu_res_track6->at(i));
             mu_res_track_vec_err6.emplace_back(mu_l_err6->at(i), mu_res_track_err6->at(i));
@@ -3450,7 +3514,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
         for (size_t i = 0; i < p_l6->size(); i++) {
             p_res_track_vec6.emplace_back(p_l6->at(i), p_res_track6->at(i));
             p_res_track_vec_err6.emplace_back(p_l_err6->at(i), p_res_track_err6->at(i));
-        }
+        }*/
 
     }
 
@@ -3492,6 +3556,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
     std::sort(p_res_vec1.begin(), p_res_vec1.end());
     std::sort(p_res_vec_err1.begin(), p_res_vec_err1.end());
 
+    /*
     //tree 1 muon pion
     std::sort(muPi_sep_track1.begin(), muPi_sep_track1.end());
     std::sort(muPi_track_err1.begin(), muPi_track_err1.end());
@@ -3510,6 +3575,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
     //tree 1 proton resolution
     std::sort(p_res_track_vec1.begin(), p_res_track_vec1.end());
     std::sort(p_res_track_vec_err1.begin(), p_res_track_vec_err1.end());
+*/
 
     //tree 2 muon pion
     std::sort(muPi_sep2.begin(), muPi_sep2.end());
@@ -3548,6 +3614,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
     std::sort(p_res_vec2.begin(), p_res_vec2.end());
     std::sort(p_res_vec_err2.begin(), p_res_vec_err2.end());
 
+    /*
     //tree 2 muon pion
     std::sort(muPi_sep_track2.begin(), muPi_sep_track2.end());
     std::sort(muPi_track_err2.begin(), muPi_track_err2.end());
@@ -3566,7 +3633,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
     //tree 2 proton resolution
     std::sort(p_res_track_vec2.begin(), p_res_track_vec2.end());
     std::sort(p_res_track_vec_err2.begin(), p_res_track_vec_err2.end());
-
+*/
 
     //tree 3 muon pion
     std::sort(muPi_sep3.begin(), muPi_sep3.end());
@@ -3605,6 +3672,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
     std::sort(p_res_vec3.begin(), p_res_vec3.end());
     std::sort(p_res_vec_err3.begin(), p_res_vec_err3.end());
 
+    /*
     //tree 3 muon pion
     std::sort(muPi_sep_track3.begin(), muPi_sep_track3.end());
     std::sort(muPi_track_err3.begin(), muPi_track_err3.end());
@@ -3623,7 +3691,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
     //tree 3 proton resolution
     std::sort(p_res_track_vec3.begin(), p_res_track_vec3.end());
     std::sort(p_res_track_vec_err3.begin(), p_res_track_vec_err3.end());
-
+*/
 
     //tree 4 muon pion
     std::sort(muPi_sep4.begin(), muPi_sep4.end());
@@ -3644,6 +3712,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
     std::sort(p_res_vec4.begin(), p_res_vec4.end());
     std::sort(p_res_vec_err4.begin(), p_res_vec_err4.end());
 
+    /*
     //tree 4 muon pion
     std::sort(muPi_sep_track4.begin(), muPi_sep_track4.end());
     std::sort(muPi_track_err4.begin(), muPi_track_err4.end());
@@ -3653,6 +3722,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
     //tree 4 pion proton
     std::sort(piP_sep_track4.begin(), piP_sep_track4.end());
     std::sort(piP_track_err4.begin(), piP_track_err4.end());
+    */
     //tree 4 muon mean dE/dx
     std::sort(mu_mean_vec4.begin(), mu_mean_vec4.end());
     std::sort(mu_mean_vec_err4.begin(), mu_mean_vec_err4.end());
@@ -3671,6 +3741,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
     //tree 4 proton sigma of dE/dx
     std::sort(p_sigma_vec4.begin(), p_sigma_vec4.end());
     std::sort(p_sigma_vec_err4.begin(), p_sigma_vec_err4.end());
+    /*
     //tree 4 muon resolution
     std::sort(mu_res_track_vec4.begin(), mu_res_track_vec4.end());
     std::sort(mu_res_track_vec_err4.begin(), mu_res_track_vec_err4.end());
@@ -3680,7 +3751,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
     //tree 4 proton resolution
     std::sort(p_res_track_vec4.begin(), p_res_track_vec4.end());
     std::sort(p_res_track_vec_err4.begin(), p_res_track_vec_err4.end());
-
+*/
 
     //tree 5 muon pion
     std::sort(muPi_sep5.begin(), muPi_sep5.end());
@@ -3719,6 +3790,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
     std::sort(p_res_vec5.begin(), p_res_vec5.end());
     std::sort(p_res_vec_err5.begin(), p_res_vec_err5.end());
 
+    /*
     //tree 5 muon pion
     std::sort(muPi_sep_track5.begin(), muPi_sep_track5.end());
     std::sort(muPi_track_err5.begin(), muPi_track_err5.end());
@@ -3737,7 +3809,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
     //tree 5 proton resolution
     std::sort(p_res_track_vec5.begin(), p_res_track_vec5.end());
     std::sort(p_res_track_vec_err5.begin(), p_res_track_vec_err5.end());
-
+*/
 
     //tree 6 muon pion
     std::sort(muPi_sep6.begin(), muPi_sep6.end());
@@ -3776,7 +3848,8 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
     std::sort(p_res_vec6.begin(), p_res_vec6.end());
     std::sort(p_res_vec_err6.begin(), p_res_vec_err6.end());
 
-    //tree 1 muon pion
+    /*
+    //tree 6 muon pion
     std::sort(muPi_sep_track6.begin(), muPi_sep_track6.end());
     std::sort(muPi_track_err6.begin(), muPi_track_err6.end());
     //tree 6 muon proton
@@ -3794,7 +3867,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
     //tree 6 proton resolution
     std::sort(p_res_track_vec6.begin(), p_res_track_vec6.end());
     std::sort(p_res_track_vec_err6.begin(), p_res_track_vec_err6.end());
-
+*/
 
     //calculate difference in separation power to CDR per momentum
     std::vector<std::pair<float, float>> muPi_diff2, muPi_diff3, muPi_diff4, muP_diff2, muP_diff3, muP_diff4, piP_diff2, piP_diff3, piP_diff4, muPi_diff5, muP_diff5, piP_diff5, muPi_diff6, muP_diff6, piP_diff6;
@@ -4353,7 +4426,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
         const double tol = 0.01; // Tolerance for floating-point comparison
 
         //calculate difference to CDR if one is non-zero
-        if ((this_muPi_2 > 0 || this_muPi_CDR > 0) && (p_bin_center < 469 || p_bin_center > 561)){
+        if ((this_muPi_2 > 0 || this_muPi_CDR > 0) && (p_bin_center < 489)){
             float this_muPi_diff2 = this_muPi_2 - this_muPi_CDR;
             float this_muPi_diff_err2 = std::sqrt(this_muPi_err_2*this_muPi_err_2 + this_muPi_err_CDR*this_muPi_err_CDR);
             float this_muPi_perc2 = 0;
@@ -4368,7 +4441,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
             muPi_diff_err2.emplace_back(p_bin_err, this_muPi_diff_err2);
             muPi_perc_err2.emplace_back(p_bin_err, this_muPi_perc_err2);
         }
-        if((this_muP_2 > 0 || this_muP_CDR > 0) && (p_bin_center < 1689 || p_bin_center > 1751)){
+        if((this_muP_2 > 0 || this_muP_CDR > 0) && (p_bin_center < 1679 || p_bin_center > 1847) && p_bin_center > 490){
             float this_muP_diff2 = this_muP_2 - this_muP_CDR;
             float this_muP_diff_err2 = std::sqrt(this_muP_err_2*this_muP_err_2 + this_muP_err_CDR*this_muP_err_CDR);
             float this_muP_perc2 = 0;
@@ -4382,7 +4455,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
             muP_diff_err2.emplace_back(p_bin_err, this_muP_diff_err2);
             muP_perc_err2.emplace_back(p_bin_err, this_muP_perc_err2);
         }
-        if((this_piP_2 > 0 || this_piP_CDR > 0) && (p_bin_center < 1814 || p_bin_center > 1815)){
+        if((this_piP_2 > 0 || this_piP_CDR > 0) && (p_bin_center < 1679 || p_bin_center > 1847) && p_bin_center > 490){
             float this_piP_diff2 = this_piP_2 - this_piP_CDR;
             float this_piP_diff_err2 = std::sqrt(this_piP_err_2*this_piP_err_2 + this_piP_err_CDR*this_piP_err_CDR);
             float this_piP_perc2 = 0;
@@ -4397,7 +4470,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
             piP_perc_err2.emplace_back(p_bin_err, this_piP_perc_err2);
         }
 
-        if ((this_muPi_3 > 0 || this_muPi_CDR > 0) && (p_bin_center < 469 || p_bin_center > 561)){
+        if ((this_muPi_3 > 0 || this_muPi_CDR > 0) && (p_bin_center < 489)){
             float this_muPi_diff3 = this_muPi_3 - this_muPi_CDR;
             float this_muPi_diff_err3 = std::sqrt(this_muPi_err_3*this_muPi_err_3 + this_muPi_err_CDR*this_muPi_err_CDR);
             float this_muPi_perc3 = 0;
@@ -4411,7 +4484,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
             muPi_diff_err3.emplace_back(p_bin_err, this_muPi_diff_err3);
             muPi_perc_err3.emplace_back(p_bin_err, this_muPi_perc_err3);
         }
-        if((this_muP_3 > 0 || this_muP_CDR > 0) && (p_bin_center < 1689 || p_bin_center > 1751)){// && std::abs(p_bin_center - 1756.999) > tol){
+        if((this_muP_3 > 0 || this_muP_CDR > 0) && (p_bin_center < 1679 || p_bin_center > 1847) && p_bin_center > 490){// && std::abs(p_bin_center - 1756.999) > tol){
             float this_muP_diff3 = this_muP_3 - this_muP_CDR;
             float this_muP_diff_err3 = std::sqrt(this_muP_err_3*this_muP_err_3 + this_muP_err_CDR*this_muP_err_CDR);
             float this_muP_perc3 = 0;
@@ -4425,7 +4498,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
             muP_diff_err3.emplace_back(p_bin_err, this_muP_diff_err3);
             muP_perc_err3.emplace_back(p_bin_err, this_muP_perc_err3);
         }
-        if((this_piP_3 > 0 || this_piP_CDR > 0) && (p_bin_center < 1814 || p_bin_center > 1815)){// && std::abs(p_bin_center - 1756.999) > tol){
+        if((this_piP_3 > 0 || this_piP_CDR > 0) && (p_bin_center < 1679 || p_bin_center > 1847) && p_bin_center > 490){// && std::abs(p_bin_center - 1756.999) > tol){
             float this_piP_diff3 = this_piP_3 - this_piP_CDR;
             float this_piP_diff_err3 = std::sqrt(this_piP_err_3*this_piP_err_3 + this_piP_err_CDR*this_piP_err_CDR);
             float this_piP_perc3 = 0;
@@ -4440,7 +4513,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
             piP_perc_err3.emplace_back(p_bin_err, this_piP_perc_err3);
         }
 
-        if ((this_muPi_4 > 0 || this_muPi_CDR > 0) && (p_bin_center < 469 || p_bin_center > 561)){// && (p_bin_center < 460 || p_bin_center > 555)){
+        if ((this_muPi_4 > 0 || this_muPi_CDR > 0) && (p_bin_center < 489)){// && (p_bin_center < 460 || p_bin_center > 555)){
             float this_muPi_diff4 = this_muPi_4 - this_muPi_CDR;
             float this_muPi_diff_err4 = std::sqrt(this_muPi_err_4*this_muPi_err_4 + this_muPi_err_CDR*this_muPi_err_CDR);
             float this_muPi_perc4 = 0;
@@ -4454,7 +4527,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
             muPi_diff_err4.emplace_back(p_bin_err, this_muPi_diff_err4);
             muPi_perc_err4.emplace_back(p_bin_err, this_muPi_perc_err4);
         }
-        if((this_muP_4 > 0 || this_muP_CDR > 0) && (p_bin_center < 1689 || p_bin_center > 1751)){// && std::abs(p_bin_center - 1756.999) > tol){
+        if((this_muP_4 > 0 || this_muP_CDR > 0) && (p_bin_center < 1679 || p_bin_center > 1847) && p_bin_center > 490){// && std::abs(p_bin_center - 1756.999) > tol){
             float this_muP_diff4 = this_muP_4 - this_muP_CDR;
             float this_muP_diff_err4 = std::sqrt(this_muP_err_4*this_muP_err_4 + this_muP_err_CDR*this_muP_err_CDR);
             float this_muP_perc4 = 0;
@@ -4468,7 +4541,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
             muP_diff_err4.emplace_back(p_bin_err, this_muP_diff_err4);
             muP_perc_err4.emplace_back(p_bin_err, this_muP_perc_err4);
         }
-        if((this_piP_4 > 0 || this_piP_CDR > 0) && (p_bin_center < 1814 || p_bin_center > 1815)){
+        if((this_piP_4 > 0 || this_piP_CDR > 0) && (p_bin_center < 1679 || p_bin_center > 1847) && p_bin_center > 490){
             float this_piP_diff4 = this_piP_4 - this_piP_CDR;
             float this_piP_diff_err4 = std::sqrt(this_piP_err_4*this_piP_err_4 + this_piP_err_CDR*this_piP_err_CDR);
             float this_piP_perc4 = 0;
@@ -4483,7 +4556,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
             piP_perc_err4.emplace_back(p_bin_err, this_piP_perc_err4);
         }
 
-        if ((this_muPi_5 > 0 || this_muPi_CDR > 0) && (p_bin_center < 469 || p_bin_center > 561)){
+        if ((this_muPi_5 > 0 || this_muPi_CDR > 0) && (p_bin_center < 489)){
             float this_muPi_diff5 = this_muPi_5 - this_muPi_CDR;
             float this_muPi_diff_err5 = std::sqrt(this_muPi_err_5*this_muPi_err_5 + this_muPi_err_CDR*this_muPi_err_CDR);
             float this_muPi_perc5 = 0;
@@ -4498,7 +4571,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
             muPi_perc_err5.emplace_back(p_bin_err, this_muPi_perc_err5);
         }
 
-        if((this_muP_5 > 0 || this_muP_CDR > 0) && (p_bin_center < 1689 || p_bin_center > 1751)){// && std::abs(p_bin_center - 1756.999) > tol){
+        if((this_muP_5 > 0 || this_muP_CDR > 0) && (p_bin_center < 1679 || p_bin_center > 1847) && p_bin_center > 490){// && std::abs(p_bin_center - 1756.999) > tol){
             float this_muP_diff5 = this_muP_5 - this_muP_CDR;
             float this_muP_diff_err5 = std::sqrt(this_muP_err_5*this_muP_err_5 + this_muP_err_CDR*this_muP_err_CDR);
             float this_muP_perc5 = 0;
@@ -4512,7 +4585,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
             muP_diff_err5.emplace_back(p_bin_err, this_muP_diff_err5);
             muP_perc_err5.emplace_back(p_bin_err, this_muP_perc_err5);
         }
-        if((this_piP_5 > 0 || this_piP_CDR > 0) && (p_bin_center < 1814 || p_bin_center > 1815)){// && std::abs(p_bin_center - 1756.999) > tol){
+        if((this_piP_5 > 0 || this_piP_CDR > 0) && (p_bin_center < 1679 || p_bin_center > 1847) && p_bin_center > 490){// && std::abs(p_bin_center - 1756.999) > tol){
             float this_piP_diff5 = this_piP_5 - this_piP_CDR;
             float this_piP_diff_err5 = std::sqrt(this_piP_err_5*this_piP_err_5 + this_piP_err_CDR*this_piP_err_CDR);
             float this_piP_perc5 = 0;
@@ -4527,7 +4600,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
             piP_perc_err5.emplace_back(p_bin_err, this_piP_perc_err5);
         }
 
-        if ((this_muPi_6 > 0 || this_muPi_CDR > 0) && (p_bin_center < 469 || p_bin_center > 561)){
+        if ((this_muPi_6 > 0 || this_muPi_CDR > 0) && (p_bin_center < 489)){
             float this_muPi_diff6 = this_muPi_6 - this_muPi_CDR;
             float this_muPi_diff_err6 = std::sqrt(this_muPi_err_6*this_muPi_err_6 + this_muPi_err_CDR*this_muPi_err_CDR);
             float this_muPi_perc6 = 0;
@@ -4541,7 +4614,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
             muPi_diff_err6.emplace_back(p_bin_err, this_muPi_diff_err6);
             muPi_perc_err6.emplace_back(p_bin_err, this_muPi_perc_err6);
         }
-        if((this_muP_6 > 0 || this_muP_CDR > 0) && (p_bin_center < 1689 || p_bin_center > 1751)){
+        if((this_muP_6 > 0 || this_muP_CDR > 0) && (p_bin_center < 1679 || p_bin_center > 1847) && p_bin_center > 490){
             float this_muP_diff6 = this_muP_6 - this_muP_CDR;
             float this_muP_diff_err6 = std::sqrt(this_muP_err_6*this_muP_err_6 + this_muP_err_CDR*this_muP_err_CDR);
             float this_muP_perc6 = 0;
@@ -4555,7 +4628,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
             muP_perc_err6.emplace_back(p_bin_err, this_muP_perc_err6);
             muP_diff_err6.emplace_back(p_bin_err, this_muP_diff_err6);
         }
-        if((this_piP_6 > 0 || this_piP_CDR > 0) && (p_bin_center < 1814 || p_bin_center > 1815)){// && std::abs(p_bin_center - 1756.999) > tol){
+        if((this_piP_6 > 0 || this_piP_CDR > 0) && (p_bin_center < 1679 || p_bin_center > 1847) && p_bin_center > 490){// && std::abs(p_bin_center - 1756.999) > tol){
             float this_piP_diff6 = this_piP_6 - this_piP_CDR;
             float this_piP_diff_err6 = std::sqrt(this_piP_err_6*this_piP_err_6 + this_piP_err_CDR*this_piP_err_CDR);
             float this_piP_perc6 = 0;
@@ -4601,7 +4674,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
             pi_mean_perc_err2.emplace_back(p_bin_err, this_pi_mean_perc_err2);
         }
 
-        if ((this_p_mean_2 > 0 || this_p_mean_CDR > 0)){
+        if ((this_p_mean_2 > 0 || this_p_mean_CDR > 0) && p_bin_center > 490){
             float this_p_mean_diff2 = this_p_mean_2 - this_p_mean_CDR;
             float this_p_mean_diff_err2 = std::sqrt(this_p_mean_err_2*this_p_mean_err_2 + this_p_mean_err_CDR*this_p_mean_err_CDR);
             float this_p_mean_perc2 = 0;
@@ -4646,7 +4719,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
             pi_mean_perc_err3.emplace_back(p_bin_err, this_pi_mean_perc_err3);
         }
 
-        if ((this_p_mean_3 > 0 || this_p_mean_CDR > 0)){
+        if ((this_p_mean_3 > 0 || this_p_mean_CDR > 0) && p_bin_center > 490){
             float this_p_mean_diff3 = this_p_mean_3 - this_p_mean_CDR;
             float this_p_mean_diff_err3 = std::sqrt(this_p_mean_err_3*this_p_mean_err_3 + this_p_mean_err_CDR*this_p_mean_err_CDR);
             float this_p_mean_perc3 = 0;
@@ -4691,7 +4764,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
             pi_mean_perc_err4.emplace_back(p_bin_err, this_pi_mean_perc_err4);
         }
 
-        if ((this_p_mean_4 > 0 || this_p_mean_CDR > 0)){
+        if ((this_p_mean_4 > 0 || this_p_mean_CDR > 0) && p_bin_center > 490){
             float this_p_mean_diff4 = this_p_mean_4 - this_p_mean_CDR;
             float this_p_mean_diff_err4 = std::sqrt(this_p_mean_err_4*this_p_mean_err_4 + this_p_mean_err_CDR*this_p_mean_err_CDR);
             float this_p_mean_perc4 = 0;
@@ -4736,7 +4809,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
             pi_mean_perc_err5.emplace_back(p_bin_err, this_pi_mean_perc_err5);
         }
 
-        if ((this_p_mean_5 > 0 || this_p_mean_CDR > 0)){
+        if ((this_p_mean_5 > 0 || this_p_mean_CDR > 0) && p_bin_center > 490){
             float this_p_mean_diff5 = this_p_mean_5 - this_p_mean_CDR;
             float this_p_mean_diff_err5 = std::sqrt(this_p_mean_err_5*this_p_mean_err_5 + this_p_mean_err_CDR*this_p_mean_err_CDR);
             float this_p_mean_perc5 = 0;
@@ -4781,7 +4854,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
             pi_mean_perc_err6.emplace_back(p_bin_err, this_pi_mean_perc_err6);
         }
 
-        if ((this_p_mean_6 > 0 || this_p_mean_CDR > 0)){
+        if ((this_p_mean_6 > 0 || this_p_mean_CDR > 0) && p_bin_center > 490){
             float this_p_mean_diff6 = this_p_mean_6 - this_p_mean_CDR;
             float this_p_mean_diff_err6 = std::sqrt(this_p_mean_err_6*this_p_mean_err_6 + this_p_mean_err_CDR*this_p_mean_err_CDR);
             float this_p_mean_perc6 = 0;
@@ -4828,7 +4901,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
             pi_sigma_perc_err2.emplace_back(p_bin_err, this_pi_sigma_perc_err2);
         }
 
-        if ((this_p_sigma_2 > 0 || this_p_sigma_CDR > 0)){
+        if ((this_p_sigma_2 > 0 || this_p_sigma_CDR > 0) && p_bin_center > 490){
             float this_p_sigma_diff2 = this_p_sigma_2 - this_p_sigma_CDR;
             float this_p_sigma_diff_err2 = std::sqrt(this_p_sigma_err_2*this_p_sigma_err_2 + this_p_sigma_err_CDR*this_p_sigma_err_CDR);
             float this_p_sigma_perc2 = 0;
@@ -4873,7 +4946,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
             pi_sigma_perc_err3.emplace_back(p_bin_err, this_pi_sigma_perc_err3);
         }
 
-        if ((this_p_sigma_3 > 0 || this_p_sigma_CDR > 0)){
+        if ((this_p_sigma_3 > 0 || this_p_sigma_CDR > 0) && p_bin_center > 490){
             float this_p_sigma_diff3 = this_p_sigma_3 - this_p_sigma_CDR;
             float this_p_sigma_diff_err3 = std::sqrt(this_p_sigma_err_3*this_p_sigma_err_3 + this_p_sigma_err_CDR*this_p_sigma_err_CDR);
             float this_p_sigma_perc3 = 0;
@@ -4918,7 +4991,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
             pi_sigma_perc_err4.emplace_back(p_bin_err, this_pi_sigma_perc_err4);
         }
 
-        if ((this_p_sigma_4 > 0 || this_p_sigma_CDR > 0)){
+        if ((this_p_sigma_4 > 0 || this_p_sigma_CDR > 0) && p_bin_center > 490){
             float this_p_sigma_diff4 = this_p_sigma_4 - this_p_sigma_CDR;
             float this_p_sigma_diff_err4 = std::sqrt(this_p_sigma_err_4*this_p_sigma_err_4 + this_p_sigma_err_CDR*this_p_sigma_err_CDR);
             float this_p_sigma_perc4 = 0;
@@ -4963,7 +5036,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
             pi_sigma_perc_err5.emplace_back(p_bin_err, this_pi_sigma_perc_err5);
         }
 
-        if ((this_p_sigma_5 > 0 || this_p_sigma_CDR > 0)){
+        if ((this_p_sigma_5 > 0 || this_p_sigma_CDR > 0) && p_bin_center > 490){
             float this_p_sigma_diff5 = this_p_sigma_5 - this_p_sigma_CDR;
             float this_p_sigma_diff_err5 = std::sqrt(this_p_sigma_err_5*this_p_sigma_err_5 + this_p_sigma_err_CDR*this_p_sigma_err_CDR);
             float this_p_sigma_perc5 = 0;
@@ -5008,7 +5081,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
             pi_sigma_perc_err6.emplace_back(p_bin_err, this_pi_sigma_perc_err6);
         }
 
-        if ((this_p_sigma_6 > 0 || this_p_sigma_CDR > 0)){
+        if ((this_p_sigma_6 > 0 || this_p_sigma_CDR > 0) && p_bin_center > 490){
             float this_p_sigma_diff6 = this_p_sigma_6 - this_p_sigma_CDR;
             float this_p_sigma_diff_err6 = std::sqrt(this_p_sigma_err_6*this_p_sigma_err_6 + this_p_sigma_err_CDR*this_p_sigma_err_CDR);
             float this_p_sigma_perc6 = 0;
@@ -5055,7 +5128,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
             pi_res_perc_err2.emplace_back(p_bin_err, this_pi_res_perc_err2);
         }
 
-        if ((this_p_res_2 > 0 || this_p_res_CDR > 0)){
+        if ((this_p_res_2 > 0 || this_p_res_CDR > 0) && p_bin_center > 490){
             float this_p_res_diff2 = this_p_res_2 - this_p_res_CDR;
             float this_p_res_diff_err2 = std::sqrt(this_p_res_err_2*this_p_res_err_2 + this_p_res_err_CDR*this_p_res_err_CDR);
             float this_p_res_perc2 = 0;
@@ -5100,7 +5173,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
             pi_res_perc_err3.emplace_back(p_bin_err, this_pi_res_perc_err3);
         }
 
-        if ((this_p_res_3 > 0 || this_p_res_CDR > 0)){
+        if ((this_p_res_3 > 0 || this_p_res_CDR > 0) && p_bin_center > 490){
             float this_p_res_diff3 = this_p_res_3 - this_p_res_CDR;
             float this_p_res_diff_err3 = std::sqrt(this_p_res_err_3*this_p_res_err_3 + this_p_res_err_CDR*this_p_res_err_CDR);
             float this_p_res_perc3 = 0;
@@ -5145,7 +5218,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
             pi_res_perc_err4.emplace_back(p_bin_err, this_pi_res_perc_err4);
         }
 
-        if ((this_p_res_4 > 0 || this_p_res_CDR > 0)){
+        if ((this_p_res_4 > 0 || this_p_res_CDR > 0) && p_bin_center > 490){
             float this_p_res_diff4 = this_p_res_4 - this_p_res_CDR;
             float this_p_res_diff_err4 = std::sqrt(this_p_res_err_4*this_p_res_err_4 + this_p_res_err_CDR*this_p_res_err_CDR);
             float this_p_res_perc4 = 0;
@@ -5190,7 +5263,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
             pi_res_perc_err5.emplace_back(p_bin_err, this_pi_res_perc_err5);
         }
 
-        if ((this_p_res_5 > 0 || this_p_res_CDR > 0)){
+        if ((this_p_res_5 > 0 || this_p_res_CDR > 0) && p_bin_center > 490){
             float this_p_res_diff5 = this_p_res_5 - this_p_res_CDR;
             float this_p_res_diff_err5 = std::sqrt(this_p_res_err_5*this_p_res_err_5 + this_p_res_err_CDR*this_p_res_err_CDR);
             float this_p_res_perc5 = 0;
@@ -5235,7 +5308,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
             pi_res_perc_err6.emplace_back(p_bin_err, this_pi_res_perc_err6);
         }
 
-        if ((this_p_res_6 > 0 || this_p_res_CDR > 0)){
+        if ((this_p_res_6 > 0 || this_p_res_CDR > 0) && p_bin_center > 490){
             float this_p_res_diff6 = this_p_res_6 - this_p_res_CDR;
             float this_p_res_diff_err6 = std::sqrt(this_p_res_err_6*this_p_res_err_6 + this_p_res_err_CDR*this_p_res_err_CDR);
             float this_p_res_perc6 = 0;
@@ -5251,6 +5324,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
         }
     }
 
+    /*
     //calculate difference in separation power to CDR per track length
     std::vector<std::pair<float, float>> muPi_diff_track2, muPi_diff_track3, muPi_diff_track4, muP_diff_track2, muP_diff_track3, muP_diff_track4, piP_diff_track2, piP_diff_track3, piP_diff_track4, muPi_diff_track5, muP_diff_track5, piP_diff_track5, muPi_diff_track6, muP_diff_track6, piP_diff_track6;
     std::vector<std::pair<float, float>> muPi_perc_track2, muPi_perc_track3, muPi_perc_track4, muP_perc_track2, muP_perc_track3, muP_perc_track4, piP_perc_track2, piP_perc_track3, piP_perc_track4, muPi_perc_track5, muP_perc_track5, piP_perc_track5, muPi_perc_track6, muP_perc_track6, piP_perc_track6;
@@ -5959,89 +6033,127 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
             p_res_perc_track6.emplace_back(l_bin_center, this_p_res_perc6);
             p_res_perc_track_err6.emplace_back(l_bin_err, this_p_res_perc_err6);
         }
-    }
+    }*/
 
 
     //draw results
-    draw_graphs(muPi_sep1, muPi_sep2, muPi_sep3, muPi_sep4, muPi_sep5, muPi_sep6, muPi_err1, muPi_err2, muPi_err3, muPi_err4, muPi_err5, muPi_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonPionSepPowComp.png" ).c_str(), "Muon Pion Separation Power", "Momentum [MeV]", "Separation Power",5e4);
-    draw_graphs(muP_sep1, muP_sep2, muP_sep3, muP_sep4, muP_sep5, muP_sep6, muP_err1, muP_err2, muP_err3, muP_err4, muP_err5, muP_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonProtonSepPowComp.png" ).c_str(), "Muon Proton Separation Power", "Momentum [MeV]", "Separation Power",5e4);
-    draw_graphs(piP_sep1, piP_sep2, piP_sep3, piP_sep4, piP_sep5, piP_sep6, piP_err1, piP_err2, piP_err3, piP_err4, piP_err5, piP_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionProtonSepPowComp.png" ).c_str(), "Pion Proton Separation Power", "Momentum [MeV]", "Separation Power",5e4);
+    draw_graphs(muPi_sep1, muPi_sep2, muPi_sep3, muPi_sep4, muPi_sep5, muPi_sep6, muPi_err1, muPi_err2, muPi_err3, muPi_err4, muPi_err5, muPi_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonPionSepPowComp.png" ).c_str(), "Muon Pion Separation Power", "Momentum [MeV/c]", "Separation Power",5e4);
+    draw_graphs(muP_sep1, muP_sep2, muP_sep3, muP_sep4, muP_sep5, muP_sep6, muP_err1, muP_err2, muP_err3, muP_err4, muP_err5, muP_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonProtonSepPowComp.png" ).c_str(), "Muon Proton Separation Power", "Momentum [MeV/c]", "Separation Power",5e4);
+    draw_graphs(piP_sep1, piP_sep2, piP_sep3, piP_sep4, piP_sep5, piP_sep6, piP_err1, piP_err2, piP_err3, piP_err4, piP_err5, piP_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionProtonSepPowComp.png" ).c_str(), "Pion Proton Separation Power", "Momentum [MeV/c]", "Separation Power",5e4);
 
-    draw_differences(muPi_diff2, muPi_diff3, muPi_diff4, muPi_diff5, muPi_diff6, muPi_diff_err2, muPi_diff_err3, muPi_diff_err4, muPi_diff_err5, muPi_diff_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonPionSepPowDiff.png" ).c_str(), "Difference in Muon Pion Separation", "Momentum [MeV]", "S-S_{Pilot}", 5e4);
-    draw_differences(muP_diff2, muP_diff3, muP_diff4, muP_diff5, muP_diff6, muP_diff_err2, muP_diff_err3, muP_diff_err4, muP_diff_err5, muP_diff_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonProtonSepPowDiff.png" ).c_str(), "Difference in Muon Proton Separation", "Momentum [MeV]", "S-S_{Pilot}", 5e4);
-    draw_differences(piP_diff2, piP_diff3, piP_diff4, piP_diff5, piP_diff6, piP_diff_err2, piP_diff_err3, piP_diff_err4, piP_diff_err5, piP_diff_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionProtonSepPowDiff.png" ).c_str(), "Difference in Pion Proton Separation", "Momentum [MeV]", "S-S_{Pilot}", 5e4);
+    draw_differences(muPi_diff2, muPi_diff3, muPi_diff4, muPi_diff5, muPi_diff6, muPi_diff_err2, muPi_diff_err3, muPi_diff_err4, muPi_diff_err5, muPi_diff_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonPionSepPowDiff.png" ).c_str(), "Difference in Muon Pion Separation", "Momentum [MeV/c]", "S-S_{Pilot}", 5e4);
+    draw_differences(muP_diff2, muP_diff3, muP_diff4, muP_diff5, muP_diff6, muP_diff_err2, muP_diff_err3, muP_diff_err4, muP_diff_err5, muP_diff_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonProtonSepPowDiff.png" ).c_str(), "Difference in Muon Proton Separation", "Momentum [MeV/c]", "S-S_{Pilot}", 5e4);
+    draw_differences(piP_diff2, piP_diff3, piP_diff4, piP_diff5, piP_diff6, piP_diff_err2, piP_diff_err3, piP_diff_err4, piP_diff_err5, piP_diff_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionProtonSepPowDiff.png" ).c_str(), "Difference in Pion Proton Separation", "Momentum [MeV/c]", "S-S_{Pilot}", 5e4);
 
-    draw_percentages(muPi_perc2, muPi_perc3, muPi_perc4, muPi_perc5, muPi_perc6, muPi_perc_err2, muPi_perc_err3, muPi_perc_err4, muPi_perc_err5, muPi_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonPionSepPowDiffPerc.png" ).c_str(), "Difference in Muon Pion Separation", "Momentum [MeV]", "(S-S_{Pilot})/S_{Pilot} *100", 5e4);
-    draw_percentages(muP_perc2, muP_perc3, muP_perc4, muP_perc5, muP_perc6, muP_perc_err2, muP_perc_err3, muP_perc_err4, muP_perc_err5, muP_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonProtonSepPowDiffPerc.png" ).c_str(), "Difference in Muon Proton Separation", "Momentum [MeV]", "(S-S_{Pilot})/S_{Pilot} *100", 5e4);
-    draw_percentages(piP_perc2, piP_perc3, piP_perc4, piP_perc5, piP_perc6, piP_perc_err2, piP_perc_err3, piP_perc_err4, piP_perc_err5, piP_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionProtonSepPowDiffPerc.png" ).c_str(), "Difference in Pion Proton Separation", "Momentum [MeV]", "(S-S_{Pilot})/S_{Pilot} *100", 5e4);
+    draw_percentages(muPi_perc2, muPi_perc3, muPi_perc4, muPi_perc5, muPi_perc6, muPi_perc_err2, muPi_perc_err3, muPi_perc_err4, muPi_perc_err5, muPi_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonPionSepPowDiffPerc.png" ).c_str(), "Difference in Muon Pion Separation", "Momentum [MeV/c]", "(S-S_{Pilot})/S_{Pilot} *100", 5e4);
+    draw_percentages(muP_perc2, muP_perc3, muP_perc4, muP_perc5, muP_perc6, muP_perc_err2, muP_perc_err3, muP_perc_err4, muP_perc_err5, muP_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonProtonSepPowDiffPerc.png" ).c_str(), "Difference in Muon Proton Separation", "Momentum [MeV/c]", "(S-S_{Pilot})/S_{Pilot} *100", 5e4);
+    draw_percentages(piP_perc2, piP_perc3, piP_perc4, piP_perc5, piP_perc6, piP_perc_err2, piP_perc_err3, piP_perc_err4, piP_perc_err5, piP_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionProtonSepPowDiffPerc.png" ).c_str(), "Difference in Pion Proton Separation", "Momentum [MeV/c]", "(S-S_{Pilot})/S_{Pilot} *100", 5e4);
 
-    draw_percentages(muPi_perc2, muPi_perc3, muPi_perc4, muPi_perc5, muPi_perc6, muPi_perc_err2, muPi_perc_err3, muPi_perc_err4, muPi_perc_err5, muPi_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonPionSepPowDiffPercZoom.png" ).c_str(), "Difference in Muon Pion Separation", "Momentum [MeV]", "(S-S_{Pilot})/S_{Pilot} *100", 5e4, true);
-    draw_percentages(muP_perc2, muP_perc3, muP_perc4, muP_perc5, muP_perc6, muP_perc_err2, muP_perc_err3, muP_perc_err4, muP_perc_err5, muP_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonProtonSepPowDiffPercZoom.png" ).c_str(), "Difference in Muon Proton Separation", "Momentum [MeV]", "(S-S_{Pilot})/S_{Pilot} *100", 5e4, true);
-    draw_percentages(piP_perc2, piP_perc3, piP_perc4, piP_perc5, piP_perc6, piP_perc_err2, piP_perc_err3, piP_perc_err4, piP_perc_err5, piP_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionProtonSepPowDiffPercZoom.png" ).c_str(), "Difference in Pion Proton Separation", "Momentum [MeV]", "(S-S_{Pilot})/S_{Pilot} *100", 5e4, true);
+    draw_percentages(muPi_perc2, muPi_perc3, muPi_perc4, muPi_perc5, muPi_perc6, muPi_perc_err2, muPi_perc_err3, muPi_perc_err4, muPi_perc_err5, muPi_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonPionSepPowDiffPercZoom.png" ).c_str(), "Difference in Muon Pion Separation", "Momentum [MeV/c]", "(S-S_{Pilot})/S_{Pilot} *100", 5e4, true);
+    draw_percentages(muP_perc2, muP_perc3, muP_perc4, muP_perc5, muP_perc6, muP_perc_err2, muP_perc_err3, muP_perc_err4, muP_perc_err5, muP_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonProtonSepPowDiffPercZoom.png" ).c_str(), "Difference in Muon Proton Separation", "Momentum [MeV/c]", "(S-S_{Pilot})/S_{Pilot} *100", 5e4, true);
+    draw_percentages(piP_perc2, piP_perc3, piP_perc4, piP_perc5, piP_perc6, piP_perc_err2, piP_perc_err3, piP_perc_err4, piP_perc_err5, piP_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionProtonSepPowDiffPercZoom.png" ).c_str(), "Difference in Pion Proton Separation", "Momentum [MeV/c]", "(S-S_{Pilot})/S_{Pilot} *100", 5e4, true);
 
-    draw_percentages_line(muPi_perc2, muPi_perc3, muPi_perc4, muPi_perc5, muPi_perc6, muPi_perc_err2, muPi_perc_err3, muPi_perc_err4, muPi_perc_err5, muPi_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonPionSepPowDiffPercLine.png" ).c_str(), "Difference in Muon Pion Separation", "Momentum [MeV]", "(S-S_{Pilot})/S_{Pilot} *100", 5e4);
-    draw_percentages_line(muP_perc2, muP_perc3, muP_perc4, muP_perc5, muP_perc6, muP_perc_err2, muP_perc_err3, muP_perc_err4, muP_perc_err5, muP_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonProtonSepPowDiffPercLine.png" ).c_str(), "Difference in Muon Proton Separation", "Momentum [MeV]", "(S-S_{Pilot})/S_{Pilot} *100", 5e4);
-    draw_percentages_line(piP_perc2, piP_perc3, piP_perc4, piP_perc5, piP_perc6, piP_perc_err2, piP_perc_err3, piP_perc_err4, piP_perc_err5, piP_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionProtonSepPowDiffPercLine.png" ).c_str(), "Difference in Pion Proton Separation", "Momentum [MeV]", "(S-S_{Pilot})/S_{Pilot} *100", 5e4);
+    draw_percentages_line(muPi_perc2, muPi_perc3, muPi_perc4, muPi_perc5, muPi_perc6, muPi_perc_err2, muPi_perc_err3, muPi_perc_err4, muPi_perc_err5, muPi_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonPionSepPowDiffPercLine.png" ).c_str(), "Difference in Muon Pion Separation", "Momentum [MeV/c]", "(S-S_{Pilot})/S_{Pilot} *100", 5e4);
+    draw_percentages_line(muP_perc2, muP_perc3, muP_perc4, muP_perc5, muP_perc6, muP_perc_err2, muP_perc_err3, muP_perc_err4, muP_perc_err5, muP_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonProtonSepPowDiffPercLine.png" ).c_str(), "Difference in Muon Proton Separation", "Momentum [MeV/c]", "(S-S_{Pilot})/S_{Pilot} *100", 5e4);
+    draw_percentages_line(piP_perc2, piP_perc3, piP_perc4, piP_perc5, piP_perc6, piP_perc_err2, piP_perc_err3, piP_perc_err4, piP_perc_err5, piP_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionProtonSepPowDiffPercLine.png" ).c_str(), "Difference in Pion Proton Separation", "Momentum [MeV/c]", "(S-S_{Pilot})/S_{Pilot} *100", 5e4);
 
-    draw_graphs(mu_mean_vec1, mu_mean_vec2, mu_mean_vec3, mu_mean_vec4, mu_mean_vec5, mu_mean_vec6, mu_mean_vec_err1, mu_mean_vec_err2, mu_mean_vec_err3, mu_mean_vec_err4, mu_mean_vec_err5, mu_mean_vec_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonMeanComp.png" ).c_str(), "Muon Mean dE/dx", "Momentum [MeV]", "Mean dE/dx [keV(cm)]", 5e4);
-    draw_graphs(pi_mean_vec1, pi_mean_vec2, pi_mean_vec3, pi_mean_vec4, pi_mean_vec5, pi_mean_vec6, pi_mean_vec_err1, pi_mean_vec_err2, pi_mean_vec_err3, pi_mean_vec_err4, pi_mean_vec_err5, pi_mean_vec_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionMeanComp.png" ).c_str(), "Pion Mean dE/dx", "Momentum [MeV]", "Mean dE/dx [keV/cm]", 5e4);
-    draw_graphs(p_mean_vec1, p_mean_vec2, p_mean_vec3, p_mean_vec4, p_mean_vec5, p_mean_vec6, p_mean_vec_err1, p_mean_vec_err2, p_mean_vec_err3, p_mean_vec_err4, p_mean_vec_err5, p_mean_vec_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_ProtonMeanComp.png" ).c_str(), "Proton Mean dE/dx", "Momentum [MeV]", "Mean dE/dx [keV/cm]", 5e4);
+    /*
+    //draw with log scale
+    draw_percentages(muPi_perc2, muPi_perc3, muPi_perc4, muPi_perc5, muPi_perc6, muPi_perc_err2, muPi_perc_err3, muPi_perc_err4, muPi_perc_err5, muPi_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonPionSepPowDiffPercLog.png" ).c_str(), "Difference in Muon Pion Separation", "Momentum [MeV/c]", "(S-S_{Pilot})/S_{Pilot} *100", 5e4, false, true);
+    draw_percentages(muP_perc2, muP_perc3, muP_perc4, muP_perc5, muP_perc6, muP_perc_err2, muP_perc_err3, muP_perc_err4, muP_perc_err5, muP_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonProtonSepPowDiffPercLog.png" ).c_str(), "Difference in Muon Proton Separation", "Momentum [MeV/c]", "(S-S_{Pilot})/S_{Pilot} *100", 5e4, false, true);
+    draw_percentages(piP_perc2, piP_perc3, piP_perc4, piP_perc5, piP_perc6, piP_perc_err2, piP_perc_err3, piP_perc_err4, piP_perc_err5, piP_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionProtonSepPowDiffPercLog.png" ).c_str(), "Difference in Pion Proton Separation", "Momentum [MeV/c]", "(S-S_{Pilot})/S_{Pilot} *100", 5e4, false, true);
+
+    draw_percentages_line(muPi_perc2, muPi_perc3, muPi_perc4, muPi_perc5, muPi_perc6, muPi_perc_err2, muPi_perc_err3, muPi_perc_err4, muPi_perc_err5, muPi_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonPionSepPowDiffPercLineLog.png" ).c_str(), "Difference in Muon Pion Separation", "Momentum [MeV/c]", "(S-S_{Pilot})/S_{Pilot} *100", 5e4, true);
+    draw_percentages_line(muP_perc2, muP_perc3, muP_perc4, muP_perc5, muP_perc6, muP_perc_err2, muP_perc_err3, muP_perc_err4, muP_perc_err5, muP_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonProtonSepPowDiffPercLineLog.png" ).c_str(), "Difference in Muon Proton Separation", "Momentum [MeV/c]", "(S-S_{Pilot})/S_{Pilot} *100", 5e4, true);
+    draw_percentages_line(piP_perc2, piP_perc3, piP_perc4, piP_perc5, piP_perc6, piP_perc_err2, piP_perc_err3, piP_perc_err4, piP_perc_err5, piP_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionProtonSepPowDiffPercLineLog.png" ).c_str(), "Difference in Pion Proton Separation", "Momentum [MeV/c]", "(S-S_{Pilot})/S_{Pilot} *100", 5e4, true);
+*/
+
+    draw_graphs(mu_mean_vec1, mu_mean_vec2, mu_mean_vec3, mu_mean_vec4, mu_mean_vec5, mu_mean_vec6, mu_mean_vec_err1, mu_mean_vec_err2, mu_mean_vec_err3, mu_mean_vec_err4, mu_mean_vec_err5, mu_mean_vec_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonMeanComp.png" ).c_str(), "Muon Mean dE/dx", "Momentum [MeV/c]", "Mean dE/dx [keV/cm]", 5e4);
+    draw_graphs(pi_mean_vec1, pi_mean_vec2, pi_mean_vec3, pi_mean_vec4, pi_mean_vec5, pi_mean_vec6, pi_mean_vec_err1, pi_mean_vec_err2, pi_mean_vec_err3, pi_mean_vec_err4, pi_mean_vec_err5, pi_mean_vec_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionMeanComp.png" ).c_str(), "Pion Mean dE/dx", "Momentum [MeV/c]", "Mean dE/dx [keV/cm]", 5e4);
+    draw_graphs(p_mean_vec1, p_mean_vec2, p_mean_vec3, p_mean_vec4, p_mean_vec5, p_mean_vec6, p_mean_vec_err1, p_mean_vec_err2, p_mean_vec_err3, p_mean_vec_err4, p_mean_vec_err5, p_mean_vec_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_ProtonMeanComp.png" ).c_str(), "Proton Mean dE/dx", "Momentum [MeV/c]", "Mean dE/dx [keV/cm]", 5e4);
     
-    draw_graphs(mu_sigma_vec1, mu_sigma_vec2, mu_sigma_vec3, mu_sigma_vec4, mu_sigma_vec5, mu_sigma_vec6, mu_sigma_vec_err1, mu_sigma_vec_err2, mu_sigma_vec_err3, mu_sigma_vec_err4, mu_sigma_vec_err5, mu_sigma_vec_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonSigmaComp.png" ).c_str(), "Muon dE/dx Sigma", "Momentum [MeV]", "#sigma_{dE/dx} [keV/cm]", 5e4);
-    draw_graphs(pi_sigma_vec1, pi_sigma_vec2, pi_sigma_vec3, pi_sigma_vec4, pi_sigma_vec5, pi_sigma_vec6, pi_sigma_vec_err1, pi_sigma_vec_err2, pi_sigma_vec_err3, pi_sigma_vec_err4, pi_sigma_vec_err5, pi_sigma_vec_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionSigmaComp.png" ).c_str(), "Pion dE/dx Sigma", "Momentum [MeV]", "#sigma_{dE/dx} [keV/cm]", 5e4);
-    draw_graphs(p_sigma_vec1, p_sigma_vec2, p_sigma_vec3, p_sigma_vec4, p_sigma_vec5, p_sigma_vec6, p_sigma_vec_err1, p_sigma_vec_err2, p_sigma_vec_err3, p_sigma_vec_err4, p_sigma_vec_err5, p_sigma_vec_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_ProtonSigmaComp.png" ).c_str(), "Proton dE/dx Sigma", "Momentum [MeV]", "#sigma_{dE/dx} [keV/cm]", 5e4);
+    draw_graphs(mu_sigma_vec1, mu_sigma_vec2, mu_sigma_vec3, mu_sigma_vec4, mu_sigma_vec5, mu_sigma_vec6, mu_sigma_vec_err1, mu_sigma_vec_err2, mu_sigma_vec_err3, mu_sigma_vec_err4, mu_sigma_vec_err5, mu_sigma_vec_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonSigmaComp.png" ).c_str(), "Muon dE/dx Sigma", "Momentum [MeV/c]", "#sigma_{dE/dx} [keV/cm]", 5e4);
+    draw_graphs(pi_sigma_vec1, pi_sigma_vec2, pi_sigma_vec3, pi_sigma_vec4, pi_sigma_vec5, pi_sigma_vec6, pi_sigma_vec_err1, pi_sigma_vec_err2, pi_sigma_vec_err3, pi_sigma_vec_err4, pi_sigma_vec_err5, pi_sigma_vec_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionSigmaComp.png" ).c_str(), "Pion dE/dx Sigma", "Momentum [MeV/c]", "#sigma_{dE/dx} [keV/cm]", 5e4);
+    draw_graphs(p_sigma_vec1, p_sigma_vec2, p_sigma_vec3, p_sigma_vec4, p_sigma_vec5, p_sigma_vec6, p_sigma_vec_err1, p_sigma_vec_err2, p_sigma_vec_err3, p_sigma_vec_err4, p_sigma_vec_err5, p_sigma_vec_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_ProtonSigmaComp.png" ).c_str(), "Proton dE/dx Sigma", "Momentum [MeV/c]", "#sigma_{dE/dx} [keV/cm]", 5e4);
     
-    draw_graphs(mu_res_vec1, mu_res_vec2, mu_res_vec3, mu_res_vec4, mu_res_vec5, mu_res_vec6, mu_res_vec_err1, mu_res_vec_err2, mu_res_vec_err3, mu_res_vec_err4, mu_res_vec_err5, mu_res_vec_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonResComp.png" ).c_str(), "Muon Resolution", "Momentum [MeV]", "Resolution", 5e4);
-    draw_graphs(pi_res_vec1, pi_res_vec2, pi_res_vec3, pi_res_vec4, pi_res_vec5, pi_res_vec6, pi_res_vec_err1, pi_res_vec_err2, pi_res_vec_err3, pi_res_vec_err4, pi_res_vec_err5, pi_res_vec_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionResComp.png" ).c_str(), "Pion Resolution", "Momentum [MeV]", "Resolution", 5e4);
-    draw_graphs(p_res_vec1, p_res_vec2, p_res_vec3, p_res_vec4, p_res_vec5, p_res_vec6, p_res_vec_err1, p_res_vec_err2, p_res_vec_err3, p_res_vec_err4, p_res_vec_err5, p_res_vec_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_ProtonResComp.png" ).c_str(), "Proton Resolution", "Momentum [MeV]", "Resolution", 5e4);
+    draw_graphs(mu_res_vec1, mu_res_vec2, mu_res_vec3, mu_res_vec4, mu_res_vec5, mu_res_vec6, mu_res_vec_err1, mu_res_vec_err2, mu_res_vec_err3, mu_res_vec_err4, mu_res_vec_err5, mu_res_vec_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonResComp.png" ).c_str(), "Muon Resolution", "Momentum [MeV/c]", "Resolution", 5e4);
+    draw_graphs(pi_res_vec1, pi_res_vec2, pi_res_vec3, pi_res_vec4, pi_res_vec5, pi_res_vec6, pi_res_vec_err1, pi_res_vec_err2, pi_res_vec_err3, pi_res_vec_err4, pi_res_vec_err5, pi_res_vec_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionResComp.png" ).c_str(), "Pion Resolution", "Momentum [MeV/c]", "Resolution", 5e4);
+    draw_graphs(p_res_vec1, p_res_vec2, p_res_vec3, p_res_vec4, p_res_vec5, p_res_vec6, p_res_vec_err1, p_res_vec_err2, p_res_vec_err3, p_res_vec_err4, p_res_vec_err5, p_res_vec_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_ProtonResComp.png" ).c_str(), "Proton Resolution", "Momentum [MeV/c]", "Resolution", 5e4);
     
-    draw_differences(mu_mean_diff2, mu_mean_diff3, mu_mean_diff4, mu_mean_diff5, mu_mean_diff6, mu_mean_diff_err2, mu_mean_diff_err3, mu_mean_diff_err4, mu_mean_diff_err5, mu_mean_diff_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonMeanDiff.png" ).c_str(), "Difference in Muon Mean dE/dx", "Momentum [MeV]", "#mu-#mu_{Pilot} [keV/cm]", 5e4);
-    draw_differences(pi_mean_diff2, pi_mean_diff3, pi_mean_diff4, pi_mean_diff5, pi_mean_diff6, pi_mean_diff_err2, pi_mean_diff_err3, pi_mean_diff_err4, pi_mean_diff_err5, pi_mean_diff_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionMeanDiff.png" ).c_str(), "Difference in Pion Mean dE/dx", "Momentum [MeV]", "#mu-#mu_{Pilot} [keV/cm]", 5e4);
-    draw_differences(p_mean_diff2, p_mean_diff3, p_mean_diff4, p_mean_diff5, p_mean_diff6, p_mean_diff_err2, p_mean_diff_err3, p_mean_diff_err4, p_mean_diff_err5, p_mean_diff_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_ProtonMeanDiff.png" ).c_str(), "Difference in Proton Mean dE/dx", "Momentum [MeV]", "#mu-#mu_{Pilot} [keV/cm]", 5e4);
+    draw_differences(mu_mean_diff2, mu_mean_diff3, mu_mean_diff4, mu_mean_diff5, mu_mean_diff6, mu_mean_diff_err2, mu_mean_diff_err3, mu_mean_diff_err4, mu_mean_diff_err5, mu_mean_diff_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonMeanDiff.png" ).c_str(), "Difference in Muon Mean dE/dx", "Momentum [MeV/c]", "#mu-#mu_{Pilot} [keV/cm]", 5e4);
+    draw_differences(pi_mean_diff2, pi_mean_diff3, pi_mean_diff4, pi_mean_diff5, pi_mean_diff6, pi_mean_diff_err2, pi_mean_diff_err3, pi_mean_diff_err4, pi_mean_diff_err5, pi_mean_diff_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionMeanDiff.png" ).c_str(), "Difference in Pion Mean dE/dx", "Momentum [MeV/c]", "#mu-#mu_{Pilot} [keV/cm]", 5e4);
+    draw_differences(p_mean_diff2, p_mean_diff3, p_mean_diff4, p_mean_diff5, p_mean_diff6, p_mean_diff_err2, p_mean_diff_err3, p_mean_diff_err4, p_mean_diff_err5, p_mean_diff_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_ProtonMeanDiff.png" ).c_str(), "Difference in Proton Mean dE/dx", "Momentum [MeV/c]", "#mu-#mu_{Pilot} [keV/cm]", 5e4);
     
-    draw_differences(mu_sigma_diff2, mu_sigma_diff3, mu_sigma_diff4, mu_sigma_diff5, mu_sigma_diff6, mu_sigma_diff_err2, mu_sigma_diff_err3, mu_sigma_diff_err4, mu_sigma_diff_err5, mu_sigma_diff_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonSigmaDiff.png" ).c_str(), "Difference in Muon Sigma", "Momentum [MeV]", "#sigma-#sigma_{Pilot} [keV/cm]", 5e4);
-    draw_differences(pi_sigma_diff2, pi_sigma_diff3, pi_sigma_diff4, pi_sigma_diff5, pi_sigma_diff6, pi_sigma_diff_err2, pi_sigma_diff_err3, pi_sigma_diff_err4, pi_sigma_diff_err5, pi_sigma_diff_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionSigmaDiff.png" ).c_str(), "Difference in Pion Sigma", "Momentum [MeV]", "#sigma-sigma_{Pilot} [keV/cm]", 5e4);
-    draw_differences(p_sigma_diff2, p_sigma_diff3, p_sigma_diff4, p_sigma_diff5, p_sigma_diff6, p_sigma_diff_err2, p_sigma_diff_err3, p_sigma_diff_err4, p_sigma_diff_err5, p_sigma_diff_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_ProtonSigmaDiff.png" ).c_str(), "Difference in Proton Sigma", "Momentum [MeV]", "#sigma-#sigma_{Pilot} [keV/cm]", 5e4);
+    draw_differences(mu_sigma_diff2, mu_sigma_diff3, mu_sigma_diff4, mu_sigma_diff5, mu_sigma_diff6, mu_sigma_diff_err2, mu_sigma_diff_err3, mu_sigma_diff_err4, mu_sigma_diff_err5, mu_sigma_diff_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonSigmaDiff.png" ).c_str(), "Difference in Muon Sigma", "Momentum [MeV/c]", "#sigma-#sigma_{Pilot} [keV/cm]", 5e4);
+    draw_differences(pi_sigma_diff2, pi_sigma_diff3, pi_sigma_diff4, pi_sigma_diff5, pi_sigma_diff6, pi_sigma_diff_err2, pi_sigma_diff_err3, pi_sigma_diff_err4, pi_sigma_diff_err5, pi_sigma_diff_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionSigmaDiff.png" ).c_str(), "Difference in Pion Sigma", "Momentum [MeV/c]", "#sigma-sigma_{Pilot} [keV/cm]", 5e4);
+    draw_differences(p_sigma_diff2, p_sigma_diff3, p_sigma_diff4, p_sigma_diff5, p_sigma_diff6, p_sigma_diff_err2, p_sigma_diff_err3, p_sigma_diff_err4, p_sigma_diff_err5, p_sigma_diff_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_ProtonSigmaDiff.png" ).c_str(), "Difference in Proton Sigma", "Momentum [MeV/c]", "#sigma-#sigma_{Pilot} [keV/cm]", 5e4);
     
-    draw_differences(mu_res_diff2, mu_res_diff3, mu_res_diff4, mu_res_diff5, mu_res_diff6, mu_res_diff_err2, mu_res_diff_err3, mu_res_diff_err4, mu_res_diff_err5, mu_res_diff_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonResDiff.png" ).c_str(), "Difference in Muon Resolution", "Momentum [MeV]", "R-R_{Pilot}", 5e4);
-    draw_differences(pi_res_diff2, pi_res_diff3, pi_res_diff4, pi_res_diff5, pi_res_diff6, pi_res_diff_err2, pi_res_diff_err3, pi_res_diff_err4, pi_res_diff_err5, pi_res_diff_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionResDiff.png" ).c_str(), "Difference in Pion Resolution", "Momentum [MeV]", "R-R_{Pilot}", 5e4);
-    draw_differences(p_res_diff2, p_res_diff3, p_res_diff4, p_res_diff5, p_res_diff6, p_res_diff_err2, p_res_diff_err3, p_res_diff_err4, p_res_diff_err5, p_res_diff_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_ProtonResDiff.png" ).c_str(), "Difference in Proton Resolution", "Momentum [MeV]", "R-R_{Pilot}", 5e4);
+    draw_differences(mu_res_diff2, mu_res_diff3, mu_res_diff4, mu_res_diff5, mu_res_diff6, mu_res_diff_err2, mu_res_diff_err3, mu_res_diff_err4, mu_res_diff_err5, mu_res_diff_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonResDiff.png" ).c_str(), "Difference in Muon Resolution", "Momentum [MeV/c]", "R-R_{Pilot}", 5e4);
+    draw_differences(pi_res_diff2, pi_res_diff3, pi_res_diff4, pi_res_diff5, pi_res_diff6, pi_res_diff_err2, pi_res_diff_err3, pi_res_diff_err4, pi_res_diff_err5, pi_res_diff_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionResDiff.png" ).c_str(), "Difference in Pion Resolution", "Momentum [MeV/c]", "R-R_{Pilot}", 5e4);
+    draw_differences(p_res_diff2, p_res_diff3, p_res_diff4, p_res_diff5, p_res_diff6, p_res_diff_err2, p_res_diff_err3, p_res_diff_err4, p_res_diff_err5, p_res_diff_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_ProtonResDiff.png" ).c_str(), "Difference in Proton Resolution", "Momentum [MeV/c]", "R-R_{Pilot}", 5e4);
     
-    draw_percentages(mu_mean_perc2, mu_mean_perc3, mu_mean_perc4, mu_mean_perc5, mu_mean_perc6, mu_mean_perc_err2, mu_mean_perc_err3, mu_mean_perc_err4, mu_mean_perc_err5, mu_mean_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonMeanDiffPerc.png" ).c_str(), "Difference in Muon Mean dE/dx", "Momentum [MeV]", "(#mu-#mu_{Pilot})/#mu_{Pilot} *100", 5e4);
-    draw_percentages(pi_mean_perc2, pi_mean_perc3, pi_mean_perc4, pi_mean_perc5, pi_mean_perc6, pi_mean_perc_err2, pi_mean_perc_err3, pi_mean_perc_err4, pi_mean_perc_err5, pi_mean_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionMeanDiffPerc.png" ).c_str(), "Difference in Pion Mean dE/dx", "Momentum [MeV]", "(#mu-#mu_{Pilot})/#mu_{Pilot} *100", 5e4);
-    draw_percentages(p_mean_perc2, p_mean_perc3, p_mean_perc4, p_mean_perc5, p_mean_perc6, p_mean_perc_err2, p_mean_perc_err3, p_mean_perc_err4, p_mean_perc_err5, p_mean_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_ProtonMeanDiffPerc.png" ).c_str(), "Difference in Proton Mean dE/dx", "Momentum [MeV]", "(#mu-#mu_{Pilot})/#mu_{Pilot} *100", 5e4);
+    draw_percentages(mu_mean_perc2, mu_mean_perc3, mu_mean_perc4, mu_mean_perc5, mu_mean_perc6, mu_mean_perc_err2, mu_mean_perc_err3, mu_mean_perc_err4, mu_mean_perc_err5, mu_mean_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonMeanDiffPerc.png" ).c_str(), "Difference in Muon Mean dE/dx", "Momentum [MeV/c]", "(#mu-#mu_{Pilot})/#mu_{Pilot} *100", 5e4);
+    draw_percentages(pi_mean_perc2, pi_mean_perc3, pi_mean_perc4, pi_mean_perc5, pi_mean_perc6, pi_mean_perc_err2, pi_mean_perc_err3, pi_mean_perc_err4, pi_mean_perc_err5, pi_mean_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionMeanDiffPerc.png" ).c_str(), "Difference in Pion Mean dE/dx", "Momentum [MeV/c]", "(#mu-#mu_{Pilot})/#mu_{Pilot} *100", 5e4);
+    draw_percentages(p_mean_perc2, p_mean_perc3, p_mean_perc4, p_mean_perc5, p_mean_perc6, p_mean_perc_err2, p_mean_perc_err3, p_mean_perc_err4, p_mean_perc_err5, p_mean_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_ProtonMeanDiffPerc.png" ).c_str(), "Difference in Proton Mean dE/dx", "Momentum [MeV/c]", "(#mu-#mu_{Pilot})/#mu_{Pilot} *100", 5e4);
 
-    draw_percentages(mu_sigma_perc2, mu_sigma_perc3, mu_sigma_perc4, mu_sigma_perc5, mu_sigma_perc6, mu_sigma_perc_err2, mu_sigma_perc_err3, mu_sigma_perc_err4, mu_sigma_perc_err5, mu_sigma_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonSigmaDiffPerc.png" ).c_str(), "Difference in Muon Sigma", "Momentum [MeV]", "(#sigma-#sigma_{Pilot})/#sigma_{Pilot} *100", 5e4);
-    draw_percentages(pi_sigma_perc2, pi_sigma_perc3, pi_sigma_perc4, pi_sigma_perc5, pi_sigma_perc6, pi_sigma_perc_err2, pi_sigma_perc_err3, pi_sigma_perc_err4, pi_sigma_perc_err5, pi_sigma_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionSigmaDiffPerc.png" ).c_str(), "Difference in Pion Sigma", "Momentum [MeV]", "(#sigma-#sigma_{Pilot})/#sigma_{Pilot} *100", 5e4);
-    draw_percentages(p_sigma_perc2, p_sigma_perc3, p_sigma_perc4, p_sigma_perc5, p_sigma_perc6, p_sigma_perc_err2, p_sigma_perc_err3, p_sigma_perc_err4, p_sigma_perc_err5, p_sigma_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_ProtonSigmaDiffPerc.png" ).c_str(), "Difference in Proton Sigma", "Momentum [MeV]", "(#sigma-#sigma_{Pilot})/#sigma_{Pilot} *100", 5e4);
+    draw_percentages(mu_sigma_perc2, mu_sigma_perc3, mu_sigma_perc4, mu_sigma_perc5, mu_sigma_perc6, mu_sigma_perc_err2, mu_sigma_perc_err3, mu_sigma_perc_err4, mu_sigma_perc_err5, mu_sigma_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonSigmaDiffPerc.png" ).c_str(), "Difference in Muon Sigma", "Momentum [MeV/c]", "(#sigma-#sigma_{Pilot})/#sigma_{Pilot} *100", 5e4);
+    draw_percentages(pi_sigma_perc2, pi_sigma_perc3, pi_sigma_perc4, pi_sigma_perc5, pi_sigma_perc6, pi_sigma_perc_err2, pi_sigma_perc_err3, pi_sigma_perc_err4, pi_sigma_perc_err5, pi_sigma_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionSigmaDiffPerc.png" ).c_str(), "Difference in Pion Sigma", "Momentum [MeV/c]", "(#sigma-#sigma_{Pilot})/#sigma_{Pilot} *100", 5e4);
+    draw_percentages(p_sigma_perc2, p_sigma_perc3, p_sigma_perc4, p_sigma_perc5, p_sigma_perc6, p_sigma_perc_err2, p_sigma_perc_err3, p_sigma_perc_err4, p_sigma_perc_err5, p_sigma_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_ProtonSigmaDiffPerc.png" ).c_str(), "Difference in Proton Sigma", "Momentum [MeV/c]", "(#sigma-#sigma_{Pilot})/#sigma_{Pilot} *100", 5e4);
 
-    draw_percentages(mu_res_perc2, mu_res_perc3, mu_res_perc4, mu_res_perc5, mu_res_perc6, mu_res_perc_err2, mu_res_perc_err3, mu_res_perc_err4, mu_res_perc_err5, mu_res_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonResDiffPerc.png" ).c_str(), "Difference in Muon Resolution", "Momentum [MeV]", "(R-R_{Pilot})/R_{Pilot} *100", 5e4);
-    draw_percentages(pi_res_perc2, pi_res_perc3, pi_res_perc4, pi_res_perc5, pi_res_perc6, pi_res_perc_err2, pi_res_perc_err3, pi_res_perc_err4, pi_res_perc_err5, pi_res_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionResDiffPerc.png" ).c_str(), "Difference in Pion Resolution", "Momentum [MeV]", "(R-R_{Pilot})/R_{Pilot} *100", 5e4);
-    draw_percentages(p_res_perc2, p_res_perc3, p_res_perc4, p_res_perc5, p_res_perc6, p_res_perc_err2, p_res_perc_err3, p_res_perc_err4, p_res_perc_err5, p_res_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_ProtonResDiffPerc.png" ).c_str(), "Difference in Proton Resolution", "Momentum [MeV]", "(R-R_{Pilot})/R_{Pilot} *100", 5e4);
+    draw_percentages(mu_res_perc2, mu_res_perc3, mu_res_perc4, mu_res_perc5, mu_res_perc6, mu_res_perc_err2, mu_res_perc_err3, mu_res_perc_err4, mu_res_perc_err5, mu_res_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonResDiffPerc.png" ).c_str(), "Difference in Muon Resolution", "Momentum [MeV/c]", "(R-R_{Pilot})/R_{Pilot} *100", 5e4);
+    draw_percentages(pi_res_perc2, pi_res_perc3, pi_res_perc4, pi_res_perc5, pi_res_perc6, pi_res_perc_err2, pi_res_perc_err3, pi_res_perc_err4, pi_res_perc_err5, pi_res_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionResDiffPerc.png" ).c_str(), "Difference in Pion Resolution", "Momentum [MeV/c]", "(R-R_{Pilot})/R_{Pilot} *100", 5e4);
+    draw_percentages(p_res_perc2, p_res_perc3, p_res_perc4, p_res_perc5, p_res_perc6, p_res_perc_err2, p_res_perc_err3, p_res_perc_err4, p_res_perc_err5, p_res_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_ProtonResDiffPerc.png" ).c_str(), "Difference in Proton Resolution", "Momentum [MeV/c]", "(R-R_{Pilot})/R_{Pilot} *100", 5e4);
 
-    draw_percentages(mu_mean_perc2, mu_mean_perc3, mu_mean_perc4, mu_mean_perc5, mu_mean_perc6, mu_mean_perc_err2, mu_mean_perc_err3, mu_mean_perc_err4, mu_mean_perc_err5, mu_mean_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonMeanDiffPercZoom.png" ).c_str(), "Difference in Muon Mean dE/dx", "Momentum [MeV]", "(#mu-#mu_{Pilot})/#mu_{Pilot} *100", 5e4, true);
-    draw_percentages(pi_mean_perc2, pi_mean_perc3, pi_mean_perc4, pi_mean_perc5, pi_mean_perc6, pi_mean_perc_err2, pi_mean_perc_err3, pi_mean_perc_err4, pi_mean_perc_err5, pi_mean_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionMeanDiffPercZoom.png" ).c_str(), "Difference in Pion Mean dE/dx", "Momentum [MeV]", "(#mu-#mu_{Pilot})/#mu_{Pilot} *100", 5e4, true);
-    draw_percentages(p_mean_perc2, p_mean_perc3, p_mean_perc4, p_mean_perc5, p_mean_perc6, p_mean_perc_err2, p_mean_perc_err3, p_mean_perc_err4, p_mean_perc_err5, p_mean_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_ProtonMeanDiffPercZoom.png" ).c_str(), "Difference in Proton Mean dE/dx", "Momentum [MeV]", "(#mu-#mu_{Pilot})/#mu_{Pilot} *100", 5e4, true);
+    draw_percentages(mu_mean_perc2, mu_mean_perc3, mu_mean_perc4, mu_mean_perc5, mu_mean_perc6, mu_mean_perc_err2, mu_mean_perc_err3, mu_mean_perc_err4, mu_mean_perc_err5, mu_mean_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonMeanDiffPercZoom.png" ).c_str(), "Difference in Muon Mean dE/dx", "Momentum [MeV/c]", "(#mu-#mu_{Pilot})/#mu_{Pilot} *100", 5e4, true);
+    draw_percentages(pi_mean_perc2, pi_mean_perc3, pi_mean_perc4, pi_mean_perc5, pi_mean_perc6, pi_mean_perc_err2, pi_mean_perc_err3, pi_mean_perc_err4, pi_mean_perc_err5, pi_mean_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionMeanDiffPercZoom.png" ).c_str(), "Difference in Pion Mean dE/dx", "Momentum [MeV/c]", "(#mu-#mu_{Pilot})/#mu_{Pilot} *100", 5e4, true);
+    draw_percentages(p_mean_perc2, p_mean_perc3, p_mean_perc4, p_mean_perc5, p_mean_perc6, p_mean_perc_err2, p_mean_perc_err3, p_mean_perc_err4, p_mean_perc_err5, p_mean_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_ProtonMeanDiffPercZoom.png" ).c_str(), "Difference in Proton Mean dE/dx", "Momentum [MeV/c]", "(#mu-#mu_{Pilot})/#mu_{Pilot} *100", 5e4, true);
 
-    draw_percentages(mu_sigma_perc2, mu_sigma_perc3, mu_sigma_perc4, mu_sigma_perc5, mu_sigma_perc6, mu_sigma_perc_err2, mu_sigma_perc_err3, mu_sigma_perc_err4, mu_sigma_perc_err5, mu_sigma_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonSigmaDiffPercZoom.png" ).c_str(), "Difference in Muon Sigma", "Momentum [MeV]", "(#sigma-#sigma_{Pilot})/#sigma_{Pilot} *100", 5e4, true);
-    draw_percentages(pi_sigma_perc2, pi_sigma_perc3, pi_sigma_perc4, pi_sigma_perc5, pi_sigma_perc6, pi_sigma_perc_err2, pi_sigma_perc_err3, pi_sigma_perc_err4, pi_sigma_perc_err5, pi_sigma_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionSigmaDiffPercZoom.png" ).c_str(), "Difference in Pion Sigma", "Momentum [MeV]", "(#sigma-#sigma_{Pilot})/#sigma_{Pilot} *100", 5e4, true);
-    draw_percentages(p_sigma_perc2, p_sigma_perc3, p_sigma_perc4, p_sigma_perc5, p_sigma_perc6, p_sigma_perc_err2, p_sigma_perc_err3, p_sigma_perc_err4, p_sigma_perc_err5, p_sigma_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_ProtonSigmaDiffPercZoom.png" ).c_str(), "Difference in Proton Sigma", "Momentum [MeV]", "(#sigma-#sigma_{Pilot})/#sigma_{Pilot} *100", 5e4, true);
+    draw_percentages(mu_sigma_perc2, mu_sigma_perc3, mu_sigma_perc4, mu_sigma_perc5, mu_sigma_perc6, mu_sigma_perc_err2, mu_sigma_perc_err3, mu_sigma_perc_err4, mu_sigma_perc_err5, mu_sigma_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonSigmaDiffPercZoom.png" ).c_str(), "Difference in Muon Sigma", "Momentum [MeV/c]", "(#sigma-#sigma_{Pilot})/#sigma_{Pilot} *100", 5e4, true);
+    draw_percentages(pi_sigma_perc2, pi_sigma_perc3, pi_sigma_perc4, pi_sigma_perc5, pi_sigma_perc6, pi_sigma_perc_err2, pi_sigma_perc_err3, pi_sigma_perc_err4, pi_sigma_perc_err5, pi_sigma_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionSigmaDiffPercZoom.png" ).c_str(), "Difference in Pion Sigma", "Momentum [MeV/c]", "(#sigma-#sigma_{Pilot})/#sigma_{Pilot} *100", 5e4, true);
+    draw_percentages(p_sigma_perc2, p_sigma_perc3, p_sigma_perc4, p_sigma_perc5, p_sigma_perc6, p_sigma_perc_err2, p_sigma_perc_err3, p_sigma_perc_err4, p_sigma_perc_err5, p_sigma_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_ProtonSigmaDiffPercZoom.png" ).c_str(), "Difference in Proton Sigma", "Momentum [MeV/c]", "(#sigma-#sigma_{Pilot})/#sigma_{Pilot} *100", 5e4, true);
 
-    draw_percentages(mu_res_perc2, mu_res_perc3, mu_res_perc4, mu_res_perc5, mu_res_perc6, mu_res_perc_err2, mu_res_perc_err3, mu_res_perc_err4, mu_res_perc_err5, mu_res_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonResDiffPercZoom.png" ).c_str(), "Difference in Muon Resolution", "Momentum [MeV]", "(R-R_{Pilot})/R_{Pilot} *100", 5e4, true);
-    draw_percentages(pi_res_perc2, pi_res_perc3, pi_res_perc4, pi_res_perc5, pi_res_perc6, pi_res_perc_err2, pi_res_perc_err3, pi_res_perc_err4, pi_res_perc_err5, pi_res_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionResDiffPercZoom.png" ).c_str(), "Difference in Pion Resolution", "Momentum [MeV]", "(R-R_{Pilot})/R_{Pilot} *100", 5e4, true);
-    draw_percentages(p_res_perc2, p_res_perc3, p_res_perc4, p_res_perc5, p_res_perc6, p_res_perc_err2, p_res_perc_err3, p_res_perc_err4, p_res_perc_err5, p_res_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_ProtonResDiffPercZoom.png" ).c_str(), "Difference in Proton Resolution", "Momentum [MeV]", "(R-R_{Pilot})/R_{Pilot} *100", 5e4, true);
+    draw_percentages(mu_res_perc2, mu_res_perc3, mu_res_perc4, mu_res_perc5, mu_res_perc6, mu_res_perc_err2, mu_res_perc_err3, mu_res_perc_err4, mu_res_perc_err5, mu_res_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonResDiffPercZoom.png" ).c_str(), "Difference in Muon Resolution", "Momentum [MeV/c]", "(R-R_{Pilot})/R_{Pilot} *100", 5e4, true);
+    draw_percentages(pi_res_perc2, pi_res_perc3, pi_res_perc4, pi_res_perc5, pi_res_perc6, pi_res_perc_err2, pi_res_perc_err3, pi_res_perc_err4, pi_res_perc_err5, pi_res_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionResDiffPercZoom.png" ).c_str(), "Difference in Pion Resolution", "Momentum [MeV/c]", "(R-R_{Pilot})/R_{Pilot} *100", 5e4, true);
+    draw_percentages(p_res_perc2, p_res_perc3, p_res_perc4, p_res_perc5, p_res_perc6, p_res_perc_err2, p_res_perc_err3, p_res_perc_err4, p_res_perc_err5, p_res_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_ProtonResDiffPercZoom.png" ).c_str(), "Difference in Proton Resolution", "Momentum [MeV/c]", "(R-R_{Pilot})/R_{Pilot} *100", 5e4, true);
 
-    draw_percentages_line(mu_mean_perc2, mu_mean_perc3, mu_mean_perc4, mu_mean_perc5, mu_mean_perc6, mu_mean_perc_err2, mu_mean_perc_err3, mu_mean_perc_err4, mu_mean_perc_err5, mu_mean_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonMeanDiffPercLine.png" ).c_str(), "Difference in Muon Mean dE/dx", "Momentum [MeV]", "(#mu-#mu_{Pilot})/#mu_{Pilot} *100", 5e4);
-    draw_percentages_line(pi_mean_perc2, pi_mean_perc3, pi_mean_perc4, pi_mean_perc5, pi_mean_perc6, pi_mean_perc_err2, pi_mean_perc_err3, pi_mean_perc_err4, pi_mean_perc_err5, pi_mean_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionMeanDiffPercLine.png" ).c_str(), "Difference in Pion Mean dE/dx", "Momentum [MeV]", "(#mu-#mu_{Pilot})/#mu_{Pilot} *100", 5e4);
-    draw_percentages_line(p_mean_perc2, p_mean_perc3, p_mean_perc4, p_mean_perc5, p_mean_perc6, p_mean_perc_err2, p_mean_perc_err3, p_mean_perc_err4, p_mean_perc_err5, p_mean_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_ProtonMeanDiffPercLine.png" ).c_str(), "Difference in Proton Mean dE/dx", "Momentum [MeV]", "(#mu-#mu_{Pilot})/#mu_{Pilot} *100", 5e4);
+    draw_percentages_line(mu_mean_perc2, mu_mean_perc3, mu_mean_perc4, mu_mean_perc5, mu_mean_perc6, mu_mean_perc_err2, mu_mean_perc_err3, mu_mean_perc_err4, mu_mean_perc_err5, mu_mean_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonMeanDiffPercLine.png" ).c_str(), "Difference in Muon Mean dE/dx", "Momentum [MeV/c]", "(#mu-#mu_{Pilot})/#mu_{Pilot} *100", 5e4);
+    draw_percentages_line(pi_mean_perc2, pi_mean_perc3, pi_mean_perc4, pi_mean_perc5, pi_mean_perc6, pi_mean_perc_err2, pi_mean_perc_err3, pi_mean_perc_err4, pi_mean_perc_err5, pi_mean_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionMeanDiffPercLine.png" ).c_str(), "Difference in Pion Mean dE/dx", "Momentum [MeV/c]", "(#mu-#mu_{Pilot})/#mu_{Pilot} *100", 5e4);
+    draw_percentages_line(p_mean_perc2, p_mean_perc3, p_mean_perc4, p_mean_perc5, p_mean_perc6, p_mean_perc_err2, p_mean_perc_err3, p_mean_perc_err4, p_mean_perc_err5, p_mean_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_ProtonMeanDiffPercLine.png" ).c_str(), "Difference in Proton Mean dE/dx", "Momentum [MeV/c]", "(#mu-#mu_{Pilot})/#mu_{Pilot} *100", 5e4);
 
-    draw_percentages_line(mu_sigma_perc2, mu_sigma_perc3, mu_sigma_perc4, mu_sigma_perc5, mu_sigma_perc6, mu_sigma_perc_err2, mu_sigma_perc_err3, mu_sigma_perc_err4, mu_sigma_perc_err5, mu_sigma_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonSigmaDiffPercLine.png" ).c_str(), "Difference in Muon Sigma", "Momentum [MeV]", "(#sigma-#sigma_{Pilot})/#sigma_{Pilot} *100", 5e4);
-    draw_percentages_line(pi_sigma_perc2, pi_sigma_perc3, pi_sigma_perc4, pi_sigma_perc5, pi_sigma_perc6, pi_sigma_perc_err2, pi_sigma_perc_err3, pi_sigma_perc_err4, pi_sigma_perc_err5, pi_sigma_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionSigmaDiffPercLine.png" ).c_str(), "Difference in Pion Sigma", "Momentum [MeV]", "(#sigma-#sigma_{Pilot})/#sigma_{Pilot} *100", 5e4);
-    draw_percentages_line(p_sigma_perc2, p_sigma_perc3, p_sigma_perc4, p_sigma_perc5, p_sigma_perc6, p_sigma_perc_err2, p_sigma_perc_err3, p_sigma_perc_err4, p_sigma_perc_err5, p_sigma_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_ProtonSigmaDiffPercLine.png" ).c_str(), "Difference in Proton Sigma", "Momentum [MeV]", "(#sigma-#sigma_{Pilot})/#sigma_{Pilot} *100", 5e4);
+    draw_percentages_line(mu_sigma_perc2, mu_sigma_perc3, mu_sigma_perc4, mu_sigma_perc5, mu_sigma_perc6, mu_sigma_perc_err2, mu_sigma_perc_err3, mu_sigma_perc_err4, mu_sigma_perc_err5, mu_sigma_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonSigmaDiffPercLine.png" ).c_str(), "Difference in Muon Sigma", "Momentum [MeV/c]", "(#sigma-#sigma_{Pilot})/#sigma_{Pilot} *100", 5e4);
+    draw_percentages_line(pi_sigma_perc2, pi_sigma_perc3, pi_sigma_perc4, pi_sigma_perc5, pi_sigma_perc6, pi_sigma_perc_err2, pi_sigma_perc_err3, pi_sigma_perc_err4, pi_sigma_perc_err5, pi_sigma_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionSigmaDiffPercLine.png" ).c_str(), "Difference in Pion Sigma", "Momentum [MeV/c]", "(#sigma-#sigma_{Pilot})/#sigma_{Pilot} *100", 5e4);
+    draw_percentages_line(p_sigma_perc2, p_sigma_perc3, p_sigma_perc4, p_sigma_perc5, p_sigma_perc6, p_sigma_perc_err2, p_sigma_perc_err3, p_sigma_perc_err4, p_sigma_perc_err5, p_sigma_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_ProtonSigmaDiffPercLine.png" ).c_str(), "Difference in Proton Sigma", "Momentum [MeV/c]", "(#sigma-#sigma_{Pilot})/#sigma_{Pilot} *100", 5e4);
 
-    draw_percentages_line(mu_res_perc2, mu_res_perc3, mu_res_perc4, mu_res_perc5, mu_res_perc6, mu_res_perc_err2, mu_res_perc_err3, mu_res_perc_err4, mu_res_perc_err5, mu_res_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonResDiffPercLine.png" ).c_str(), "Difference in Muon Resolution", "Momentum [MeV]", "(R-R_{Pilot})/R_{Pilot} *100", 5e4);
-    draw_percentages_line(pi_res_perc2, pi_res_perc3, pi_res_perc4, pi_res_perc5, pi_res_perc6, pi_res_perc_err2, pi_res_perc_err3, pi_res_perc_err4, pi_res_perc_err5, pi_res_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionResDiffPercLine.png" ).c_str(), "Difference in Pion Resolution", "Momentum [MeV]", "(R-R_{Pilot})/R_{Pilot} *100", 5e4);
-    draw_percentages_line(p_res_perc2, p_res_perc3, p_res_perc4, p_res_perc5, p_res_perc6, p_res_perc_err2, p_res_perc_err3, p_res_perc_err4, p_res_perc_err5, p_res_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_ProtonResDiffPercLine.png" ).c_str(), "Difference in Proton Resolution", "Momentum [MeV]", "(R-R_{Pilot})/R_{Pilot} *100", 5e4);
+    draw_percentages_line(mu_res_perc2, mu_res_perc3, mu_res_perc4, mu_res_perc5, mu_res_perc6, mu_res_perc_err2, mu_res_perc_err3, mu_res_perc_err4, mu_res_perc_err5, mu_res_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonResDiffPercLine.png" ).c_str(), "Difference in Muon Resolution", "Momentum [MeV/c]", "(R-R_{Pilot})/R_{Pilot} *100", 5e4);
+    draw_percentages_line(pi_res_perc2, pi_res_perc3, pi_res_perc4, pi_res_perc5, pi_res_perc6, pi_res_perc_err2, pi_res_perc_err3, pi_res_perc_err4, pi_res_perc_err5, pi_res_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionResDiffPercLine.png" ).c_str(), "Difference in Pion Resolution", "Momentum [MeV/c]", "(R-R_{Pilot})/R_{Pilot} *100", 5e4);
+    draw_percentages_line(p_res_perc2, p_res_perc3, p_res_perc4, p_res_perc5, p_res_perc6, p_res_perc_err2, p_res_perc_err3, p_res_perc_err4, p_res_perc_err5, p_res_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_ProtonResDiffPercLine.png" ).c_str(), "Difference in Proton Resolution", "Momentum [MeV/c]", "(R-R_{Pilot})/R_{Pilot} *100", 5e4);
+
+    /*
+    //draw with log scale
+    draw_percentages(mu_mean_perc2, mu_mean_perc3, mu_mean_perc4, mu_mean_perc5, mu_mean_perc6, mu_mean_perc_err2, mu_mean_perc_err3, mu_mean_perc_err4, mu_mean_perc_err5, mu_mean_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonMeanDiffPercLog.png" ).c_str(), "Difference in Muon Mean dE/dx", "Momentum [MeV/c]", "(#mu-#mu_{Pilot})/#mu_{Pilot} *100", 5e4, false, true);
+    draw_percentages(pi_mean_perc2, pi_mean_perc3, pi_mean_perc4, pi_mean_perc5, pi_mean_perc6, pi_mean_perc_err2, pi_mean_perc_err3, pi_mean_perc_err4, pi_mean_perc_err5, pi_mean_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionMeanDiffPercLog.png" ).c_str(), "Difference in Pion Mean dE/dx", "Momentum [MeV/c]", "(#mu-#mu_{Pilot})/#mu_{Pilot} *100", 5e4, false, true);
+    draw_percentages(p_mean_perc2, p_mean_perc3, p_mean_perc4, p_mean_perc5, p_mean_perc6, p_mean_perc_err2, p_mean_perc_err3, p_mean_perc_err4, p_mean_perc_err5, p_mean_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_ProtonMeanDiffPercLog.png" ).c_str(), "Difference in Proton Mean dE/dx", "Momentum [MeV/c]", "(#mu-#mu_{Pilot})/#mu_{Pilot} *100", 5e4, false, true);
+
+    draw_percentages(mu_sigma_perc2, mu_sigma_perc3, mu_sigma_perc4, mu_sigma_perc5, mu_sigma_perc6, mu_sigma_perc_err2, mu_sigma_perc_err3, mu_sigma_perc_err4, mu_sigma_perc_err5, mu_sigma_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonSigmaDiffPercLog.png" ).c_str(), "Difference in Muon Sigma", "Momentum [MeV/c]", "(#sigma-#sigma_{Pilot})/#sigma_{Pilot} *100", 5e4, false, true);
+    draw_percentages(pi_sigma_perc2, pi_sigma_perc3, pi_sigma_perc4, pi_sigma_perc5, pi_sigma_perc6, pi_sigma_perc_err2, pi_sigma_perc_err3, pi_sigma_perc_err4, pi_sigma_perc_err5, pi_sigma_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionSigmaDiffPercLog.png" ).c_str(), "Difference in Pion Sigma", "Momentum [MeV/c]", "(#sigma-#sigma_{Pilot})/#sigma_{Pilot} *100", 5e4, false, true);
+    draw_percentages(p_sigma_perc2, p_sigma_perc3, p_sigma_perc4, p_sigma_perc5, p_sigma_perc6, p_sigma_perc_err2, p_sigma_perc_err3, p_sigma_perc_err4, p_sigma_perc_err5, p_sigma_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_ProtonSigmaDiffPercLog.png" ).c_str(), "Difference in Proton Sigma", "Momentum [MeV/c]", "(#sigma-#sigma_{Pilot})/#sigma_{Pilot} *100", 5e4, false, true);
+
+    draw_percentages(mu_res_perc2, mu_res_perc3, mu_res_perc4, mu_res_perc5, mu_res_perc6, mu_res_perc_err2, mu_res_perc_err3, mu_res_perc_err4, mu_res_perc_err5, mu_res_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonResDiffPercLog.png" ).c_str(), "Difference in Muon Resolution", "Momentum [MeV/c]", "(R-R_{Pilot})/R_{Pilot} *100", 5e4, false, true);
+    draw_percentages(pi_res_perc2, pi_res_perc3, pi_res_perc4, pi_res_perc5, pi_res_perc6, pi_res_perc_err2, pi_res_perc_err3, pi_res_perc_err4, pi_res_perc_err5, pi_res_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionResDiffPercLog.png" ).c_str(), "Difference in Pion Resolution", "Momentum [MeV/c]", "(R-R_{Pilot})/R_{Pilot} *100", 5e4, false, true);
+    draw_percentages(p_res_perc2, p_res_perc3, p_res_perc4, p_res_perc5, p_res_perc6, p_res_perc_err2, p_res_perc_err3, p_res_perc_err4, p_res_perc_err5, p_res_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_ProtonResDiffPercLog.png" ).c_str(), "Difference in Proton Resolution", "Momentum [MeV/c]", "(R-R_{Pilot})/R_{Pilot} *100", 5e4, false, true);
+
+    draw_percentages_line(mu_mean_perc2, mu_mean_perc3, mu_mean_perc4, mu_mean_perc5, mu_mean_perc6, mu_mean_perc_err2, mu_mean_perc_err3, mu_mean_perc_err4, mu_mean_perc_err5, mu_mean_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonMeanDiffPercLineLog.png" ).c_str(), "Difference in Muon Mean dE/dx", "Momentum [MeV/c]", "(#mu-#mu_{Pilot})/#mu_{Pilot} *100", 5e4, true);
+    draw_percentages_line(pi_mean_perc2, pi_mean_perc3, pi_mean_perc4, pi_mean_perc5, pi_mean_perc6, pi_mean_perc_err2, pi_mean_perc_err3, pi_mean_perc_err4, pi_mean_perc_err5, pi_mean_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionMeanDiffPercLineLog.png" ).c_str(), "Difference in Pion Mean dE/dx", "Momentum [MeV/c]", "(#mu-#mu_{Pilot})/#mu_{Pilot} *100", 5e4, true);
+    draw_percentages_line(p_mean_perc2, p_mean_perc3, p_mean_perc4, p_mean_perc5, p_mean_perc6, p_mean_perc_err2, p_mean_perc_err3, p_mean_perc_err4, p_mean_perc_err5, p_mean_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_ProtonMeanDiffPercLineLog.png" ).c_str(), "Difference in Proton Mean dE/dx", "Momentum [MeV/c]", "(#mu-#mu_{Pilot})/#mu_{Pilot} *100", 5e4, true);
+
+    draw_percentages_line(mu_sigma_perc2, mu_sigma_perc3, mu_sigma_perc4, mu_sigma_perc5, mu_sigma_perc6, mu_sigma_perc_err2, mu_sigma_perc_err3, mu_sigma_perc_err4, mu_sigma_perc_err5, mu_sigma_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonSigmaDiffPercLineLog.png" ).c_str(), "Difference in Muon Sigma", "Momentum [MeV/c]", "(#sigma-#sigma_{Pilot})/#sigma_{Pilot} *100", 5e4, true);
+    draw_percentages_line(pi_sigma_perc2, pi_sigma_perc3, pi_sigma_perc4, pi_sigma_perc5, pi_sigma_perc6, pi_sigma_perc_err2, pi_sigma_perc_err3, pi_sigma_perc_err4, pi_sigma_perc_err5, pi_sigma_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionSigmaDiffPercLineLog.png" ).c_str(), "Difference in Pion Sigma", "Momentum [MeV/c]", "(#sigma-#sigma_{Pilot})/#sigma_{Pilot} *100", 5e4, true);
+    draw_percentages_line(p_sigma_perc2, p_sigma_perc3, p_sigma_perc4, p_sigma_perc5, p_sigma_perc6, p_sigma_perc_err2, p_sigma_perc_err3, p_sigma_perc_err4, p_sigma_perc_err5, p_sigma_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_ProtonSigmaDiffPercLineLog.png" ).c_str(), "Difference in Proton Sigma", "Momentum [MeV/c]", "(#sigma-#sigma_{Pilot})/#sigma_{Pilot} *100", 5e4, true);
+
+    draw_percentages_line(mu_res_perc2, mu_res_perc3, mu_res_perc4, mu_res_perc5, mu_res_perc6, mu_res_perc_err2, mu_res_perc_err3, mu_res_perc_err4, mu_res_perc_err5, mu_res_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonResDiffPercLineLog.png" ).c_str(), "Difference in Muon Resolution", "Momentum [MeV/c]", "(R-R_{Pilot})/R_{Pilot} *100", 5e4, true);
+    draw_percentages_line(pi_res_perc2, pi_res_perc3, pi_res_perc4, pi_res_perc5, pi_res_perc6, pi_res_perc_err2, pi_res_perc_err3, pi_res_perc_err4, pi_res_perc_err5, pi_res_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionResDiffPercLineLog.png" ).c_str(), "Difference in Pion Resolution", "Momentum [MeV/c]", "(R-R_{Pilot})/R_{Pilot} *100", 5e4, true);
+    draw_percentages_line(p_res_perc2, p_res_perc3, p_res_perc4, p_res_perc5, p_res_perc6, p_res_perc_err2, p_res_perc_err3, p_res_perc_err4, p_res_perc_err5, p_res_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_ProtonResDiffPercLineLog.png" ).c_str(), "Difference in Proton Resolution", "Momentum [MeV/c]", "(R-R_{Pilot})/R_{Pilot} *100", 5e4, true);
+*/
 
     /*
     draw_percentagesWithFit(muPi_perc2, muPi_perc3, muPi_perc4, muPi_perc5, muPi_perc6, muPi_perc_err2, muPi_perc_err3, muPi_perc_err4, muPi_perc_err5, muPi_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonPionSepPowDiffPercWithFit.png" ).c_str(), "Difference in Muon Pion Separation", "Momentum [MeV]", "(S-S_{Pilot})/S_{Pilot} *100", 5e4, true);
@@ -6075,7 +6187,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
     draw_percentagesFit(mu_res_perc2, mu_res_perc3, mu_res_perc4, mu_res_perc5, mu_res_perc6, mu_res_perc_err2, mu_res_perc_err3, mu_res_perc_err4, mu_res_perc_err5, mu_res_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonResDiffPercFit.png" ).c_str(), "Difference in Muon Resolution", "Momentum [MeV]", "(R-R_{Pilot})/R_{Pilot} *100", 5e4, true);
     draw_percentagesFit(pi_res_perc2, pi_res_perc3, pi_res_perc4, pi_res_perc5, pi_res_perc6, pi_res_perc_err2, pi_res_perc_err3, pi_res_perc_err4, pi_res_perc_err5, pi_res_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionResDiffPercFit.png" ).c_str(), "Difference in Pion Resolution", "Momentum [MeV]", "(R-R_{Pilot})/R_{Pilot} *100", 5e4, true);
     draw_percentagesFit(p_res_perc2, p_res_perc3, p_res_perc4, p_res_perc5, p_res_perc6, p_res_perc_err2, p_res_perc_err3, p_res_perc_err4, p_res_perc_err5, p_res_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_ProtonResDiffPercFit.png" ).c_str(), "Difference in Proton Resolution", "Momentum [MeV]", "(R-R_{Pilot})/R_{Pilot} *100", 5e4, false);
-*/
+
 
     draw_graphs(muPi_sep_track1, muPi_sep_track2, muPi_sep_track3, muPi_sep_track4, muPi_sep_track5, muPi_sep_track6, muPi_track_err1, muPi_track_err2, muPi_track_err3, muPi_track_err4, muPi_track_err5, muPi_track_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_track_MuonPionSepPowComp.png" ).c_str(), "Muon Pion Separation Power", "Track Length [cm]", "Separation Power",5e3);
     draw_graphs(muP_sep_track1, muP_sep_track2, muP_sep_track3, muP_sep_track4, muP_sep_track5, muP_sep_track6, muP_track_err1, muP_track_err2, muP_track_err3, muP_track_err4, muP_track_err5, muP_track_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_track_MuonProtonSepPowComp.png" ).c_str(), "Muon Proton Separation Power", "Track Length [cm]", "Separation Power",5e3);
@@ -6116,7 +6228,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
     draw_percentages_line(mu_res_perc_track2, mu_res_perc_track3, mu_res_perc_track4, mu_res_perc_track5, mu_res_perc_track6, mu_res_perc_track_err2, mu_res_perc_track_err3, mu_res_perc_track_err4, mu_res_perc_track_err5, mu_res_perc_track_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_track_MuonResDiffPercLine.png" ).c_str(), "Difference in Muon Resolution", "Track Length [cm]", "(R-R_{Pilot})/R_{Pilot} *100", 5e3);
     draw_percentages_line(pi_res_perc_track2, pi_res_perc_track3, pi_res_perc_track4, pi_res_perc_track5, pi_res_perc_track6, pi_res_perc_track_err2, pi_res_perc_track_err3, pi_res_perc_track_err4, pi_res_perc_track_err5, pi_res_perc_track_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_track_PionResDiffPercLine.png" ).c_str(), "Difference in Pion Resolution", "Track Length [cm]", "(R-R_{Pilot})/R_{Pilot} *100", 5e3);
     draw_percentages_line(p_res_perc_track2, p_res_perc_track3, p_res_perc_track4, p_res_perc_track5, p_res_perc_track6, p_res_perc_track_err2, p_res_perc_track_err3, p_res_perc_track_err4, p_res_perc_track_err5, p_res_perc_track_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_track_ProtonResDiffPercLine.png" ).c_str(), "Difference in Proton Resolution", "Track Length [cm]", "(R-R_{Pilot})/R_{Pilot} *100", 5e3);
-
+*/
     /*
     draw_percentagesWithFit(muPi_perc_track2, muPi_perc_track3, muPi_perc_track4, muPi_perc_track5, muPi_perc_track6, muPi_perc_track_err2, muPi_perc_track_err3, muPi_perc_track_err4, muPi_perc_track_err5, muPi_perc_track_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_track_MuonPionSepPowDiffPercWithFit.png" ).c_str(), "Difference in Muon Pion Separation", "Track Length [cm]", "(S-S_{Pilot})/S_{Pilot} *100", 5e3, true);
     draw_percentagesWithFit(muP_perc_track2, muP_perc_track3, muP_perc_track4, muP_perc_track5, muP_perc_track6, muP_perc_track_err2, muP_perc_track_err3, muP_perc_track_err4, muP_perc_track_err5, muP_perc_track_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_track_MuonProtonSepPowDiffPercWithFit.png" ).c_str(), "Difference in Muon Proton Separation", "Track Length [cm]", "(S-S_{Pilot})/S_{Pilot} *100", 5e3, false);
@@ -6506,7 +6618,9 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
        const std::vector<std::pair<float, float>>& perc_err_vector) {
         size_t n = std::min(perc_vector.size(), perc_err_vector.size());
         int count = 0;
+        float tol_perc = 1.0;
         for (size_t i = 0; i < n; ++i) {
+            if(std::abs(perc_vector[i].second + 100 ) < tol_perc) continue; //skip if point doesn't exist in smaller radius
             float low  = perc_vector[i].second - perc_err_vector[i].second;
             float high = perc_vector[i].second + perc_err_vector[i].second;
 
@@ -6539,12 +6653,27 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
        const std::vector<std::pair<float, float>>& perc_err_vector) {
         size_t n = std::min(perc_vector.size(), perc_err_vector.size());
         int count = 0;
+        float tol_perc = 1.0;
         for (size_t i = 0; i < n; ++i) {
+            if(std::abs(perc_vector[i].second + 100 ) < tol_perc) continue; //skip if point doesn't exist in smaller radius
             float low  = perc_vector[i].second - perc_err_vector[i].second;
             float high = perc_vector[i].second + perc_err_vector[i].second;
 
             // Entire uncertainty band is below 0
             if (high < 0) ++count;
+        }
+        return count;
+    };
+
+    //count number of bins where the separation power is not caluclated for smaller radius but is for pilot design
+    auto count_missing =
+    [](const std::vector<std::pair<float, float>>& perc_vector,
+       const std::vector<std::pair<float, float>>& perc_err_vector) {
+        size_t n = std::min(perc_vector.size(), perc_err_vector.size());
+        int count = 0;
+        float tol_perc = 1.0;
+        for (size_t i = 0; i < n; ++i) {
+            if(std::abs(perc_vector[i].second + 100 ) < tol_perc) ++count; //count if point doesn't exist in smaller radius
         }
         return count;
     };
@@ -6565,6 +6694,22 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
     float muP_lower6 = count_lower_than_pilot(muP_perc6, muP_perc_err6);
     float piP_lower6 = count_lower_than_pilot(piP_perc6, piP_perc_err6);
 
+    float muPi_missing2 = count_missing(muPi_perc2, muPi_perc_err2);
+    float muP_missing2 = count_missing(muP_perc2, muP_perc_err2);
+    float piP_missing2 = count_missing(piP_perc2, piP_perc_err2);
+    float muPi_missing3 = count_missing(muPi_perc3, muPi_perc_err3);
+    float muP_missing3 = count_missing(muP_perc3, muP_perc_err3);
+    float piP_missing3 = count_missing(piP_perc3, piP_perc_err3);
+    float muPi_missing4 = count_missing(muPi_perc4, muPi_perc_err4);
+    float muP_missing4 = count_missing(muP_perc4, muP_perc_err4);
+    float piP_missing4 = count_missing(piP_perc4, piP_perc_err4);
+    float muPi_missing5 = count_missing(muPi_perc5, muPi_perc_err5);
+    float muP_missing5 = count_missing(muP_perc5, muP_perc_err5);
+    float piP_missing5 = count_missing(piP_perc5, piP_perc_err5);
+    float muPi_missing6 = count_missing(muPi_perc6, muPi_perc_err6);
+    float muP_missing6 = count_missing(muP_perc6, muP_perc_err6);
+    float piP_missing6 = count_missing(piP_perc6, piP_perc_err6);
+
     //print the number of momentum bins where the separation power is higher or lower than the pilot design for each sample and particle pair
     std::cout << "\nNumber of momentum bins where the separation power is higher or lower than the pilot design for each sample and particle pair:\n\n";
     std::cout << std::left 
@@ -6572,6 +6717,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
                     << std::setw(20) << "Particle Pair" 
                     << std::setw(20) << "Higher than Pilot Design" 
                     << std::setw(20) << "Lower than Pilot Design" 
+                    << std::setw(20) << "Missing in Smaller Radius"
                     << "\n";
     std::cout << std::string(80, '-') << "\n";
     std::cout << std::fixed << std::setprecision(0);
@@ -6580,30 +6726,35 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
                 << std::setw(20) << "Muon-Pion" 
                 << std::setw(20) << muPi_higher2 
                 << std::setw(20) << muPi_lower2 
+                << std::setw(20) << muPi_missing2
                 << "\n";
     std::cout << std::left 
                 << std::setw(20) << sample3 
                 << std::setw(20) << "Muon-Pion" 
                 << std::setw(20) << muPi_higher3 
                 << std::setw(20) << muPi_lower3 
+                << std::setw(20) << muPi_missing3
                 << "\n";
     std::cout << std::left 
                 << std::setw(20) << sample4 
                 << std::setw(20) << "Muon-Pion" 
                 << std::setw(20) << muPi_higher4 
                 << std::setw(20) << muPi_lower4 
+                << std::setw(20) << muPi_missing4
                 << "\n";
     std::cout << std::left 
                 << std::setw(20) << sample5 
                 << std::setw(20) << "Muon-Pion" 
                 << std::setw(20) << muPi_higher5 
                 << std::setw(20) << muPi_lower5 
+                << std::setw(20) << muPi_missing5
                 << "\n";
     std::cout << std::left 
                 << std::setw(20) << sample6 
                 << std::setw(20) << "Muon-Pion" 
                 << std::setw(20) << muPi_higher6 
                 << std::setw(20) << muPi_lower6 
+                << std::setw(20) << muPi_missing6
                 << "\n";
 
     std::cout << std::left 
@@ -6611,30 +6762,35 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
                 << std::setw(20) << "Muon-Proton" 
                 << std::setw(20) << muP_higher2 
                 << std::setw(20) << muP_lower2 
+                << std::setw(20) << muP_missing2
                 << "\n";
     std::cout << std::left 
                 << std::setw(20) << sample3
                 << std::setw(20) << "Muon-Proton" 
                 << std::setw(20) << muP_higher3 
                 << std::setw(20) << muP_lower3 
+                << std::setw(20) << muP_missing3
                 << "\n";
     std::cout << std::left 
                 << std::setw(20) << sample4
                 << std::setw(20) << "Muon-Proton" 
                 << std::setw(20) << muP_higher4 
                 << std::setw(20) << muP_lower4 
+                << std::setw(20) << muP_missing4
                 << "\n";
     std::cout << std::left 
                 << std::setw(20) << sample5
                 << std::setw(20) << "Muon-Proton" 
                 << std::setw(20) << muP_higher5 
                 << std::setw(20) << muP_lower5 
+                << std::setw(20) << muP_missing5
                 << "\n";
     std::cout << std::left 
                 << std::setw(20) << sample6
                 << std::setw(20) << "Muon-Proton" 
                 << std::setw(20) << muP_higher6 
                 << std::setw(20) << muP_lower6 
+                << std::setw(20) << muP_missing6
                 << "\n";
 
     std::cout << std::left 
@@ -6642,30 +6798,35 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
                 << std::setw(20) << "Pion-Proton" 
                 << std::setw(20) << piP_higher2 
                 << std::setw(20) << piP_lower2 
+                << std::setw(20) << piP_missing2
                 << "\n";
     std::cout << std::left 
                 << std::setw(20) << sample3 
                 << std::setw(20) << "Pion-Proton" 
                 << std::setw(20) << piP_higher3 
                 << std::setw(20) << piP_lower3 
+                << std::setw(20) << piP_missing3
                 << "\n";
     std::cout << std::left 
                 << std::setw(20) << sample4 
                 << std::setw(20) << "Pion-Proton" 
                 << std::setw(20) << piP_higher4 
                 << std::setw(20) << piP_lower4 
+                << std::setw(20) << piP_missing4
                 << "\n";
     std::cout << std::left 
                 << std::setw(20) << sample5 
                 << std::setw(20) << "Pion-Proton" 
                 << std::setw(20) << piP_higher5 
                 << std::setw(20) << piP_lower5 
+                << std::setw(20) << piP_missing5
                 << "\n";
     std::cout << std::left 
                 << std::setw(20) << sample6 
                 << std::setw(20) << "Pion-Proton" 
                 << std::setw(20) << piP_higher6 
                 << std::setw(20) << piP_lower6 
+                << std::setw(20) << piP_missing6
                 << "\n";
 
 
@@ -6701,6 +6862,22 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
     float p_res_higher6 = count_higher_than_pilot(p_res_perc6, p_res_perc_err6); 
     float p_res_lower6 = count_lower_than_pilot(p_res_perc6, p_res_perc_err6);
 
+    float mu_res_missing2 = count_missing(mu_res_perc2, mu_res_perc_err2);
+    float p_res_missing2 = count_missing(p_res_perc2, p_res_perc_err2);
+    float pi_res_missing2 = count_missing(pi_res_perc2, pi_res_perc_err2);
+    float mu_res_missing3 = count_missing(mu_res_perc3, mu_res_perc_err3);
+    float p_res_missing3 = count_missing(p_res_perc3, p_res_perc_err3);
+    float pi_res_missing3 = count_missing(pi_res_perc3, pi_res_perc_err3);
+    float mu_res_missing4 = count_missing(mu_res_perc4, mu_res_perc_err4);
+    float p_res_missing4 = count_missing(p_res_perc4, p_res_perc_err4);
+    float pi_res_missing4 = count_missing(pi_res_perc4, pi_res_perc_err4);
+    float mu_res_missing5 = count_missing(mu_res_perc5, mu_res_perc_err5);
+    float p_res_missing5 = count_missing(p_res_perc5, p_res_perc_err5);
+    float pi_res_missing5 = count_missing(pi_res_perc5, pi_res_perc_err5);
+    float mu_res_missing6 = count_missing(mu_res_perc6, mu_res_perc_err6);
+    float p_res_missing6 = count_missing(p_res_perc6, p_res_perc_err6);
+    float pi_res_missing6 = count_missing(pi_res_perc6, pi_res_perc_err6);
+
     //print the number of bins where resoluition is higher/lower than pilot design for each sample and particle type
     std::cout << "\nNumber of momentum bins where the resolution is higher or lower than the pilot design for each sample and particle type:\n\n";
     std::cout << std::left 
@@ -6708,6 +6885,7 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
                     << std::setw(20) << "Particle Type" 
                     << std::setw(20) << "Higher than Pilot Design" 
                     << std::setw(20) << "Lower than Pilot Design" 
+                    << std::setw(20) << "Missing in Smaller Radius"
                     << "\n";
     std::cout << std::string(80, '-') << "\n";
     std::cout << std::fixed << std::setprecision(0);
@@ -6717,30 +6895,35 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
                 << std::setw(20) << "Muon" 
                 << std::setw(20) << mu_res_higher2 
                 << std::setw(20) << mu_res_lower2 
+                << std::setw(20) << mu_res_missing2
                 << "\n";
     std::cout << std::left 
                 << std::setw(20) << sample3 
                 << std::setw(20) << "Muon" 
                 << std::setw(20) << mu_res_higher3 
                 << std::setw(20) << mu_res_lower3 
+                << std::setw(20) << mu_res_missing3
                 << "\n";
     std::cout << std::left 
                 << std::setw(20) << sample4 
                 << std::setw(20) << "Muon" 
                 << std::setw(20) << mu_res_higher4 
                 << std::setw(20) << mu_res_lower4 
+                << std::setw(20) << mu_res_missing4
                 << "\n";
     std::cout << std::left 
                 << std::setw(20) << sample5 
                 << std::setw(20) << "Muon" 
                 << std::setw(20) << mu_res_higher5 
                 << std::setw(20) << mu_res_lower5 
+                << std::setw(20) << mu_res_missing5
                 << "\n";
     std::cout << std::left 
                 << std::setw(20) << sample6 
                 << std::setw(20) << "Muon" 
                 << std::setw(20) << mu_res_higher6 
                 << std::setw(20) << mu_res_lower6 
+                << std::setw(20) << mu_res_missing6
                 << "\n";
 
     std::cout << std::left 
@@ -6748,30 +6931,35 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
                 << std::setw(20) << "Pion" 
                 << std::setw(20) << pi_res_higher2 
                 << std::setw(20) << pi_res_lower2 
+                << std::setw(20) << pi_res_missing2
                 << "\n";
     std::cout << std::left 
                 << std::setw(20) << sample3
                 << std::setw(20) << "Pion" 
                 << std::setw(20) << pi_res_higher3 
                 << std::setw(20) << pi_res_lower3 
+                << std::setw(20) << pi_res_missing3
                 << "\n";
     std::cout << std::left 
                 << std::setw(20) << sample4
                 << std::setw(20) << "Pion" 
                 << std::setw(20) << pi_res_higher4 
                 << std::setw(20) << pi_res_lower4 
+                << std::setw(20) << pi_res_missing4
                 << "\n";
     std::cout << std::left 
                 << std::setw(20) << sample5
                 << std::setw(20) << "Pion" 
                 << std::setw(20) << pi_res_higher5 
                 << std::setw(20) << pi_res_lower5 
+                << std::setw(20) << pi_res_missing5
                 << "\n";
     std::cout << std::left 
                 << std::setw(20) << sample6
                 << std::setw(20) << "Pion" 
                 << std::setw(20) << pi_res_higher6 
                 << std::setw(20) << pi_res_lower6 
+                << std::setw(20) << pi_res_missing6
                 << "\n";
 
     std::cout << std::left 
@@ -6779,30 +6967,35 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
                 << std::setw(20) << "Proton" 
                 << std::setw(20) << p_res_higher2 
                 << std::setw(20) << p_res_lower2 
+                << std::setw(20) << p_res_missing2
                 << "\n";
     std::cout << std::left 
                 << std::setw(20) << sample3 
                 << std::setw(20) << "Proton" 
                 << std::setw(20) << p_res_higher3 
-                << std::setw(20) << p_res_lower3 
+                << std::setw(20) << p_res_lower3
+                << std::setw(20) << p_res_missing3 
                 << "\n";
     std::cout << std::left 
                 << std::setw(20) << sample4 
                 << std::setw(20) << "Proton" 
                 << std::setw(20) << p_res_higher4 
                 << std::setw(20) << p_res_lower4 
+                << std::setw(20) << p_res_missing4
                 << "\n";
     std::cout << std::left 
                 << std::setw(20) << sample5 
                 << std::setw(20) << "Proton" 
                 << std::setw(20) << p_res_higher5 
                 << std::setw(20) << p_res_lower5 
+                << std::setw(20) << p_res_missing5
                 << "\n";
     std::cout << std::left 
                 << std::setw(20) << sample6 
                 << std::setw(20) << "Proton" 
                 << std::setw(20) << p_res_higher6 
                 << std::setw(20) << p_res_lower6 
+                << std::setw(20) << p_res_missing6
                 << "\n";
 
     /*

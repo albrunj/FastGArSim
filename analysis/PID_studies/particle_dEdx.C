@@ -322,7 +322,7 @@ void draw_sepPow(std::vector<Float_t>& mom_vec, std::vector<Float_t>& sep_pow_ve
 void draw_all_sepPow(std::vector<Float_t>& mupi_mom_vec, std::vector<Float_t>& mupi_sep_pow_vec, std::vector<Float_t>& mupi_sep_pow_err_vec, std::vector<Float_t>& mupi_mom_err_vec,
     std::vector<Float_t>& mup_mom_vec, std::vector<Float_t>& mup_sep_pow_vec, std::vector<Float_t>& mup_sep_pow_err_vec, std::vector<Float_t>& mup_mom_err_vec,
     std::vector<Float_t>& pip_mom_vec, std::vector<Float_t>& pip_sep_pow_vec, std::vector<Float_t>& pip_sep_pow_err_vec, std::vector<Float_t>& pip_mom_err_vec,
-    const std::string& outName, const char* title, const char* Xtitle, const char* Ytitle){
+    const std::string& outName, const char* title, const char* Xtitle, const char* Ytitle, bool mupi){
 
     static int canvasCounter = 0;
 
@@ -411,7 +411,7 @@ void draw_all_sepPow(std::vector<Float_t>& mupi_mom_vec, std::vector<Float_t>& m
     float max_y = 0;
     float max_x = 0;
 
-    if(!mupi_y.empty()){
+    if(!mupi_y.empty() && mupi){
         max_y = std::max({
             max_y,
             *std::max_element(mupi_y.begin(), mupi_y.end())
@@ -429,7 +429,7 @@ void draw_all_sepPow(std::vector<Float_t>& mupi_mom_vec, std::vector<Float_t>& m
             *std::max_element(pip_y.begin(), pip_y.end())
         });
     }
-    if(!mupi_y_err.empty()){
+    if(!mupi_y_err.empty() && mupi){
         max_y = std::max({
             max_y,
             *std::max_element(mupi_y_err_max.begin(), mupi_y_err_max.end())
@@ -448,7 +448,7 @@ void draw_all_sepPow(std::vector<Float_t>& mupi_mom_vec, std::vector<Float_t>& m
         });
     }
 
-    if(!mupi_x.empty()){
+    if(!mupi_x.empty() && mupi){
         max_x = std::max({
             max_x,
             *std::max_element(mupi_x.begin(), mupi_x.end())
@@ -466,7 +466,7 @@ void draw_all_sepPow(std::vector<Float_t>& mupi_mom_vec, std::vector<Float_t>& m
             *std::max_element(pip_x.begin(), pip_x.end())
         });
     }
-    if(!mupi_x_err.empty()){
+    if(!mupi_x_err.empty() && mupi){
         max_x = std::max({
             max_x,
             *std::max_element(mupi_x_err_max.begin(), mupi_x_err_max.end())
@@ -534,13 +534,13 @@ void draw_all_sepPow(std::vector<Float_t>& mupi_mom_vec, std::vector<Float_t>& m
     shade->SetLineColor(0);
     shade->Draw("SAME");
     
-    if (!mupi_x.empty() && !mupi_y.empty()) gr_err1->Draw("PL SAME");
+    if (!mupi_x.empty() && !mupi_y.empty() && mupi) gr_err1->Draw("PL SAME");
     if (!mup_x.empty() && !mup_y.empty()) gr_err2->Draw("PL SAME");
     if (!pip_x.empty() && !pip_y.empty()) gr_err3->Draw("PL SAME");
 
     //add legend
     TLegend* leg = new TLegend(0.15, 0.7, 0.4, 0.88);
-    if (!mupi_x.empty() && !mupi_y.empty()) leg->AddEntry(gr_err1, "Muon-Pion", "p");
+    if (!mupi_x.empty() && !mupi_y.empty() && mupi) leg->AddEntry(gr_err1, "Muon-Pion", "p");
     if (!mup_x.empty() && !mup_y.empty()) leg->AddEntry(gr_err2, "Muon-Proton", "p");
     if (!pip_x.empty() && !pip_y.empty()) leg->AddEntry(gr_err3, "Pion-Proton", "p");
     leg->AddEntry(shade, "<3#sigma");
@@ -633,28 +633,28 @@ fit_results calc_res(TH1F* hist){
     double sigma     = fr->Parameter(2);
     double sigma_err = fr->ParError(2);
 
-    /*
+    
     double sigma_frac = sigma_err/sigma;
     double mean_frac = mean_err/mean;
 
-    if(sigma_frac > 0.25 || mean_frac > 0.25){
+    if(sigma_frac > 0.1 || mean_frac > 0.1){
         return {0, 0, 0, 0, 0, 0, 0};
-    }*/
+    }
 
-
+/*
     double chi2ndf = 0;
 
     if (fr->Ndf() != 0) chi2ndf = fr->Chi2() / fr->Ndf();
-    /*
+    
     if(chi2ndf > 5.0){
         return {0, 0, 0, 0, 0, 0, 0};
-    }*/
+    }
     
     double prob = fr->Prob();
 
     if (prob < 0.01 && chi2ndf > 5.0) {
         return {0, 0, 0, 0, 0, 0, 0};
-    }
+    }*/
 
     TMatrixDSym cov = fr->GetCovarianceMatrix();
     double cov_mean_sigma = cov(1, 2);
@@ -712,28 +712,28 @@ fit_results calc_res_land(TH1F* hist){
     double sigma     = fr->Parameter(2);
     double sigma_err = fr->ParError(2);
 
-    /*
+    
     double sigma_frac = sigma_err/sigma;
     double mean_frac = mean_err/mean;
 
-    if(sigma_frac > 0.25 || mean_frac > 0.25){
+    if(sigma_frac > 0.1 || mean_frac > 0.1){
         return {0, 0, 0, 0, 0, 0, 0};
-    }*/
+    }
 
-    
+    /*
     double chi2ndf = 0;
 
     if (fr->Ndf() != 0) chi2ndf = fr->Chi2() / fr->Ndf();
-    /*
+    
     if(chi2ndf > 5.0){
         return {0, 0, 0, 0, 0, 0, 0};
-    }*/
+    }
 
     double prob = fr->Prob();
 
     if (prob < 0.01 && chi2ndf > 5.0) {
         return {0, 0, 0, 0, 0, 0, 0};
-    }
+    }*/
 
     TMatrixDSym cov = fr->GetCovarianceMatrix();
     double cov_mean_sigma = cov(1, 2);
@@ -831,23 +831,37 @@ void draw_gaussian_fit(TH1F* hist, const char* title, const std::string& outName
         return;
     }
 
+    double mean      = fr->Parameter(1);
+    double mean_err  = fr->ParError(1);
+    double sigma     = fr->Parameter(2);
+    double sigma_err = fr->ParError(2);
+
+    double sigma_frac = sigma_err/sigma;
+    double mean_frac = mean_err/mean;
+
+    if(sigma_frac > 0.1 || mean_frac > 0.1){
+        delete canvas;
+        return;
+    }
+
+/*
     double chi2ndf = 0;
 
     if (fr->Ndf() != 0) chi2ndf = fr->Chi2() / static_cast<double>(fr->Ndf());
 
     // Reject poor fits
-    /*
+    
     if (chi2ndf > 5.0) {
         delete canvas;
         return;
-    }*/
+    }
 
     double prob = fr->Prob();
 
     if (prob < 0.01 && chi2ndf > 5.0) {
         delete canvas;
         return;
-    }
+    }*/
 
     // Force pad update so stats box appears
     gPad->Modified();
@@ -936,28 +950,42 @@ void draw_landau_fit(TH1F* hist, const char* title, const std::string& outName){
     TFitResult* fr = r.Get();
 
     // Check fit validity
-    if (!fr || fr->Status() != 0 || fr->Ndf() <= 0) {
+    if (!fr || fr->Status() != 0) {
         delete canvas;
         return;
     }
 
+    double mean      = fr->Parameter(1);
+    double mean_err  = fr->ParError(1);
+    double sigma     = fr->Parameter(2);
+    double sigma_err = fr->ParError(2);
+
+    double sigma_frac = sigma_err/sigma;
+    double mean_frac = mean_err/mean;
+
+    if(sigma_frac > 0.1 || mean_frac > 0.1){
+        delete canvas;
+        return;
+    }
+
+    /*
     double chi2ndf = 0;
 
     if (fr->Ndf() != 0) chi2ndf = fr->Chi2() / static_cast<double>(fr->Ndf());
 
     // Reject poor fits
-    /*
+    
     if (chi2ndf > 5.0) {
         delete canvas;
         return;
-    }*/
+    }
 
     double prob = fr->Prob();
 
     if (prob < 0.01 && (chi2ndf > 5.0 || chi2ndf == 0.)) {
         delete canvas;
         return;
-    }
+    }*/
 
     // Force pad update so stats box appears
     gPad->Modified();
@@ -1191,7 +1219,7 @@ void particle_dEdx(const std::string& inputFileNameMuon, const std::string& inpu
     //constants
     const float p_min = 70.0; // MeV
     const float p_max = 5e3; // MeV
-    const int nPBins = 120; // number of momentum bins for p vs dE/dx graph; ~3% log bins
+    const int nPBins = 45; // number of momentum bins for p vs dE/dx graph; ~3% log bins
     const float p_interval = (p_max - p_min) / nPBins; // MeV
     float p_bin_min = std::log10(p_min); // MeV
     float p_bin_max = std::log10(p_max); // MeV
@@ -1299,11 +1327,12 @@ void particle_dEdx(const std::string& inputFileNameMuon, const std::string& inpu
         //float p_bin_high = p_min + (i + 1) * p_interval;
         float p_bin_low = std::pow(10, p_bin_min + i * (p_bin_max - p_bin_min) / nPBins);
         float p_bin_high = std::pow(10, p_bin_min + (i + 1) * (p_bin_max - p_bin_min) / nPBins);
-        hMuon[i] = new TH1F(Form("hMuon_p%0.2f-%0.2f", p_bin_low, p_bin_high), Form("Muon dE/dx for p=%0.2f-%0.2f cm; dE/dx [keV/cm]; Counts", p_bin_low, p_bin_high),150, 0, 300);
+        hMuon[i] = new TH1F(Form("hMuon_p%0.2f-%0.2f", p_bin_low, p_bin_high), Form("Muon dE/dx for p=%0.2f-%0.2f cm; dE/dx [keV/cm]; Counts", p_bin_low, p_bin_high), 150, 0, 300);
         hPion[i] = new TH1F(Form("hPion_p%0.2f-%0.2f", p_bin_low, p_bin_high), Form("Pion dE/dx for p=%0.2f-%0.2f cm; dE/dx [keV/cm]; Counts", p_bin_low, p_bin_high), 150, 0, 300);
         hProton[i] = new TH1F(Form("hProton_p%0.2f-%0.2f", p_bin_low, p_bin_high), Form("Proton dE/dx for p=%0.2f-%0.2f cm; dE/dx [keV/cm]; Counts", p_bin_low, p_bin_high), 150, 0, 300);
     }
 
+    /*
     for (int i = 0; i < nLBins; i++) {
         //float l_bin_low = l_min + i * l_interval;
         //float l_bin_high = l_min + (i + 1) * l_interval;
@@ -1312,7 +1341,7 @@ void particle_dEdx(const std::string& inputFileNameMuon, const std::string& inpu
         hMuonL[i] = new TH1F(Form("hMuon_l%0.2f-%0.2f", l_bin_low, l_bin_high), Form("Muon dE/dx for l=%0.2f-%0.2f MeV/c; dE/dx [keV/cm]; Counts", l_bin_low, l_bin_high), 150, 0, 300);
         hPionL[i] = new TH1F(Form("hPion_l%0.2f-%0.2f", l_bin_low, l_bin_high), Form("Pion dE/dx for l=%0.2f-%0.2f MeV/c; dE/dx [keV/cm]; Counts", l_bin_low, l_bin_high), 150, 0, 300);
         hProtonL[i] = new TH1F(Form("hProton_l%0.2f-%0.2f", l_bin_low, l_bin_high), Form("Proton dE/dx for l=%0.2f-%0.2f MeV/c; dE/dx [keV/cm]; Counts", l_bin_low, l_bin_high), 150, 0, 300);
-    }
+    }*/
 
     //histogram to find momentum of 1m tracks
     TH1F* hP_1m = new TH1F("hP_1m", "Momentum for ~1 m tracks;Momentum [MeV/c];Tracks", 100, 0, 5000);
@@ -1463,13 +1492,14 @@ void particle_dEdx(const std::string& inputFileNameMuon, const std::string& inpu
                     case 2212: hProton[bin]->Fill(truncated_mean); break;
                 }
             }
+            /*
             if (bin_l >= 0 && bin_l < nLBins) {
                 switch (pdg) {
                     case 13: hMuonL[bin_l]->Fill(truncated_mean); break;
                     case 211: hPionL[bin_l]->Fill(truncated_mean); break;
                     case 2212: hProtonL[bin_l]->Fill(truncated_mean); break;
                 }
-            }
+            }*/
 
         }//end loop over particles
     }//end loop over entries   
@@ -1647,6 +1677,7 @@ void particle_dEdx(const std::string& inputFileNameMuon, const std::string& inpu
         
     }
 
+    /*
     //loop over track length bins to get gaussian fit, variables and separation power
     for (size_t i = 0; i < nLBins; ++i){
 
@@ -1818,7 +1849,7 @@ void particle_dEdx(const std::string& inputFileNameMuon, const std::string& inpu
             }
         }
         
-    }
+    }*/
 
     //draw example histograms
     for(size_t i = 0; i < nPBins; i++){
@@ -1828,13 +1859,14 @@ void particle_dEdx(const std::string& inputFileNameMuon, const std::string& inpu
         if (hPion[i]->GetEntries() > 300 && hPion[i]->Integral() > 0) draw_gaussian_fit(hPion[i], "Pion dE/dx", ("gaussiandEdx/" + sampleName + "_pion_dEdx_" + p_bin_range + "_GaussianFit.png").c_str());
         if (hProton[i]->GetEntries() > 300 && hProton[i]->Integral() > 0) draw_gaussian_fit(hProton[i], "Proton dE/dx", ("gaussiandEdx/" + sampleName + "_proton_dEdx_" + p_bin_range + "_GaussianFit.png").c_str());
     }
+    /*
     for(size_t i = 0; i < nLBins; i++){
         if (sampleName.find("CDR") == std::string::npos) continue; //only draw example histograms for CDR samples
         std::string l_bin_range = std::to_string(i);
         if (hMuonL[i]->GetEntries() > 300 && hMuonL[i]->Integral() > 0) draw_landau_fit(hMuonL[i], "Muon dE/dx", ("gaussiandEdx/" + sampleName + "_track_muon_dEdx_" + l_bin_range + "_GaussianFit.png").c_str());
         if (hPionL[i]->GetEntries() > 300 && hPionL[i]->Integral() > 0) draw_landau_fit(hPionL[i], "Pion dE/dx", ("gaussiandEdx/" + sampleName + "_track_pion_dEdx_" + l_bin_range + "_GaussianFit.png").c_str());
         if (hProtonL[i]->GetEntries() > 300 && hProtonL[i]->Integral() > 0) draw_landau_fit(hProtonL[i], "Proton dE/dx", ("gaussiandEdx/" + sampleName + "_track_proton_dEdx_" + l_bin_range + "_GaussianFit.png").c_str());
-    }
+    }*/
 
 
     /*
@@ -1853,9 +1885,9 @@ void particle_dEdx(const std::string& inputFileNameMuon, const std::string& inpu
     std::cout << "Mean number of hits for ~1 m muon tracks = " << hH_1m_mu->GetMean() << std::endl;
     
     //make plots
-    draw_graphs(pdg_to_p, pdg_to_mean, pdg_to_p_err, pdg_to_mean_err, ("outputs_sepPow/" + sampleName + "_mean_dEdx_fit.png").c_str(), "p vs dE/dx", "Momentum [MeV]", "dE/dx [keV/cm]", 6e3, 35);
-    draw_graphs(pdg_to_p, pdg_to_sigma, pdg_to_p_err, pdg_to_sigma_err, ("outputs_sepPow/" + sampleName + "_sigma_dEdx_fit.png").c_str(), "p vs sigma of dE/dx fit", "Momentum [MeV]", "Sigma of dE/dx [keV/cm]", 6e3, 10);
-    draw_graphs(pdg_to_p, pdg_to_res, pdg_to_p_err, pdg_to_res_err, ("outputs_sepPow/" + sampleName + "_res_dEdx_fit.png").c_str(), "p vs resolution of dE/dx fit", "Momentum [MeV]", "Resolution of dE/dx", 6e3, 0.5);
+    draw_graphs(pdg_to_p, pdg_to_mean, pdg_to_p_err, pdg_to_mean_err, ("outputs_sepPow/" + sampleName + "_mean_dEdx_fit.png").c_str(), "p vs dE/dx", "Momentum [MeV/c]", "dE/dx [keV/cm]", 6e3, 35);
+    draw_graphs(pdg_to_p, pdg_to_sigma, pdg_to_p_err, pdg_to_sigma_err, ("outputs_sepPow/" + sampleName + "_sigma_dEdx_fit.png").c_str(), "p vs sigma of dE/dx fit", "Momentum [MeV/c]", "Sigma of dE/dx [keV/cm]", 6e3, 10);
+    draw_graphs(pdg_to_p, pdg_to_res, pdg_to_p_err, pdg_to_res_err, ("outputs_sepPow/" + sampleName + "_res_dEdx_fit.png").c_str(), "p vs resolution of dE/dx fit", "Momentum [MeV/c]", "Resolution of dE/dx", 6e3, 0.5);
     
     draw_graphs(pdg_to_l, pdg_to_mean_l, pdg_to_l_err, pdg_to_mean_l_err, ("outputs_sepPow/" + sampleName + "_track_mean_dEdx_fit.png").c_str(), "l vs dE/dx", "Track Length [cm]", "dE/dx [keV/cm]", 6e3, 35);
     draw_graphs(pdg_to_l, pdg_to_sigma_l, pdg_to_l_err, pdg_to_sigma_l_err, ("outputs_sepPow/" + sampleName + "_track_sigma_dEdx_fit.png").c_str(), "l vs sigma of dE/dx fit", "Track Length [cm]", "Sigma of dE/dx [keV/cm]", 6e3, 10);
@@ -1864,22 +1896,24 @@ void particle_dEdx(const std::string& inputFileNameMuon, const std::string& inpu
 
     //draw separation power graphs
     if (muon_pion_sp.size() > 0) {
-        draw_sepPow(mom_vec1, muon_pion_sp, muon_pion_sp_err, mom_vec1_err, ("outputs_sepPow/" + sampleName + "_sep_pow_muon_pion.png").c_str(), "Muon-Pion Separation Power", "Momentum [MeV]", "Separation Power", 6e3, 5, false);
-        //draw_sepPow(mom_vec1, muon_pion_sp, muon_pion_sp_err, mom_vec1_err, ("outputs_sepPow/" + sampleName + "_sep_pow_muon_pion_zoomed.png").c_str(), "Muon-Pion Separation Power", "Momentum [MeV]", "Separation Power", 6e3, 5, true);
+        draw_sepPow(mom_vec1, muon_pion_sp, muon_pion_sp_err, mom_vec1_err, ("outputs_sepPow/" + sampleName + "_sep_pow_muon_pion.png").c_str(), "Muon-Pion Separation Power", "Momentum [MeV/c]", "Separation Power", 6e3, 5, false);
+        //draw_sepPow(mom_vec1, muon_pion_sp, muon_pion_sp_err, mom_vec1_err, ("outputs_sepPow/" + sampleName + "_sep_pow_muon_pion_zoomed.png").c_str(), "Muon-Pion Separation Power", "Momentum [MeV/c]", "Separation Power", 6e3, 5, true);
     }
     if (muon_proton_sp.size() > 0) {
-        draw_sepPow(mom_vec2, muon_proton_sp, muon_proton_sp_err, mom_vec2_err, ("outputs_sepPow/" + sampleName + "_sep_pow_muon_proton.png").c_str(), "Muon-Proton Separation Power", "Momentum [MeV]", "Separation Power", 6e3, 5, false);
-        //draw_sepPow(mom_vec2, muon_proton_sp, muon_proton_sp_err, mom_vec2_err, ("outputs_sepPow/" + sampleName + "_sep_pow_muon_proton_zoomed.png").c_str(), "Muon-Proton Separation Power", "Momentum [MeV]", "Separation Power", 6e3, 10, true);
+        draw_sepPow(mom_vec2, muon_proton_sp, muon_proton_sp_err, mom_vec2_err, ("outputs_sepPow/" + sampleName + "_sep_pow_muon_proton.png").c_str(), "Muon-Proton Separation Power", "Momentum [MeV/c]", "Separation Power", 6e3, 5, false);
+        //draw_sepPow(mom_vec2, muon_proton_sp, muon_proton_sp_err, mom_vec2_err, ("outputs_sepPow/" + sampleName + "_sep_pow_muon_proton_zoomed.png").c_str(), "Muon-Proton Separation Power", "Momentum [MeV/c]", "Separation Power", 6e3, 10, true);
     }
     if (pion_proton_sp.size() > 0) {
-        draw_sepPow(mom_vec3, pion_proton_sp, pion_proton_sp_err, mom_vec3_err, ("outputs_sepPow/" + sampleName + "_sep_pow_pion_proton.png").c_str(), "Pion-Proton Separation Power", "Momentum [MeV]", "Separation Power", 6e3, 5, false);
-        //draw_sepPow(mom_vec3, pion_proton_sp, pion_proton_sp_err, mom_vec3_err, ("outputs_sepPow/" + sampleName + "_sep_pow_pion_proton_zoomed.png").c_str(), "Pion-Proton Separation Power", "Momentum [MeV]", "Separation Power", 6e3, 10, true);
+        draw_sepPow(mom_vec3, pion_proton_sp, pion_proton_sp_err, mom_vec3_err, ("outputs_sepPow/" + sampleName + "_sep_pow_pion_proton.png").c_str(), "Pion-Proton Separation Power", "Momentum [MeV/c]", "Separation Power", 6e3, 5, false);
+        //draw_sepPow(mom_vec3, pion_proton_sp, pion_proton_sp_err, mom_vec3_err, ("outputs_sepPow/" + sampleName + "_sep_pow_pion_proton_zoomed.png").c_str(), "Pion-Proton Separation Power", "Momentum [MeV/c]", "Separation Power", 6e3, 10, true);
     }
 
     if (muon_pion_sp.size() > 0 || muon_proton_sp.size() > 0 || pion_proton_sp.size() > 0){
-        draw_all_sepPow(mom_vec1, muon_pion_sp, muon_pion_sp_err, mom_vec1_err, mom_vec2, muon_proton_sp, muon_proton_sp_err, mom_vec2_err, mom_vec3, pion_proton_sp, pion_proton_sp_err, mom_vec3_err, ("outputs_sepPow/" + sampleName + "_sep_pow_all.png").c_str(), "dE/dx Separation Power", "Momentum [MeV]", "Separation Power");
+        draw_all_sepPow(mom_vec1, muon_pion_sp, muon_pion_sp_err, mom_vec1_err, mom_vec2, muon_proton_sp, muon_proton_sp_err, mom_vec2_err, mom_vec3, pion_proton_sp, pion_proton_sp_err, mom_vec3_err, ("outputs_sepPow/" + sampleName + "_sep_pow_all.png").c_str(), "dE/dx Separation Power", "Momentum [MeV/c]", "Separation Power", true);
+        draw_all_sepPow(mom_vec1, muon_pion_sp, muon_pion_sp_err, mom_vec1_err, mom_vec2, muon_proton_sp, muon_proton_sp_err, mom_vec2_err, mom_vec3, pion_proton_sp, pion_proton_sp_err, mom_vec3_err, ("outputs_sepPow/" + sampleName + "_sep_pow_mup_pip.png").c_str(), "dE/dx Separation Power", "Momentum [MeV/c]", "Separation Power", false);
     }
 
+    /*
     if (muon_pion_sp_l.size() > 0) {
         draw_sepPow(l_vec1, muon_pion_sp_l, muon_pion_sp_l_err, l_vec1_err, ("outputs_sepPow/" + sampleName + "_track_sep_pow_muon_pion.png").c_str(), "Muon-Pion Separation Power", "Track Length [cm]", "Separation Power", 6e3, 5, false);
         //draw_sepPow(mom_vec1, muon_pion_sp, muon_pion_sp_err, mom_vec1_err, ("outputs_sepPow/" + sampleName + "_sep_pow_muon_pion_zoomed.png").c_str(), "Muon-Pion Separation Power", "Momentum [MeV]", "Separation Power", 6e3, 5, true);
@@ -1895,7 +1929,7 @@ void particle_dEdx(const std::string& inputFileNameMuon, const std::string& inpu
 
     if (muon_pion_sp_l.size() > 0 || muon_proton_sp_l.size() > 0 || pion_proton_sp_l.size() > 0){
         draw_all_sepPow(l_vec1, muon_pion_sp_l, muon_pion_sp_l_err, l_vec1_err, l_vec2, muon_proton_sp_l, muon_proton_sp_l_err, l_vec2_err, l_vec3, pion_proton_sp_l, pion_proton_sp_l_err, l_vec3_err, ("outputs_sepPow/" + sampleName + "_track_sep_pow_all.png").c_str(), "dE/dx Separation Power", "Track Length [cm]", "Separation Power");
-    }
+    }*/
 
     //write separation power to text file
     txtOutputFile << "Separation Power Values:\n\n";
@@ -1942,11 +1976,12 @@ void particle_dEdx(const std::string& inputFileNameMuon, const std::string& inpu
         hPion[i]->Write();
         hProton[i]->Write();
     }
+    /*
     for (int i = 0; i < nLBins; ++i){
         hMuonL[i]->Write();
         hPionL[i]->Write();
         hProtonL[i]->Write();
-    }
+    }*/
     //hMuon->Write();
     //hPion->Write();
     //hProton->Write();
