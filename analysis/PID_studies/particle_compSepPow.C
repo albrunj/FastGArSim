@@ -47,10 +47,14 @@ using namespace geometry;
 void draw_graphs(std::vector<std::pair<float, float>> points1, std::vector<std::pair<float, float>> points2,std::vector<std::pair<float, float>> points3, std::vector<std::pair<float, float>> points4, std::vector<std::pair<float, float>> points5, std::vector<std::pair<float, float>> points6,
     std::vector<std::pair<float, float>> err_points1, std::vector<std::pair<float, float>> err_points2,std::vector<std::pair<float, float>> err_points3, std::vector<std::pair<float, float>> err_points4, std::vector<std::pair<float, float>> err_points5, std::vector<std::pair<float, float>> err_points6,
     const std::string& name2, const std::string& name3, const std::string& name4, const std::string& name5, const std::string& name6,
-    const std::string& outName, const char* title, const char* Xtitle, const char* Ytitle, float x_lim){
+    const std::string& outName, const char* title, const char* Xtitle, const char* Ytitle, float x_lim, bool sepPow = true){
 
-    TCanvas* canvas = new TCanvas("canvas", title, 900, 700);
+    TCanvas* canvas = new TCanvas("canvas", title, 1100, 700);
     canvas->SetLogx();
+    canvas->SetLeftMargin(0.13);
+    canvas->SetRightMargin(0.25);
+    canvas->SetTopMargin(0.10);
+    canvas->SetBottomMargin(0.12);
 
     struct point{
         double x, y, sigma_x, sigma_y;
@@ -258,98 +262,61 @@ void draw_graphs(std::vector<std::pair<float, float>> points1, std::vector<std::
     frame->GetXaxis()->SetTitle(Xtitle);
     frame->GetYaxis()->SetTitle(Ytitle);
 
+    float y_0 = 3.0;
+    TBox* shade = new TBox(0.8*x_min, 0, 1.2*x_max, y_0);
+    shade->SetFillColorAlpha(kRed-10, 0.8);
+    shade->SetLineColor(0);
+    if (sepPow) shade->Draw("SAME");
+
     TGraphErrors* gr1 = new TGraphErrors(clean_x1.size(), clean_x1.data(), clean_y1.data(), err_x1.data(), err_y1.data());
-    //gr1->GetXaxis()->SetLimits(1,x_max*1.2);
-    //gr1->SetMinimum(0);
-    //gr1->SetMaximum(12);
     gr1->SetMarkerStyle(20);
     gr1->SetMarkerColor(kRed);
     gr1->SetLineColor(kRed);
-    //gr1->SetTitle(title);
-    //gr1->GetXaxis()->SetTitle(Xtitle);
-    //gr1->GetYaxis()->SetTitle(Ytitle);
-    gr1->Draw("PL SAME");
+    if (clean_x1.size() > 0) gr1->Draw("PL SAME");
 
     TGraphErrors* gr2 = new TGraphErrors(clean_x2.size(), clean_x2.data(), clean_y2.data(), err_x2.data(), err_y2.data());
     gr2->SetMarkerStyle(20);
     gr2->SetMarkerColor(kBlue);
     gr2->SetLineColor(kBlue);
-    gr2->Draw("PL SAME");
+    if (clean_x2.size() > 0) gr2->Draw("PL SAME");
 
     TGraphErrors* gr3 = new TGraphErrors(clean_x3.size(), clean_x3.data(), clean_y3.data(), err_x3.data(), err_y3.data());
     gr3->SetMarkerStyle(20);
     gr3->SetMarkerColor(kGreen);
     gr3->SetLineColor(kGreen);
-    gr3->Draw("PL SAME");
+    if (clean_x3.size() > 0) gr3->Draw("PL SAME");
 
     TGraphErrors* gr4 = new TGraphErrors(clean_x4.size(), clean_x4.data(), clean_y4.data(), err_x4.data(), err_y4.data());
     gr4->SetMarkerStyle(20);
     gr4->SetMarkerColor(kOrange);
     gr4->SetLineColor(kOrange);
-    gr4->Draw("PL SAME");
+    if (clean_x4.size() > 0) gr4->Draw("PL SAME");
 
     TGraphErrors* gr5 = new TGraphErrors(clean_x5.size(), clean_x5.data(), clean_y5.data(), err_x5.data(), err_y5.data());
     gr5->SetMarkerStyle(20);
     gr5->SetMarkerColor(kMagenta);
     gr5->SetLineColor(kMagenta);
-    gr5->Draw("PL SAME");
+    if (clean_x5.size() > 0) gr5->Draw("PL SAME");
 
     TGraphErrors* gr6 = new TGraphErrors(clean_x6.size(), clean_x6.data(), clean_y6.data(), err_x6.data(), err_y6.data());
     gr6->SetMarkerStyle(20);
     gr6->SetMarkerColor(kCyan-5);
     gr6->SetLineColor(kCyan-5);
-    gr6->Draw("PL SAME");
+    if (clean_x6.size() > 0) gr6->Draw("PL SAME");
 
-    /*
-    //add smoothing
-    TGraphSmooth* gs1 = new TGraphSmooth();
-    TGraph* gr_smooth1 = gs1->SmoothLowess(gr1, "", 0.3);
-    gr_smooth1->SetLineColor(kRed);
-    gr_smooth1->SetLineWidth(2);
-    gr_smooth1->Draw("L SAME");
-    */
-
-    
-
-    /*
-    TGraphSmooth* gs2 = new TGraphSmooth();
-    TGraph* gr_smooth2 = gs2->SmoothLowess(gr2, "", 0.3);
-    gr_smooth2->SetLineColor(kBlue);
-    gr_smooth2->SetLineWidth(2);
-    gr_smooth2->Draw("L SAME");
-    */
-
-    
-
-    /*
-    TGraphSmooth* gs3 = new TGraphSmooth();
-    TGraph* gr_smooth3 = gs3->SmoothLowess(gr3, "", 0.3);
-    gr_smooth3->SetLineColor(kGreen);
-    gr_smooth3->SetLineWidth(2);
-    gr_smooth3->Draw("L SAME");
-    */
-
-    
-    /*
-    TGraphSmooth* gs4 = new TGraphSmooth();
-    TGraph* gr_smooth4 = gs4->SmoothLowess(gr4, "", 0.1);
-    gr_smooth4->SetLineColor(kOrange);
-    gr_smooth4->SetLineWidth(2);
-    gr_smooth4->Draw("L SAME");
-    */
-
-    
-
-    
+    gPad->RedrawAxis(); //make sure the axis is drawn on top of the graphs
 
     // Create legend
-    TLegend* legend = new TLegend(0.15, 0.75, 0.3, 0.9);
-    legend->AddEntry(gr1, "CDR", "p");
-    legend->AddEntry(gr2, name2.c_str(), "p");
-    legend->AddEntry(gr3, name3.c_str(), "p");
-    legend->AddEntry(gr4, name4.c_str(), "p");
-    legend->AddEntry(gr5, name5.c_str(), "p");
-    legend->AddEntry(gr6, name6.c_str(), "p");
+    TLegend *legend = new TLegend(0.77, 0.55, 0.98, 0.85);
+    if (clean_x1.size() > 0) legend->AddEntry(gr1, "Pilot Design", "p");
+    if (clean_x2.size() > 0) legend->AddEntry(gr2, name2.c_str(), "p");
+    if (clean_x3.size() > 0) legend->AddEntry(gr3, name3.c_str(), "p");
+    if (clean_x4.size() > 0) legend->AddEntry(gr4, name4.c_str(), "p");
+    if (clean_x5.size() > 0) legend->AddEntry(gr5, name5.c_str(), "p");
+    if (clean_x6.size() > 0) legend->AddEntry(gr6, name6.c_str(), "p");
+    if (sepPow) legend->AddEntry(shade, "<3#sigma");
+    legend->SetBorderSize(0);
+    legend->SetFillStyle(0);
     legend->Draw();    
 
     canvas->SaveAs((outName).c_str());
@@ -6068,17 +6035,17 @@ void particle_compSepPow(const char* outName, const char* sample2, const char* s
     draw_percentages_line(piP_perc2, piP_perc3, piP_perc4, piP_perc5, piP_perc6, piP_perc_err2, piP_perc_err3, piP_perc_err4, piP_perc_err5, piP_perc_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionProtonSepPowDiffPercLineLog.png" ).c_str(), "Difference in Pion Proton Separation", "Momentum [MeV/c]", "(S-S_{Pilot})/S_{Pilot} *100", 5e4, true);
 */
 
-    draw_graphs(mu_mean_vec1, mu_mean_vec2, mu_mean_vec3, mu_mean_vec4, mu_mean_vec5, mu_mean_vec6, mu_mean_vec_err1, mu_mean_vec_err2, mu_mean_vec_err3, mu_mean_vec_err4, mu_mean_vec_err5, mu_mean_vec_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonMeanComp.png" ).c_str(), "Muon Mean dE/dx", "Momentum [MeV/c]", "Mean dE/dx [keV/cm]", 5e4);
-    draw_graphs(pi_mean_vec1, pi_mean_vec2, pi_mean_vec3, pi_mean_vec4, pi_mean_vec5, pi_mean_vec6, pi_mean_vec_err1, pi_mean_vec_err2, pi_mean_vec_err3, pi_mean_vec_err4, pi_mean_vec_err5, pi_mean_vec_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionMeanComp.png" ).c_str(), "Pion Mean dE/dx", "Momentum [MeV/c]", "Mean dE/dx [keV/cm]", 5e4);
-    draw_graphs(p_mean_vec1, p_mean_vec2, p_mean_vec3, p_mean_vec4, p_mean_vec5, p_mean_vec6, p_mean_vec_err1, p_mean_vec_err2, p_mean_vec_err3, p_mean_vec_err4, p_mean_vec_err5, p_mean_vec_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_ProtonMeanComp.png" ).c_str(), "Proton Mean dE/dx", "Momentum [MeV/c]", "Mean dE/dx [keV/cm]", 5e4);
+    draw_graphs(mu_mean_vec1, mu_mean_vec2, mu_mean_vec3, mu_mean_vec4, mu_mean_vec5, mu_mean_vec6, mu_mean_vec_err1, mu_mean_vec_err2, mu_mean_vec_err3, mu_mean_vec_err4, mu_mean_vec_err5, mu_mean_vec_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonMeanComp.png" ).c_str(), "Muon Mean dE/dx", "Momentum [MeV/c]", "Mean dE/dx [keV/cm]", 5e4, false);
+    draw_graphs(pi_mean_vec1, pi_mean_vec2, pi_mean_vec3, pi_mean_vec4, pi_mean_vec5, pi_mean_vec6, pi_mean_vec_err1, pi_mean_vec_err2, pi_mean_vec_err3, pi_mean_vec_err4, pi_mean_vec_err5, pi_mean_vec_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionMeanComp.png" ).c_str(), "Pion Mean dE/dx", "Momentum [MeV/c]", "Mean dE/dx [keV/cm]", 5e4, false);
+    draw_graphs(p_mean_vec1, p_mean_vec2, p_mean_vec3, p_mean_vec4, p_mean_vec5, p_mean_vec6, p_mean_vec_err1, p_mean_vec_err2, p_mean_vec_err3, p_mean_vec_err4, p_mean_vec_err5, p_mean_vec_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_ProtonMeanComp.png" ).c_str(), "Proton Mean dE/dx", "Momentum [MeV/c]", "Mean dE/dx [keV/cm]", 5e4, false);
     
-    draw_graphs(mu_sigma_vec1, mu_sigma_vec2, mu_sigma_vec3, mu_sigma_vec4, mu_sigma_vec5, mu_sigma_vec6, mu_sigma_vec_err1, mu_sigma_vec_err2, mu_sigma_vec_err3, mu_sigma_vec_err4, mu_sigma_vec_err5, mu_sigma_vec_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonSigmaComp.png" ).c_str(), "Muon dE/dx Sigma", "Momentum [MeV/c]", "#sigma_{dE/dx} [keV/cm]", 5e4);
-    draw_graphs(pi_sigma_vec1, pi_sigma_vec2, pi_sigma_vec3, pi_sigma_vec4, pi_sigma_vec5, pi_sigma_vec6, pi_sigma_vec_err1, pi_sigma_vec_err2, pi_sigma_vec_err3, pi_sigma_vec_err4, pi_sigma_vec_err5, pi_sigma_vec_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionSigmaComp.png" ).c_str(), "Pion dE/dx Sigma", "Momentum [MeV/c]", "#sigma_{dE/dx} [keV/cm]", 5e4);
-    draw_graphs(p_sigma_vec1, p_sigma_vec2, p_sigma_vec3, p_sigma_vec4, p_sigma_vec5, p_sigma_vec6, p_sigma_vec_err1, p_sigma_vec_err2, p_sigma_vec_err3, p_sigma_vec_err4, p_sigma_vec_err5, p_sigma_vec_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_ProtonSigmaComp.png" ).c_str(), "Proton dE/dx Sigma", "Momentum [MeV/c]", "#sigma_{dE/dx} [keV/cm]", 5e4);
+    draw_graphs(mu_sigma_vec1, mu_sigma_vec2, mu_sigma_vec3, mu_sigma_vec4, mu_sigma_vec5, mu_sigma_vec6, mu_sigma_vec_err1, mu_sigma_vec_err2, mu_sigma_vec_err3, mu_sigma_vec_err4, mu_sigma_vec_err5, mu_sigma_vec_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonSigmaComp.png" ).c_str(), "Muon dE/dx Sigma", "Momentum [MeV/c]", "#sigma_{dE/dx} [keV/cm]", 5e4, false);
+    draw_graphs(pi_sigma_vec1, pi_sigma_vec2, pi_sigma_vec3, pi_sigma_vec4, pi_sigma_vec5, pi_sigma_vec6, pi_sigma_vec_err1, pi_sigma_vec_err2, pi_sigma_vec_err3, pi_sigma_vec_err4, pi_sigma_vec_err5, pi_sigma_vec_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionSigmaComp.png" ).c_str(), "Pion dE/dx Sigma", "Momentum [MeV/c]", "#sigma_{dE/dx} [keV/cm]", 5e4, false);
+    draw_graphs(p_sigma_vec1, p_sigma_vec2, p_sigma_vec3, p_sigma_vec4, p_sigma_vec5, p_sigma_vec6, p_sigma_vec_err1, p_sigma_vec_err2, p_sigma_vec_err3, p_sigma_vec_err4, p_sigma_vec_err5, p_sigma_vec_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_ProtonSigmaComp.png" ).c_str(), "Proton dE/dx Sigma", "Momentum [MeV/c]", "#sigma_{dE/dx} [keV/cm]", 5e4, false);
     
-    draw_graphs(mu_res_vec1, mu_res_vec2, mu_res_vec3, mu_res_vec4, mu_res_vec5, mu_res_vec6, mu_res_vec_err1, mu_res_vec_err2, mu_res_vec_err3, mu_res_vec_err4, mu_res_vec_err5, mu_res_vec_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonResComp.png" ).c_str(), "Muon Resolution", "Momentum [MeV/c]", "Resolution", 5e4);
-    draw_graphs(pi_res_vec1, pi_res_vec2, pi_res_vec3, pi_res_vec4, pi_res_vec5, pi_res_vec6, pi_res_vec_err1, pi_res_vec_err2, pi_res_vec_err3, pi_res_vec_err4, pi_res_vec_err5, pi_res_vec_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionResComp.png" ).c_str(), "Pion Resolution", "Momentum [MeV/c]", "Resolution", 5e4);
-    draw_graphs(p_res_vec1, p_res_vec2, p_res_vec3, p_res_vec4, p_res_vec5, p_res_vec6, p_res_vec_err1, p_res_vec_err2, p_res_vec_err3, p_res_vec_err4, p_res_vec_err5, p_res_vec_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_ProtonResComp.png" ).c_str(), "Proton Resolution", "Momentum [MeV/c]", "Resolution", 5e4);
+    draw_graphs(mu_res_vec1, mu_res_vec2, mu_res_vec3, mu_res_vec4, mu_res_vec5, mu_res_vec6, mu_res_vec_err1, mu_res_vec_err2, mu_res_vec_err3, mu_res_vec_err4, mu_res_vec_err5, mu_res_vec_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonResComp.png" ).c_str(), "Muon Resolution", "Momentum [MeV/c]", "Resolution", 5e4, false);
+    draw_graphs(pi_res_vec1, pi_res_vec2, pi_res_vec3, pi_res_vec4, pi_res_vec5, pi_res_vec6, pi_res_vec_err1, pi_res_vec_err2, pi_res_vec_err3, pi_res_vec_err4, pi_res_vec_err5, pi_res_vec_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionResComp.png" ).c_str(), "Pion Resolution", "Momentum [MeV/c]", "Resolution", 5e4, false);
+    draw_graphs(p_res_vec1, p_res_vec2, p_res_vec3, p_res_vec4, p_res_vec5, p_res_vec6, p_res_vec_err1, p_res_vec_err2, p_res_vec_err3, p_res_vec_err4, p_res_vec_err5, p_res_vec_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_ProtonResComp.png" ).c_str(), "Proton Resolution", "Momentum [MeV/c]", "Resolution", 5e4, false);
     
     draw_differences(mu_mean_diff2, mu_mean_diff3, mu_mean_diff4, mu_mean_diff5, mu_mean_diff6, mu_mean_diff_err2, mu_mean_diff_err3, mu_mean_diff_err4, mu_mean_diff_err5, mu_mean_diff_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_MuonMeanDiff.png" ).c_str(), "Difference in Muon Mean dE/dx", "Momentum [MeV/c]", "#mu-#mu_{Pilot} [keV/cm]", 5e4);
     draw_differences(pi_mean_diff2, pi_mean_diff3, pi_mean_diff4, pi_mean_diff5, pi_mean_diff6, pi_mean_diff_err2, pi_mean_diff_err3, pi_mean_diff_err4, pi_mean_diff_err5, pi_mean_diff_err6, sample2, sample3, sample4, sample5, sample6, ("outputs_sepPow/" + std::string(outName) + "_PionMeanDiff.png" ).c_str(), "Difference in Pion Mean dE/dx", "Momentum [MeV/c]", "#mu-#mu_{Pilot} [keV/cm]", 5e4);

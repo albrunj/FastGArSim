@@ -249,17 +249,7 @@ void draw_sepPow(std::vector<Float_t>& mom_vec, std::vector<Float_t>& sep_pow_ve
     frame->GetXaxis()->SetTitle(Xtitle);
     frame->GetYaxis()->SetTitle(Ytitle);
     
-    //TGraph* gr = new TGraph(clean_x.size(), clean_x.data(), clean_y.data());
-    //gr->SetMarkerStyle(20);
-    //gr->SetMarkerColor(kBlue);
-    //gr->SetLineColor(kBlue);
-    //gr->SetMarkerSize(0.6);
-    //gr->GetXaxis()->SetLimits(1e0,x_max);
-    //gr->GetYaxis()->SetLimits(0,y_max);
-    //gr->SetTitle(title);
-    //gr->GetXaxis()->SetTitle(Xtitle);
-    //gr->GetYaxis()->SetTitle(Ytitle);
-    //gr->Draw("PL SAME");
+
 
     TGraphErrors* gr_err = new TGraphErrors(clean_x.size(), clean_x.data(), clean_y.data(), clean_x_err.data(), clean_y_err.data());
     gr_err->SetMarkerStyle(20);
@@ -278,43 +268,9 @@ void draw_sepPow(std::vector<Float_t>& mom_vec, std::vector<Float_t>& sep_pow_ve
 
     gPad->RedrawAxis();
 
-    /*
-    TLatex latex;
-    latex.SetNDC();
-    latex.DrawLatex(0.15, 0.85, title);
-    */
-
-    
-    //add smoothing
-    //TGraphSmooth gs;
-    //TGraph* gr_smooth = gs.SmoothLowess(gr, "", 0.1);
-    //gr_smooth->SetLineColor(kBlue);
-    //gr_smooth->SetLineWidth(2);
-    //gr_smooth->SetTitle("Smoothed");
-    //gr_smooth->Draw("L SAME");
-    
-    
-    
-
-    //add legend
-    //TLegend* legend = new TLegend(0.65, 0.7, 0.9, 0.88);
-    //legend->AddEntry(gr, "Separation Power", "p");
-    //legend->AddEntry(gs, "Smoothed", "l");
-    //legend->Draw();
-
-    /*
-    auto leg = canvas->BuildLegend();
-
-    auto entry = (TLegendEntry*) leg->GetListOfPrimitives()->At(0);
-    entry->SetLabel("Data");
-
-    entry = (TLegendEntry*) leg->GetListOfPrimitives()->At(1);
-    entry->SetLabel("Smoothed");
-    */
 
     canvas->SaveAs((outName).c_str());
 
-    //delete gr_err;
     delete canvas;
 
 }
