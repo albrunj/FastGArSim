@@ -8,7 +8,7 @@ This simulation models a detector with the following components:
 - Cylindrical high-pressure gaseous argon Time Projection Chamber (TPC)
 - Electromagnetic calorimeter (ECal) with separate barrel and endcap regions
   - Barrel and endcap ECal with configurable high-gain (HG) and low-gain (LG) layers
-  - Alternating layers of lead absorber and plastic scintillator
+  - Alternating layers of absorber and scintillator
 - Muon identification system (MuID) barrel with layers of absorber and scintillator
 - Configurable magnetic field
 
@@ -25,26 +25,16 @@ This simulation models a detector with the following components:
 - Multi-threaded event processing support
 - Grid job submission tools for large-scale production
 
-## Requirements
+## Building
 
-- Geant4 (10.7 or later recommended)
-- CMake (3.16 or later)
-- C++ compiler with C++17 support
-- ROOT
-
-## Building the Project
+Built as part of the top-level FastGArSim build, or on its own:
 
 ```bash
-# Create a build directory
-mkdir build
-cd build
-
-# Configure with CMake
-cmake ..
-
-# Build the application
-make -j4
+mkdir build && cd build
+cmake .. && make -j4
 ```
+
+Requirements, build options and environment setup (including the FNAL machines) are in the [top-level README](../README.md#building).
 
 ## Running the Simulation
 
@@ -67,6 +57,12 @@ Run the simulation with visualization:
 ```bash
 ./GArSimulation -v
 ```
+
+`-v` is what constructs the Geant4 visualization manager, and it also executes [macros/vis.mac](macros/vis.mac) for you. The `/vis/` commands do not exist without it, so `-m macros/vis.mac` on its own fails with `COMMAND NOT FOUND </vis/open ...>`.
+
+### Where the macros are looked up
+
+The run macros refer to each other by paths relative to the application directory (`/control/execute macros/init.mac`). `GArSimulation` therefore sets Geant4's macro search path at start-up to the working directory, then `FASTGARSIM_MACRO_PATH` (exported by the generated `setup.sh`), then the directory holding the executable and its `macros/` subdirectory. The program can consequently be started from anywhere, including from a relocated or tarballed build as used by the grid jobs. Because the working directory is searched first, a local `macros/` still takes precedence.
 
 ## Configuring the Simulation
 
@@ -128,6 +124,7 @@ Configure the detector geometry parameters:
 /detector/TPCRadius 260 cm
 /detector/TPCLength 500 cm
 /detector/GasPressure 10.0 bar
+/detector/TPCMaxStep 1.0 mm
 /detector/BField 0.5 tesla
 
 # ECal absorber and scintillator materials
@@ -164,8 +161,18 @@ Select physics models and production cuts:
 
 ```
 /run/OutputFileName output_name
-/analysis/EnergyCut 0.001 MeV  # Energy threshold for recording hits
+/analysis/TPCEnergyCut 0.0 MeV     # Energy threshold for recording TPC gas hits
+/analysis/CaloEnergyCut 0.001 MeV  # Energy threshold for recording ECal and MuID hits
 ```
+
+The two thresholds are deliberately different.
+
+### Stepping in the TPC Gas
+
+`/detector/TPCMaxStep` sets the maximum step length in the gas volume, and therefore the granularity of the energy deposits handed to the drift simulation. The gas is thin enough that Geant4's own step limits are of order metres for a GeV-scale track, so without an explicit limit a particle crosses the whole TPC in a handful of steps. The total energy
+loss is still correct, but the deposits are far too sparse to seed drift.
+
+A limit of 1--2 mm is a sensible default: pads are a few mm across and transverse diffusion over the full drift is itself of that order, so finer stepping costs CPU and output size without buying resolution.
 
 ### Multi-threading
 
@@ -210,34 +217,12 @@ The simulation writes a ROOT file containing two TTrees:
 
 The data types are defined in [common/include/SimDataTypes.hh](../common/include/SimDataTypes.hh) and shared between the simulation and the reconstruction.
 
-### Ntuple Maker
+### Flat ntuples
 
-The object-based `Events` TTree is not directly suited for event-loop analyses. The macro [utils/EventToNtupleConverter.C](utils/EventToNtupleConverter.C) converts it into a flat ntuple that is easier to work with.
+The `Events` tree holds objects, which the analysis framework reads directly — see the [analysis README](../analysis/README.md). For reading the output outside that framework, from uproot or a bare ROOT session, [common/utils/MakeNtuple.C](../common/utils/MakeNtuple.C) converts any FastGArSim file into flat `std::vector` branches:
 
-**Usage (from ROOT):**
-
-```cpp
-// Load the simulation dictionary first
-gSystem->Load("libROOTDataDict");
-.x utils/EventToNtupleConverter.C("input.root", "output_ntuple.root")
+```bash
+MakeNtuple simulation.root ntuple.root
 ```
 
-The converter produces a file with two TTrees:
-
-- **`AnaTree`** — one entry per event, with all data stored as flat `std::vector` branches (indexed by particle or hit):
-  - Particle identity: `eventID`, `trackID`, `pdgCode`, `motherID`, `creatorProcess`, `endProcess`
-  - Trajectory endpoints: `startX/Y/Z`, `endX/Y/Z` [cm] and `startPX/Y/Z`, `endPX/Y/Z` [MeV/c]
-  - TPC hits: `tpcHitTrackID`, `tpcHitIsSec`, `tpcHitX/Y/Z`, `tpcHitEdep`, `tpcHitStepSize`
-  - ECal hits: `ecalHitTrackID`, `ecalHitIsSec`, `ecalHitX/Y/Z`, `ecalHitTime`, `ecalHitEdep`, `ecalHitSegment`, `ecalHitLayer`, `ecalHitDetID`
-  - MuID hits: `muidHitTrackID`, `muidHitIsSec`, `muidHitX/Y/Z`, `muidHitTime`, `muidHitEdep`, `muidHitSegment`, `muidHitLayer`, `muidHitDetID`
-
-  The `*IsSec` flag distinguishes direct hits from hits accumulated from unrecorded secondaries. All hit vectors include both primary and secondary contributions tagged accordingly.
-
-- **`GeoTree`** — a copy of the `Geometry` tree from the simulation file, renamed for consistency.
-
-This flat ntuple is the expected input format for the analysis macros in [analysis/](../analysis/).
-
-## Authors
-
-- Francisco Martinez Lopez — [frmart@iu.edu](mailto:frmart@iu.edu)
-- Jude Martin — [j.martin24@imperial.ac.uk](mailto:j.martin24@imperial.ac.uk)
+Nothing in it is specific to the simulation: the columns are worked out from the ROOT dictionaries of whatever the file contains, so the same tool flattens reconstruction output with any set of modules. It writes one flat tree per input tree, keeping the names, and a `Schema` tree recording which column came from which branch. See the [main README](../README.md) for the naming rule and the options.
