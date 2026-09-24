@@ -29,7 +29,7 @@
 /detector/ECalEndcapLGLayers 36
 
 /detector/MuIDLayers 3
-/detector/GasPressure 10.0 bar
+/detector/GasPressure 8.0 bar
 /detector/TPCMaxStep 1.0 mm
 
 # Initialize random number generator

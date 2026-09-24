@@ -1,0 +1,2001 @@
+/******************************************************************************************
+ * new_particle_dEdx.C
+ * 
+ * Author: Albrun Johnson
+ * Email: albrjohn@iu.edu
+ * 
+ * Created: September 23, 2026
+ * 
+ * Description:
+ *  Extract dE/dx from hits in TPC of particle gun for new branch names
+ * 
+ * Inputs: const std::string& inputFileNameMuon (must have form inputFileName_0.root),
+ *         const std::string& inputFileNamePion (must have form inputFileName_0.root),
+ *         const std::string& inputFileNameProton (must have form inputFileName_0.root),
+ *         const std::string& sampleName (for output graphs),
+ *         int fileNumber (number of input files for each particle type),
+ *         float radius = 260 (radius of TPC in cm),
+ *         float length = 500 (length of TPC in cm),
+ *         const char* inputTreeName = "Events", const char* outputTreeName = "dE_dxTree"
+ * 
+ * Outputs: Output file saved as .root file and .png files in outputs_sepPow/ and gaussiandEdx directories
+ * 
+ ********************************************************************************************/
+
+#include <iostream>
+#include <vector>
+#include <numeric>
+#include <sstream>
+#include <iomanip>
+#include <algorithm>
+#include <cmath>
+#include <string>
+#include <fstream>
+#include <map>
+
+#include "TFile.h"
+#include "TTree.h"
+#include "TChain.h"
+#include "TH1F.h"
+#include "TCanvas.h"
+#include "TLegend.h"
+#include "TAxis.h"
+#include "TMath.h"
+#include "TString.h"
+#include "TGraphSmooth.h"
+#include "TLatex.h"
+
+#include "geometry.h"
+using namespace geometry;
+
+
+
+//create graphs for p vs dE/dx
+void draw_graphs(std::map<int, std::vector<double>>& pdg_to_p, std::map<int, std::vector<double>>& pdg_to_dEdx, std::map<int, std::vector<double>>& pdg_to_p_err, std::map<int, std::vector<double>>& pdg_to_dEdx_err, const std::string& outName, const char* title, const char* Xtitle, const char* Ytitle, float x_max, float y_max){
+
+    static int canvasCounter = 0;
+
+    TCanvas* canvas = new TCanvas(Form("c_sep_%d", canvasCounter++),title,900,700);
+
+    canvas->SetLogx(); //set logarithmic for x-axis
+
+    // create legend for p vs. dE/dx graph
+    TLegend* legend = new TLegend(0.15, 0.7, 0.38, 0.88);
+    std::map<int, int> color_map = {
+    	{13, kBlue},
+    	{211, kRed},
+    	{2212, kGreen}
+    };
+
+    //get max dE/dx value
+    double max_y = 0.0;
+
+    for (const auto& [pdg, values] : pdg_to_dEdx) {
+        const auto& errs = pdg_to_dEdx_err[pdg];
+        for (size_t i = 0; i < values.size(); ++i) {
+            double upper = values[i] + (i < errs.size() ? errs[i] : 0.0);
+            max_y = std::max(max_y, upper);
+        }
+    }
+
+    TH1F* frame = canvas->DrawFrame(
+        1,
+        0,
+        x_max,
+        1.2* max_y
+    );
+
+    TLatex dune;
+    dune.SetNDC();
+    dune.SetTextFont(62);     // Bold Helvetica
+    dune.SetTextSize(0.045);
+    dune.DrawLatex(0.12, 0.93, "DUNE");
+
+    TLatex prelim;
+    prelim.SetNDC();
+    prelim.SetTextFont(42);   // Regular Helvetica
+    prelim.SetTextSize(0.040);
+    prelim.DrawLatex(0.215, 0.93, "Simulation Preliminary");
+
+    //frame->SetTitle(title);
+    frame->GetXaxis()->SetTitle(Xtitle);
+    frame->GetYaxis()->SetTitle(Ytitle);
+
+    for (const auto& entry : pdg_to_p) {
+    	int pdg = entry.first;
+    	const auto& p_vec = entry.second;
+    	const auto& dEdx_vec = pdg_to_dEdx[pdg];
+        const auto& p_err_vec = pdg_to_p_err[pdg];
+        const auto& dEdx_err_vec = pdg_to_dEdx_err[pdg];
+
+    	if (p_vec.empty()) continue;
+
+    	//TGraph* gr = new TGraph(p_vec.size(), p_vec.data(), dEdx_vec.data());
+    	//gr->SetMarkerStyle(20);
+    	//gr->SetMarkerColor(color_map[pdg]);
+        //gr->SetLineColor(color_map[pdg]);
+    	//gr->SetMarkerSize(0.6);
+    	//gr->GetXaxis()->SetLimits(1e0,x_max);
+    	//gr->GetYaxis()->SetLimits(0,y_max);
+
+        // draw graphs
+    	//gr->Draw("P SAME");
+
+        TGraphErrors* gr_err = new TGraphErrors(p_vec.size(), p_vec.data(), dEdx_vec.data(), p_err_vec.data(), dEdx_err_vec.data());
+        gr_err->SetMarkerStyle(20);
+        gr_err->SetMarkerColor(color_map[pdg]);
+        gr_err->SetLineColor(color_map[pdg]);
+        gr_err->Draw("P SAME");
+    	
+
+    	TString label;
+    	switch (pdg) {
+    	 	case 13: label = "Muon"; break;
+    	 	case 211: label = "Pion"; break;
+    	 	case 2212: label = "Proton"; break;
+    	 	default: label = Form("PDG %d", pdg); break;
+    	}
+    	legend->AddEntry(gr_err, label, "p");
+    }
+
+    legend->Draw();
+
+    // save canvas to file
+    canvas->SaveAs((outName).c_str());
+
+    //clean up graph
+    delete canvas;
+
+}
+
+
+void draw_sepPow(std::vector<Float_t>& mom_vec, std::vector<Float_t>& sep_pow_vec, std::vector<Float_t>& sep_pow_err_vec, std::vector<Float_t>& mom_err_vec, const std::string& outName, const char* title, const char* Xtitle, const char* Ytitle, float x_max, float y_max, bool zoomed){
+
+    static int canvasCounter = 0;
+
+    TCanvas* canvas = new TCanvas(Form("c_sep_%d", canvasCounter++),title,900,700);
+    canvas->SetLogx(); //set logarithmic for x-axis
+
+    // create legend for separation power graph
+    //TLegend* legend = new TLegend(0.15, 0.7, 0.38, 0.88);
+
+    // graph separation power vs momentum
+    struct point{
+        double x, y, sigma_x, sigma_y;
+    };
+    std::vector<point> points;
+
+    for (size_t i = 0; i < mom_vec.size(); i++) {
+        points.push_back({mom_vec[i], sep_pow_vec[i], mom_err_vec[i], sep_pow_err_vec[i]});
+    }
+
+    std::sort(points.begin(), points.end(), [](const auto& a, const auto& b) {
+        return a.x < b.x;
+    });
+
+    for (size_t i = 0; i < points.size(); i++) {
+        mom_vec[i] = points[i].x;
+        sep_pow_vec[i] = points[i].y;
+        mom_err_vec[i] = points[i].sigma_x;
+        sep_pow_err_vec[i] = points[i].sigma_y;
+    }
+
+    std::vector<Float_t> clean_x, clean_y, clean_x_err, clean_y_err;
+
+    for (size_t i = 0; i < points.size(); i++){
+        clean_x.push_back(points[i].x);
+        clean_y.push_back(points[i].y);
+        clean_x_err.push_back(points[i].sigma_x);
+        clean_y_err.push_back(points[i].sigma_y);
+    }
+
+    if (clean_x.empty() || clean_y.empty()) {
+        std::cerr << "ERROR in draw_sepPow: no valid points to draw\n";
+        delete canvas;
+        return;
+    }
+
+    std::vector<float> err_max, err_min;
+    for (size_t i = 0; i < points.size(); i++){
+        //float frac_err = clean_y_err[i] / clean_y[i];
+        //if (frac_err >= 0.5) continue;
+        err_max.push_back(clean_y[i] + clean_y_err[i]);
+    }
+
+    float max_y = 0;
+    if(!err_max.empty()){
+        max_y = std::max({
+            *std::max_element(clean_y.begin(), clean_y.end()),
+            *std::max_element(err_max.begin(), err_max.end())
+        });
+    }
+    else{
+        max_y = std::max({
+            *std::max_element(clean_y.begin(), clean_y.end())
+        });
+    }
+ 
+
+    float max_x = std::max({
+        *std::max_element(clean_x.begin(), clean_x.end())
+    });
+
+    float min_x = std::min({
+        *std::min_element(clean_x.begin(),clean_x.end())
+    });
+
+    if (zoomed) max_x = x_max;
+
+    TH1F* frame = canvas->DrawFrame(
+        1,
+        0,
+        1.2*x_max,
+        1.2*max_y
+    );
+
+    TLatex dune;
+    dune.SetNDC();
+    dune.SetTextFont(62);     // Bold Helvetica
+    dune.SetTextSize(0.045);
+    dune.DrawLatex(0.12, 0.93, "DUNE");
+
+    TLatex prelim;
+    prelim.SetNDC();
+    prelim.SetTextFont(42);   // Regular Helvetica
+    prelim.SetTextSize(0.040);
+    prelim.DrawLatex(0.215, 0.93, "Simulation Preliminary");
+
+    //frame->SetTitle(title);
+    frame->GetXaxis()->SetTitle(Xtitle);
+    frame->GetYaxis()->SetTitle(Ytitle);
+    
+
+
+    TGraphErrors* gr_err = new TGraphErrors(clean_x.size(), clean_x.data(), clean_y.data(), clean_x_err.data(), clean_y_err.data());
+    gr_err->SetMarkerStyle(20);
+    gr_err->SetMarkerColor(kBlue);
+    gr_err->SetLineColor(kBlue);
+    
+
+    double y_0 = 3.0; // horizontal divide at separation power of 3
+
+    TBox* shade = new TBox(1, 0, 1.2*x_max, y_0);
+    shade->SetFillColorAlpha(kRed-10, 0.8);
+    shade->SetLineColor(0);
+    shade->Draw("SAME");
+    
+    gr_err->Draw("PL SAME");
+
+    gPad->RedrawAxis();
+
+
+    canvas->SaveAs((outName).c_str());
+
+    delete canvas;
+
+}
+
+void draw_all_sepPow(std::vector<Float_t>& mupi_mom_vec, std::vector<Float_t>& mupi_sep_pow_vec, std::vector<Float_t>& mupi_sep_pow_err_vec, std::vector<Float_t>& mupi_mom_err_vec,
+    std::vector<Float_t>& mup_mom_vec, std::vector<Float_t>& mup_sep_pow_vec, std::vector<Float_t>& mup_sep_pow_err_vec, std::vector<Float_t>& mup_mom_err_vec,
+    std::vector<Float_t>& pip_mom_vec, std::vector<Float_t>& pip_sep_pow_vec, std::vector<Float_t>& pip_sep_pow_err_vec, std::vector<Float_t>& pip_mom_err_vec,
+    const std::string& outName, const char* title, const char* Xtitle, const char* Ytitle, bool mupi){
+
+    static int canvasCounter = 0;
+
+    TCanvas* canvas = new TCanvas(Form("c_sep_%d", canvasCounter++),title,900,700);
+    canvas->SetLogx(); //set logarithmic for x-axis
+
+
+    // graph separation power vs momentum
+    struct point{
+        double x, y, sigma_x, sigma_y;
+    };
+
+    std::vector<point> mupi_points, mup_points, pip_points;
+
+    for (size_t i = 0; i < mupi_mom_vec.size(); i++) {
+        mupi_points.push_back({mupi_mom_vec[i], mupi_sep_pow_vec[i], mupi_mom_err_vec[i], mupi_sep_pow_err_vec[i]});
+    }
+    for (size_t i = 0; i < mup_mom_vec.size(); i++) {
+        mup_points.push_back({mup_mom_vec[i], mup_sep_pow_vec[i], mup_mom_err_vec[i], mup_sep_pow_err_vec[i]});
+    }
+    for (size_t i = 0; i < pip_mom_vec.size(); i++) {
+        pip_points.push_back({pip_mom_vec[i], pip_sep_pow_vec[i], pip_mom_err_vec[i], pip_sep_pow_err_vec[i]});
+    }
+
+    std::sort(mupi_points.begin(), mupi_points.end(), [](const auto& a, const auto& b) {
+        return a.x < b.x;
+    });
+    std::sort(mup_points.begin(), mup_points.end(), [](const auto& a, const auto& b) {
+        return a.x < b.x;
+    });
+    std::sort(pip_points.begin(), pip_points.end(), [](const auto& a, const auto& b) {
+        return a.x < b.x;
+    });
+
+    std::vector<Float_t> mupi_x, mupi_y, mupi_x_err, mupi_y_err;
+    std::vector<Float_t> mup_x, mup_y, mup_x_err, mup_y_err;
+    std::vector<Float_t> pip_x, pip_y, pip_x_err, pip_y_err;
+
+    for (size_t i = 0; i < mupi_points.size(); i++){
+        mupi_x.push_back(mupi_points[i].x);
+        mupi_y.push_back(mupi_points[i].y);
+        mupi_x_err.push_back(mupi_points[i].sigma_x);
+        mupi_y_err.push_back(mupi_points[i].sigma_y);
+    }
+    for (size_t i = 0; i < mup_points.size(); i++){
+        mup_x.push_back(mup_points[i].x);
+        mup_y.push_back(mup_points[i].y);
+        mup_x_err.push_back(mup_points[i].sigma_x);
+        mup_y_err.push_back(mup_points[i].sigma_y);
+    }
+    for (size_t i = 0; i < pip_points.size(); i++){
+        pip_x.push_back(pip_points[i].x);
+        pip_y.push_back(pip_points[i].y);
+        pip_x_err.push_back(pip_points[i].sigma_x);
+        pip_y_err.push_back(pip_points[i].sigma_y);
+    }
+
+    if ((pip_x.empty() || pip_y.empty()) && (mup_x.empty() || mup_y.empty()) && (mupi_x.empty() || mupi_y.empty())) {
+        std::cerr << "ERROR in draw_sepPow_all: no valid points to draw\n";
+        delete canvas;
+        return;
+    }
+
+    std::vector<float> mupi_x_err_max, mupi_y_err_max;
+    for (size_t i = 0; i < mupi_points.size(); i++){
+        //float frac_err = mupi_y_err[i] / mupi_y[i];
+        //if (frac_err >= 0.5) continue;
+        mupi_x_err_max.push_back(mupi_x[i] + mupi_x_err[i]);
+        mupi_y_err_max.push_back(mupi_y[i] + mupi_y_err[i]);
+    }
+    std::vector<float> mup_x_err_max, mup_y_err_max;
+    for (size_t i = 0; i < mup_points.size(); i++){
+        //float frac_err = mup_y_err[i] / mup_y[i];
+        //if (frac_err >= 0.5) continue;
+        mup_x_err_max.push_back(mup_x[i] + mup_x_err[i]);
+        mup_y_err_max.push_back(mup_y[i] + mup_y_err[i]);
+    }
+    std::vector<float> pip_x_err_max, pip_y_err_max;
+    for (size_t i = 0; i < pip_points.size(); i++){
+        //float frac_err = pip_y_err[i] / pip_y[i];
+        //if (frac_err >= 0.5) continue;
+        pip_x_err_max.push_back(pip_x[i] + pip_x_err[i]);
+        pip_y_err_max.push_back(pip_y[i] + pip_y_err[i]);
+    }
+
+    float max_y = 0;
+    float max_x = 0;
+
+    if(!mupi_y.empty() && mupi){
+        max_y = std::max({
+            max_y,
+            *std::max_element(mupi_y.begin(), mupi_y.end())
+        });
+    }
+    if(!mup_y.empty()){
+        max_y = std::max({
+            max_y,
+            *std::max_element(mup_y.begin(), mup_y.end())
+        });
+    }
+    if(!pip_y.empty()){
+        max_y = std::max({
+            max_y,
+            *std::max_element(pip_y.begin(), pip_y.end())
+        });
+    }
+    if(!mupi_y_err.empty() && mupi){
+        max_y = std::max({
+            max_y,
+            *std::max_element(mupi_y_err_max.begin(), mupi_y_err_max.end())
+        });
+    }
+    if(!mup_y_err.empty()){
+        max_y = std::max({
+            max_y,
+            *std::max_element(mup_y_err_max.begin(), mup_y_err_max.end())
+        });
+    }
+    if(!pip_y_err.empty()){
+        max_y = std::max({
+            max_y,
+            *std::max_element(pip_y_err_max.begin(), pip_y_err_max.end())
+        });
+    }
+
+    if(!mupi_x.empty() && mupi){
+        max_x = std::max({
+            max_x,
+            *std::max_element(mupi_x.begin(), mupi_x.end())
+        });
+    }
+    if(!mup_x.empty()){
+        max_x = std::max({
+            max_x,
+            *std::max_element(mup_x.begin(), mup_x.end())
+        });
+    }
+    if(!pip_x.empty()){
+        max_x = std::max({
+            max_x,
+            *std::max_element(pip_x.begin(), pip_x.end())
+        });
+    }
+    if(!mupi_x_err.empty() && mupi){
+        max_x = std::max({
+            max_x,
+            *std::max_element(mupi_x_err_max.begin(), mupi_x_err_max.end())
+        });
+    }
+    if(!mup_x_err.empty()){
+        max_x = std::max({
+            max_x,
+            *std::max_element(mup_x_err_max.begin(), mup_x_err_max.end())
+        });
+    }
+    if(!pip_x_err.empty()){
+        max_x = std::max({
+            max_x,
+            *std::max_element(pip_x_err_max.begin(), pip_x_err_max.end())
+        });
+    }
+
+    
+
+    TH1F* frame = canvas->DrawFrame(
+        1,
+        0,
+        1.2*max_x,
+        1.2*max_y
+    );
+
+
+    TLatex dune;
+    dune.SetNDC();
+    dune.SetTextFont(62);     // Bold Helvetica
+    dune.SetTextSize(0.045);
+    dune.DrawLatex(0.12, 0.93, "DUNE");
+
+    TLatex prelim;
+    prelim.SetNDC();
+    prelim.SetTextFont(42);   // Regular Helvetica
+    prelim.SetTextSize(0.040);
+    prelim.DrawLatex(0.215, 0.93, "Simulation Preliminary");
+
+    //frame->SetTitle(title);
+    frame->GetXaxis()->SetTitle(Xtitle);
+    frame->GetYaxis()->SetTitle(Ytitle);
+
+    TGraphErrors* gr_err1 = new TGraphErrors(mupi_x.size(), mupi_x.data(), mupi_y.data(), mupi_x_err.data(), mupi_y_err.data());
+    gr_err1->SetMarkerStyle(20);
+    gr_err1->SetMarkerColor(kBlue);
+    gr_err1->SetLineColor(kBlue);
+
+    TGraphErrors* gr_err2 = new TGraphErrors(mup_x.size(), mup_x.data(), mup_y.data(), mup_x_err.data(), mup_y_err.data());
+    gr_err2->SetMarkerStyle(20);
+    gr_err2->SetMarkerColor(kGreen);
+    gr_err2->SetLineColor(kGreen);
+
+    TGraphErrors* gr_err3 = new TGraphErrors(pip_x.size(), pip_x.data(), pip_y.data(), pip_x_err.data(), pip_y_err.data());
+    gr_err3->SetMarkerStyle(20);
+    gr_err3->SetMarkerColor(kOrange);
+    gr_err3->SetLineColor(kOrange);
+    
+
+    double y_0 = 3.0; // horizontal divide at separation power of 3
+
+    TBox* shade = new TBox(1, 0, 1.2*max_x, y_0);
+    shade->SetFillColorAlpha(kRed-10, 0.8);
+    shade->SetLineColor(0);
+    shade->Draw("SAME");
+    
+    if (!mupi_x.empty() && !mupi_y.empty() && mupi) gr_err1->Draw("PL SAME");
+    if (!mup_x.empty() && !mup_y.empty()) gr_err2->Draw("PL SAME");
+    if (!pip_x.empty() && !pip_y.empty()) gr_err3->Draw("PL SAME");
+
+    //add legend
+    TLegend* leg = new TLegend(0.15, 0.7, 0.4, 0.88);
+    if (!mupi_x.empty() && !mupi_y.empty() && mupi) leg->AddEntry(gr_err1, "Muon-Pion", "p");
+    if (!mup_x.empty() && !mup_y.empty()) leg->AddEntry(gr_err2, "Muon-Proton", "p");
+    if (!pip_x.empty() && !pip_y.empty()) leg->AddEntry(gr_err3, "Pion-Proton", "p");
+    leg->AddEntry(shade, "<3#sigma");
+    leg->Draw();
+
+    gPad->RedrawAxis();
+
+    canvas->SaveAs((outName).c_str());
+
+    //delete gr_err1;
+    //delete gr_err2;
+    //delete gr_err3;
+    delete canvas;
+
+
+}
+
+struct IQR_results{
+    double mean;
+    double sigma;
+};
+
+IQR_results calc_IQR(TH1F* hist){
+    if (!hist || hist->GetEntries() == 0 || hist->Integral() <= 0){
+        return {0, 0};
+    }
+
+    Double_t quantiles[2];
+    Double_t prob[2] = {0.25, 0.75};
+    hist->GetQuantiles(2, quantiles, prob);
+    double q1 = quantiles[0];
+    double q3 = quantiles[1];
+    double iqr = q3 - q1;
+    double mean = (q1 + q3) / 2;
+    double sigma = iqr / 1.349; // approximate standard deviation from IQR
+
+    return {mean, sigma};
+}
+
+struct fit_results{
+    double sigma;
+    double mean;
+    double res;
+    double sigma_err;
+    double mean_err;
+    double res_err;
+    double cov_mean_sigma;
+};
+
+fit_results calc_res(TH1F* hist){
+    //TF1* fit = hist->Fit("gaus");
+
+    if (!hist || hist->GetEntries() == 0 || hist->Integral() <= 0){
+        return {0, 0, 0, 0, 0, 0, 0};
+    }
+
+    IQR_results iqr_results = calc_IQR(hist);
+    if (iqr_results.sigma == 0 || iqr_results.mean == 0){
+        return {0, 0, 0, 0, 0, 0, 0};
+    }
+
+    //fit window based on IQR results
+    double NSigma = 2.5;
+    double xmin = iqr_results.mean - NSigma * iqr_results.sigma;
+    double xmax = iqr_results.mean + NSigma * iqr_results.sigma;
+
+    //keep the fit within the histogram range
+    xmin = std::max(xmin, hist->GetXaxis()->GetXmin());
+    xmax = std::min(xmax, hist->GetXaxis()->GetXmax());
+
+    TF1 fit ("fit", "gaus", xmin, xmax);
+
+    //initial parameters for the fit
+    fit.SetParameters(hist->GetMaximum(), iqr_results.mean, iqr_results.sigma);
+
+    //constrain the mean and sigma to be within the IQR range
+    fit.SetParLimits(1, iqr_results.mean - 2 * iqr_results.sigma, iqr_results.mean + 2 * iqr_results.sigma);
+    fit.SetParLimits(2, 0, 5 * iqr_results.sigma);
+
+    TFitResultPtr r = hist->Fit(&fit, "QRS"); // Q: quiet, R: use range, S: return fit result
+    TFitResult* fr = r.Get();
+
+    if (!fr || fr->Status() != 0) {
+        std::cerr << "Fit failed for histogram " << hist->GetName() << std::endl;
+        return {0, 0, 0, 0, 0, 0, 0};
+    }
+
+    double mean      = fr->Parameter(1);
+    double mean_err  = fr->ParError(1);
+    double sigma     = fr->Parameter(2);
+    double sigma_err = fr->ParError(2);
+
+    
+    double sigma_frac = sigma_err/sigma;
+    double mean_frac = mean_err/mean;
+
+    if(sigma_frac > 0.1 || mean_frac > 0.1){
+        return {0, 0, 0, 0, 0, 0, 0};
+    }
+
+/*
+    double chi2ndf = 0;
+
+    if (fr->Ndf() != 0) chi2ndf = fr->Chi2() / fr->Ndf();
+    
+    if(chi2ndf > 5.0){
+        return {0, 0, 0, 0, 0, 0, 0};
+    }
+    
+    double prob = fr->Prob();
+
+    if (prob < 0.01 && chi2ndf > 5.0) {
+        return {0, 0, 0, 0, 0, 0, 0};
+    }*/
+
+    TMatrixDSym cov = fr->GetCovarianceMatrix();
+    double cov_mean_sigma = cov(1, 2);
+
+    double res = sigma / mean;
+    double del_sig = 1 / mean;
+    double del_mu = -sigma / (mean * mean);
+    double res_err = std::sqrt(del_sig * del_sig * sigma_err * sigma_err + del_mu * del_mu * mean_err * mean_err + 2 * del_sig * del_mu * cov_mean_sigma);
+    return {sigma, mean, res, sigma_err, mean_err, res_err, cov_mean_sigma};
+}
+
+fit_results calc_res_land(TH1F* hist){
+    //TF1* fit = hist->Fit("gaus");
+
+    if (!hist || hist->GetEntries() == 0 || hist->Integral() <= 0){
+        return {0, 0, 0, 0, 0, 0, 0};
+    }
+
+    //IQR_results iqr_results = calc_IQR(hist);
+    //if (iqr_results.sigma == 0 || iqr_results.mean == 0){
+    //    return {0, 0, 0, 0, 0, 0, 0};
+    //}
+
+    float m = hist->GetMean();
+    float s = hist->GetRMS();  
+
+    //fit window based on sigma/mean results
+    double NSigma = 2.5;
+    double xmin = m - NSigma * s;
+    double xmax = m + NSigma * s;
+
+    //keep the fit within the histogram range
+    xmin = std::max(xmin, hist->GetXaxis()->GetXmin());
+    xmax = std::min(xmax, hist->GetXaxis()->GetXmax());
+
+    TF1 fit ("fit", "landau", xmin, xmax);
+
+    //initial parameters for the fit
+    fit.SetParameters(hist->GetMaximum(), m, s);
+
+    //constrain the mean and sigma to be within range
+    fit.SetParLimits(1, m - 2 * s, m + 2 * s);
+    fit.SetParLimits(2, 0, 5 * s);
+
+    TFitResultPtr r = hist->Fit(&fit, "QRS"); // Q: quiet, R: use range, S: return fit result
+    TFitResult* fr = r.Get();
+
+    if (!fr || fr->Status() != 0) {
+        std::cerr << "Fit failed for histogram " << hist->GetName() << std::endl;
+        return {0, 0, 0, 0, 0, 0, 0};
+    }
+
+    double mean      = fr->Parameter(1);
+    double mean_err  = fr->ParError(1);
+    double sigma     = fr->Parameter(2);
+    double sigma_err = fr->ParError(2);
+
+    
+    double sigma_frac = sigma_err/sigma;
+    double mean_frac = mean_err/mean;
+
+    if(sigma_frac > 0.1 || mean_frac > 0.1){
+        return {0, 0, 0, 0, 0, 0, 0};
+    }
+
+    /*
+    double chi2ndf = 0;
+
+    if (fr->Ndf() != 0) chi2ndf = fr->Chi2() / fr->Ndf();
+    
+    if(chi2ndf > 5.0){
+        return {0, 0, 0, 0, 0, 0, 0};
+    }
+
+    double prob = fr->Prob();
+
+    if (prob < 0.01 && chi2ndf > 5.0) {
+        return {0, 0, 0, 0, 0, 0, 0};
+    }*/
+
+    TMatrixDSym cov = fr->GetCovarianceMatrix();
+    double cov_mean_sigma = cov(1, 2);
+
+    double res = sigma / mean;
+    double del_sig = 1 / mean;
+    double del_mu = -sigma / (mean * mean);
+    double res_err = std::sqrt(del_sig * del_sig * sigma_err * sigma_err + del_mu * del_mu * mean_err * mean_err + 2 * del_sig * del_mu * cov_mean_sigma);
+    return {sigma, mean, res, sigma_err, mean_err, res_err, cov_mean_sigma};
+}
+
+
+fit_results calc_res_iqr(TH1F* hist){
+    //TF1* fit = hist->Fit("gaus");
+
+    if (!hist || hist->GetEntries() == 0 || hist->Integral() <= 0){
+        return {0, 0, 0, 0, 0, 0, 0};
+    }
+
+    IQR_results iqr_results = calc_IQR(hist);
+    if (iqr_results.sigma == 0 || iqr_results.mean == 0){
+        return {0, 0, 0, 0, 0, 0, 0};
+    }
+
+    double mean      = iqr_results.mean;
+    double mean_err  = 0;
+    double sigma     = iqr_results.sigma;
+    double sigma_err = 0;
+
+    double cov_mean_sigma = 0;
+
+    double res = sigma / mean;
+    double res_err = 0;
+    return {sigma, mean, res, sigma_err, mean_err, res_err, cov_mean_sigma};
+}
+
+void draw_gaussian_fit(TH1F* hist, const char* title, const std::string& outName){
+
+    static int canvasCounter = 0;
+
+    TCanvas* canvas = new TCanvas(Form("c_sep_%d", canvasCounter++),title,900,700);
+    
+    // Set style options for statistics box and fit parameters
+    gStyle->SetOptStat(1111);
+    gStyle->SetOptFit(1111);
+
+    TLatex dune;
+    dune.SetNDC();
+    dune.SetTextFont(62);     // Bold Helvetica
+    dune.SetTextSize(0.045);
+    dune.DrawLatex(0.12, 0.93, "DUNE");
+
+    TLatex prelim;
+    prelim.SetNDC();
+    prelim.SetTextFont(42);   // Regular Helvetica
+    prelim.SetTextSize(0.040);
+    prelim.DrawLatex(0.215, 0.93, "Simulation Preliminary");
+
+    hist->SetStats(kTRUE);
+
+    // Draw histogram
+    hist->SetLineWidth(2);
+    hist->SetLineColor(kBlack);
+    hist->SetFillStyle(0);
+    hist->Draw();
+
+    // Fit gaussian to histogram
+    IQR_results iqr_results = calc_IQR(hist);
+    //fit window based on IQR results
+    double NSigma = 2.5;
+    double xmin = iqr_results.mean - NSigma * iqr_results.sigma;
+    double xmax = iqr_results.mean + NSigma * iqr_results.sigma;
+
+    //keep the fit within the histogram range
+    xmin = std::max(xmin, hist->GetXaxis()->GetXmin());
+    xmax = std::min(xmax, hist->GetXaxis()->GetXmax());
+
+    TF1 fit ("fit", "gaus", xmin, xmax);
+
+    //initial parameters for the fit
+    fit.SetParameters(hist->GetMaximum(), iqr_results.mean, iqr_results.sigma);
+
+    //constrain the mean and sigma to be within the IQR range
+    fit.SetParLimits(1, iqr_results.mean - 2 * iqr_results.sigma, iqr_results.mean + 2 * iqr_results.sigma);
+    fit.SetParLimits(2, 0, 5 * iqr_results.sigma);
+
+    //find fit
+    TFitResultPtr r = hist->Fit(&fit, "QRS");
+
+    TFitResult* fr = r.Get();
+
+    // Check fit validity
+    if (!fr || fr->Status() != 0 || fr->Ndf() <= 0) {
+        delete canvas;
+        return;
+    }
+
+    double mean      = fr->Parameter(1);
+    double mean_err  = fr->ParError(1);
+    double sigma     = fr->Parameter(2);
+    double sigma_err = fr->ParError(2);
+
+    double sigma_frac = sigma_err/sigma;
+    double mean_frac = mean_err/mean;
+
+    if(sigma_frac > 0.1 || mean_frac > 0.1){
+        delete canvas;
+        return;
+    }
+
+/*
+    double chi2ndf = 0;
+
+    if (fr->Ndf() != 0) chi2ndf = fr->Chi2() / static_cast<double>(fr->Ndf());
+
+    // Reject poor fits
+    
+    if (chi2ndf > 5.0) {
+        delete canvas;
+        return;
+    }
+
+    double prob = fr->Prob();
+
+    if (prob < 0.01 && chi2ndf > 5.0) {
+        delete canvas;
+        return;
+    }*/
+
+    // Force pad update so stats box appears
+    gPad->Modified();
+    gPad->Update();
+
+    /*
+    TPaveStats* stats = (TPaveStats*)hist->FindObject("stats");
+    if (stats) {
+        stats->SetX1NDC(0.15); // left edge
+        stats->SetX2NDC(0.40); // right edge
+        stats->SetY1NDC(0.65); // bottom edge
+        stats->SetY2NDC(0.88); // top edge
+    }
+    gStyle->SetStatW(0.2);
+    gStyle->SetStatH(0.15);
+
+    gPad->Modified();
+    gPad->Update();
+    */
+
+    //add legend
+    //TLegend* legend = new TLegend(0.65, 0.7, 0.9, 0.88);
+    //legend->AddEntry(hist, particle, "f");
+    //legend->Draw();
+
+    // Save canvas to file
+    canvas->SaveAs(outName.c_str());
+    delete canvas;
+}
+
+void draw_landau_fit(TH1F* hist, const char* title, const std::string& outName){
+
+    static int canvasCounter = 0;
+
+    TCanvas* canvas = new TCanvas(Form("c_sep_%d", canvasCounter++),title,900,700);
+    
+    // Set style options for statistics box and fit parameters
+    gStyle->SetOptStat(1111);
+    gStyle->SetOptFit(1111);
+
+    TLatex dune;
+    dune.SetNDC();
+    dune.SetTextFont(62);     // Bold Helvetica
+    dune.SetTextSize(0.045);
+    dune.DrawLatex(0.12, 0.93, "DUNE");
+
+    TLatex prelim;
+    prelim.SetNDC();
+    prelim.SetTextFont(42);   // Regular Helvetica
+    prelim.SetTextSize(0.040);
+    prelim.DrawLatex(0.215, 0.93, "Simulation Preliminary");
+
+    hist->SetStats(kTRUE);
+
+    // Draw histogram
+    hist->SetLineWidth(2);
+    hist->SetLineColor(kBlack);
+    hist->SetFillStyle(0);
+    hist->Draw();
+
+    // Fit landau to histogram
+    float m = hist->GetMean();
+    float s = hist->GetRMS();  
+
+    //fit window based on sigma/mean results
+    double NSigma = 2.5;
+    double xmin = m - NSigma * s;
+    double xmax = m + NSigma * s;
+
+    //keep the fit within the histogram range
+    xmin = std::max(xmin, hist->GetXaxis()->GetXmin());
+    xmax = std::min(xmax, hist->GetXaxis()->GetXmax());
+
+    TF1 fit ("fit", "landau", xmin, xmax);
+
+    //initial parameters for the fit
+    fit.SetParameters(hist->GetMaximum(), m, s);
+
+    //constrain the mean and sigma to be within range
+    fit.SetParLimits(1, m - 2 * s, m + 2 * s);
+    fit.SetParLimits(2, 0, 5 * s);
+    
+    //find fit
+    TFitResultPtr r = hist->Fit(&fit, "QRS");
+
+    TFitResult* fr = r.Get();
+
+    // Check fit validity
+    if (!fr || fr->Status() != 0) {
+        delete canvas;
+        return;
+    }
+
+    double mean      = fr->Parameter(1);
+    double mean_err  = fr->ParError(1);
+    double sigma     = fr->Parameter(2);
+    double sigma_err = fr->ParError(2);
+
+    double sigma_frac = sigma_err/sigma;
+    double mean_frac = mean_err/mean;
+
+    if(sigma_frac > 0.1 || mean_frac > 0.1){
+        delete canvas;
+        return;
+    }
+
+    /*
+    double chi2ndf = 0;
+
+    if (fr->Ndf() != 0) chi2ndf = fr->Chi2() / static_cast<double>(fr->Ndf());
+
+    // Reject poor fits
+    
+    if (chi2ndf > 5.0) {
+        delete canvas;
+        return;
+    }
+
+    double prob = fr->Prob();
+
+    if (prob < 0.01 && (chi2ndf > 5.0 || chi2ndf == 0.)) {
+        delete canvas;
+        return;
+    }*/
+
+    // Force pad update so stats box appears
+    gPad->Modified();
+    gPad->Update();
+
+    /*
+    TPaveStats* stats = (TPaveStats*)hist->FindObject("stats");
+    if (stats) {
+        stats->SetX1NDC(0.15); // left edge
+        stats->SetX2NDC(0.40); // right edge
+        stats->SetY1NDC(0.65); // bottom edge
+        stats->SetY2NDC(0.88); // top edge
+    }
+    gStyle->SetStatW(0.2);
+    gStyle->SetStatH(0.15);
+
+    gPad->Modified();
+    gPad->Update();
+    */
+
+    //add legend
+    //TLegend* legend = new TLegend(0.65, 0.7, 0.9, 0.88);
+    //legend->AddEntry(hist, particle, "f");
+    //legend->Draw();
+
+    // Save canvas to file
+    canvas->SaveAs(outName.c_str());
+    delete canvas;
+}
+
+
+    
+/*
+struct fit_results{ 
+    double sigma; 
+    double mean; 
+    double res; 
+    double sigma_err; 
+    double mean_err; 
+    double res_err; };
+    
+fit_results calc_res(TH1F* hist){ 
+    TF1* fit = hist->GetFunction("gaus"); 
+    if(!fit){ 
+        std::cerr << "Error: No fit found for histogram " << hist->GetName() << std::endl; 
+        return {0, 0, 0, 0, 0, 0}; 
+    }
+
+
+    double sigma = fit->GetParameter(2); 
+    double sigma_err = fit->GetParError(2); 
+    double mean = fit->GetParameter(1); 
+    double mean_err = fit->GetParError(1); 
+    double res = sigma / mean; 
+    double res_err = 1/mean * std::sqrt(res*res * mean_err*mean_err + sigma_err*sigma_err); 
+    
+    return {sigma, mean, res, sigma_err, mean_err, res_err}; 
+}
+    */
+
+    
+auto getHist = [](TFile* f, const char* prefix, float low, float high) -> TH1F* {
+    TString name = Form("%s_p%.2f-%.2f", prefix, low, high);
+    auto* h = dynamic_cast<TH1F*>(f->Get(name));
+    if (!h) {
+        std::cerr << "Missing histogram: " << name << std::endl;
+    }
+    return h;
+};
+
+
+// main function
+void new_particle_dEdx(const std::string& inputFileNameMuon, const std::string& inputFileNamePion, const std::string& inputFileNameProton, const std::string& sampleName, int fileNumber, float radius = 260, float length = 500, const char* inputTreeName = "Events", const char* outputTreeName = "dE_dxTree") {
+
+    // General plotting options
+    //gStyle->SetOptTitle(0);
+    gStyle->SetOptStat(0);
+    // Set canvas margins
+    gStyle->SetPadLeftMargin(0.12);
+    gStyle->SetPadRightMargin(0.05);
+    gStyle->SetPadBottomMargin(0.12);
+    gStyle->SetPadTopMargin(0.08);
+    // Title and label sizes
+    gStyle->SetTitleSize(0.045, "XY");
+    gStyle->SetLabelSize(0.04, "XY");
+    gStyle->SetTitleOffset(1.2, "Y");
+    // Use better fonts
+    gStyle->SetTextFont(42);
+    gStyle->SetLabelFont(42, "XY");
+    gStyle->SetTitleFont(42, "XY");
+
+    
+    // Get analysis TTree from multiple files
+    TChain *chain = new TChain(inputTreeName);
+    for (size_t n = 0; n < fileNumber; n++) {
+    
+    	std::ostringstream ossMuon, ossPion, ossProton;
+
+    	ossMuon << inputFileNameMuon << n << ".root";
+    	std::string fileNameMuon = ossMuon.str();
+        int nFilesAddedM = chain->Add(fileNameMuon.c_str());
+    	std::cout << "Tried adding " << fileNameMuon << std::endl;
+    	if (nFilesAddedM == 0) {
+    		std::cerr << "Warning: Could not add file " << fileNameMuon << std::endl;
+    		return;
+    	}
+
+        ossPion << inputFileNamePion << n << ".root";
+    	std::string fileNamePion = ossPion.str();
+        int nFilesAddedPi = chain->Add(fileNamePion.c_str());
+    	std::cout << "Tried adding " << fileNamePion << std::endl;
+    	if (nFilesAddedPi == 0) {
+    		std::cerr << "Warning: Could not add file " << fileNamePion << std::endl;
+    		return;
+    	}
+
+        ossProton << inputFileNameProton << n << ".root";
+    	std::string fileNameProton = ossProton.str();
+        int nFilesAddedPr = chain->Add(fileNameProton.c_str());
+    	std::cout << "Tried adding " << fileNameProton << std::endl;
+    	if (nFilesAddedPr == 0) {
+    		std::cerr << "Warning: Could not add file " << fileNameProton << std::endl;
+    		return;
+    	}
+
+    }
+    
+    // makes sure all the data gets read
+    chain->TChain::SetBranchStatus("*",1);
+    //chain->TChain::SetMakeClass(0);
+    
+    // Declare pointers to vectors
+    std::vector<int>* trackID = 	   nullptr;
+    std::vector<int>*   pdgCode = 	   nullptr;
+    std::vector<double>* trajectory_x =        nullptr;
+    std::vector<double>* trajectory_y =        nullptr;
+    std::vector<double>* trajectory_z =        nullptr;
+    std::vector<double>* trajectory_px =        nullptr;
+    std::vector<double>* trajectory_py =        nullptr;
+    std::vector<double>* trajectory_pz =        nullptr;
+    std::vector<double>* tpcHitX = 	   nullptr;
+    std::vector<double>* tpcHitY = 	   nullptr;
+    std::vector<double>* tpcHitZ = 	   nullptr;
+    std::vector<double>* tpcHitEdep =     nullptr;
+    std::vector<double>* tpcHitStepSize = nullptr;
+    std::vector<double>*  tpcHitSec_Edep = nullptr;
+    std::vector<std::string>*  creatorProcess = nullptr;
+    std::vector<std::string>* endProcess = nullptr;
+    std::vector<std::string>* endVol = nullptr;
+    std::vector<int>* tpcHitParent = nullptr;
+    std::vector<int>* trajectory_parent = nullptr;
+    std::vector<int>* trajectory_mom_parent = nullptr;
+    std::vector<int>* tpcHitSecParent = nullptr;
+     
+       
+    // Set branch addresses
+    chain->TChain::SetBranchAddress("particles_trackID",               &trackID);
+    chain->TChain::SetBranchAddress("particles_pdgCode",               &pdgCode);
+    chain->TChain::SetBranchAddress("particles_trajectory_points_x", 		    &trajectory_x);
+    chain->TChain::SetBranchAddress("particles_trajectory_points_y", 		    &trajectory_y);
+    chain->TChain::SetBranchAddress("particles_trajectory_points_z", 		    &trajectory_z);
+    chain->TChain::SetBranchAddress("particles_trajectory_mom_points_x", 		    &trajectory_px);
+    chain->TChain::SetBranchAddress("particles_trajectory_mom_points_y", 		    &trajectory_py);
+    chain->TChain::SetBranchAddress("particles_trajectory_mom_points_z", 		    &trajectory_pz);
+    chain->TChain::SetBranchAddress("particles_tpcHits_x", 		 &tpcHitX);
+    chain->TChain::SetBranchAddress("particles_tpcHits_y", 		 &tpcHitY);
+    chain->TChain::SetBranchAddress("particles_tpcHits_z", 		 &tpcHitZ);
+    chain->TChain::SetBranchAddress("particles_tpcHits_energyDeposit",         &tpcHitEdep);
+    chain->TChain::SetBranchAddress("particles_tpcHits_stepSize",	&tpcHitStepSize);
+    chain->TChain::SetBranchAddress("particles_sec_tpcHits_energyDeposit",      &tpcHitSec_Edep);
+    chain->TChain::SetBranchAddress("particles_creatorProcess",      &creatorProcess);
+    chain->TChain::SetBranchAddress("particles_endProcess",      &endProcess);
+    chain->TChain::SetBranchAddress("particles_trajectory_stop_vol_name",       &endVol);
+    chain->TChain::SetBranchAddress("particles_tpcHits_parent", &tpcHitParent);
+    chain->TChain::SetBranchAddress("particles_trajectory_points_parent",   &trajectory_parent);
+    chain->TChain::SetBranchAddress("particles_trajectory_mom_points_parent",   &trajectory_mom_parent);
+    chain->TChain::SetBranchAddress("particles_sec_tpcHits_parent", &tpcHitSecParent);
+
+    //make output file and tree
+    TFile* outputFile = new TFile(Form("outputs_sepPow/%s_dEdx.root", sampleName.c_str()), "RECREATE");
+    TTree* outputTree = new TTree("SepTree", "Tree to hold separation power");
+    std::ofstream txtOutputFile(Form("outputs_sepPow/%s_dEdx.txt", sampleName.c_str()));
+
+    if (!txtOutputFile.is_open()) {
+        std::cerr << "Error: Could not open output file.\n";
+        return;
+    }
+
+    //create vectors for momentum, resolution, mean, sigma
+    std::map<int, std::vector<double>> pdg_to_p, pdg_to_sigma, pdg_to_mean, pdg_to_res;
+    std::map<int, std::vector<double>> pdg_to_p_err, pdg_to_sigma_err, pdg_to_mean_err, pdg_to_res_err;
+
+    //create vectors for track length, resolution, mean, sigma
+    std::map<int, std::vector<double>> pdg_to_l, pdg_to_sigma_l, pdg_to_mean_l, pdg_to_res_l;
+    std::map<int, std::vector<double>> pdg_to_l_err, pdg_to_sigma_l_err, pdg_to_mean_l_err, pdg_to_res_l_err;
+
+    //create vectors for separation power
+    std::vector<Float_t> mom_vec1, mom_vec2, mom_vec3;
+    std::vector<Float_t> muon_pion_sp, muon_proton_sp, pion_proton_sp;
+    std::vector<Float_t> mom_vec1_err, mom_vec2_err, mom_vec3_err;
+    std::vector<Float_t> muon_pion_sp_err, muon_proton_sp_err, pion_proton_sp_err;
+
+    //create vector for separation power by track length
+    std::vector<Float_t> l_vec1, l_vec2, l_vec3;
+    std::vector<Float_t> muon_pion_sp_l, muon_proton_sp_l, pion_proton_sp_l;
+    std::vector<Float_t> l_vec1_err, l_vec2_err, l_vec3_err;
+    std::vector<Float_t> muon_pion_sp_l_err, muon_proton_sp_l_err, pion_proton_sp_l_err;
+
+    // Muon
+    std::vector<double> mu_p, mu_sigma, mu_mean, mu_res;
+    std::vector<double> mu_p_err, mu_sigma_err, mu_mean_err, mu_res_err;
+    std::vector<double> mu_l, mu_sigma_l, mu_mean_l, mu_res_l;
+    std::vector<double> mu_l_err, mu_sigma_l_err, mu_mean_l_err, mu_res_l_err;
+
+    // Pion
+    std::vector<double> pi_p, pi_sigma, pi_mean, pi_res;
+    std::vector<double> pi_p_err, pi_sigma_err, pi_mean_err, pi_res_err;
+    std::vector<double> pi_l, pi_sigma_l, pi_mean_l, pi_res_l;
+    std::vector<double> pi_l_err, pi_sigma_l_err, pi_mean_l_err, pi_res_l_err;
+
+    // Proton
+    std::vector<double> pr_p, pr_sigma, pr_mean, pr_res;
+    std::vector<double> pr_p_err, pr_sigma_err, pr_mean_err, pr_res_err;
+    std::vector<double> pr_l, pr_sigma_l, pr_mean_l, pr_res_l;
+    std::vector<double> pr_l_err, pr_sigma_l_err, pr_mean_l_err, pr_res_l_err;
+
+    //constants
+    const float p_min = 70.0; // MeV
+    const float p_max = 5e3; // MeV
+    const int nPBins = 45; // number of momentum bins for p vs dE/dx graph; ~3% log bins
+    const float p_interval = (p_max - p_min) / nPBins; // MeV
+    float p_bin_min = std::log10(p_min); // MeV
+    float p_bin_max = std::log10(p_max); // MeV
+    const float l_min = 10.0; // cm
+    const float l_max = 2000; // cm
+    const int nLBins = 60; // number of track length bins for l vs dE/dx graph
+    const float l_interval = (l_max - l_min) / nLBins; // cm
+    float l_bin_min = std::log10(l_min); // cm
+    float l_bin_max = std::log10(l_max); // cm
+
+    std::vector<int> muon_size(nPBins, 0), pion_size(nPBins, 0), proton_size(nPBins, 0);
+ 
+    outputTree->Branch("muon_pion_sep", &muon_pion_sp);
+    outputTree->Branch("muon_proton_sep", &muon_proton_sp);
+    outputTree->Branch("pion_proton_sep", &pion_proton_sp);
+    outputTree->Branch("mpi_mom", &mom_vec1);
+    outputTree->Branch("mp_mom", &mom_vec2);
+    outputTree->Branch("pp_mom", &mom_vec3);
+    outputTree->Branch("mpi_mom_err", &mom_vec1_err);
+    outputTree->Branch("mp_mom_err", &mom_vec2_err);
+    outputTree->Branch("pp_mom_err", &mom_vec3_err);
+    outputTree->Branch("muon_pion_sep_err", &muon_pion_sp_err);
+    outputTree->Branch("muon_proton_sep_err", &muon_proton_sp_err);
+    outputTree->Branch("pion_proton_sep_err", &pion_proton_sp_err);
+    outputTree->Branch("muon_size", &muon_size);
+    outputTree->Branch("pion_size", &pion_size);
+    outputTree->Branch("proton_size", &proton_size);
+    outputTree->Branch("mu_p", &mu_p);
+    outputTree->Branch("mu_sigma", &mu_sigma);
+    outputTree->Branch("mu_mean", &mu_mean);
+    outputTree->Branch("mu_res", &mu_res);
+    outputTree->Branch("mu_p_err", &mu_p_err);
+    outputTree->Branch("mu_sigma_err", &mu_sigma_err);
+    outputTree->Branch("mu_mean_err", &mu_mean_err);
+    outputTree->Branch("mu_res_err", &mu_res_err);
+    outputTree->Branch("pi_p", &pi_p);
+    outputTree->Branch("pi_sigma", &pi_sigma);
+    outputTree->Branch("pi_mean", &pi_mean);
+    outputTree->Branch("pi_res", &pi_res);
+    outputTree->Branch("pi_p_err", &pi_p_err);
+    outputTree->Branch("pi_sigma_err", &pi_sigma_err);
+    outputTree->Branch("pi_mean_err", &pi_mean_err);
+    outputTree->Branch("pi_res_err", &pi_res_err);
+    outputTree->Branch("pr_p", &pr_p);
+    outputTree->Branch("pr_sigma", &pr_sigma);
+    outputTree->Branch("pr_mean", &pr_mean);
+    outputTree->Branch("pr_res", &pr_res);
+    outputTree->Branch("pr_p_err", &pr_p_err);
+    outputTree->Branch("pr_sigma_err", &pr_sigma_err);
+    outputTree->Branch("pr_mean_err", &pr_mean_err);
+    outputTree->Branch("pr_res_err", &pr_res_err);
+
+    outputTree->Branch("muon_pion_sep_l", &muon_pion_sp_l);
+    outputTree->Branch("muon_proton_sep_l", &muon_proton_sp_l);
+    outputTree->Branch("pion_proton_sep_l", &pion_proton_sp_l);
+    outputTree->Branch("mpi_l", &l_vec1);
+    outputTree->Branch("mp_l", &l_vec2);
+    outputTree->Branch("pp_l", &l_vec3);
+    outputTree->Branch("mpi_l_err", &l_vec1_err);
+    outputTree->Branch("mp_l_err", &l_vec2_err);
+    outputTree->Branch("pp_l_err", &l_vec3_err);
+    outputTree->Branch("muon_pion_sep_l_err", &muon_pion_sp_l_err);
+    outputTree->Branch("muon_proton_sep_l_err", &muon_proton_sp_l_err);
+    outputTree->Branch("pion_proton_sep_l_err", &pion_proton_sp_l_err);
+    outputTree->Branch("mu_l", &mu_l);
+    outputTree->Branch("mu_sigma_l", &mu_sigma_l);
+    outputTree->Branch("mu_mean_l", &mu_mean_l);
+    outputTree->Branch("mu_res_l", &mu_res_l);
+    outputTree->Branch("mu_l_err", &mu_l_err);
+    outputTree->Branch("mu_sigma_l_err", &mu_sigma_l_err);
+    outputTree->Branch("mu_mean_l_err", &mu_mean_l_err);
+    outputTree->Branch("mu_res_l_err", &mu_res_l_err);
+    outputTree->Branch("pi_l", &pi_l);
+    outputTree->Branch("pi_sigma_l", &pi_sigma_l);
+    outputTree->Branch("pi_mean_l", &pi_mean_l);
+    outputTree->Branch("pi_res_l", &pi_res_l);
+    outputTree->Branch("pi_l_err", &pi_l_err);
+    outputTree->Branch("pi_sigma_l_err", &pi_sigma_l_err);
+    outputTree->Branch("pi_mean_l_err", &pi_mean_l_err);
+    outputTree->Branch("pi_res_l_err", &pi_res_l_err);
+    outputTree->Branch("pr_l", &pr_l);
+    outputTree->Branch("pr_sigma_l", &pr_sigma_l);
+    outputTree->Branch("pr_mean_l", &pr_mean_l);
+    outputTree->Branch("pr_res_l", &pr_res_l);
+    outputTree->Branch("pr_l_err", &pr_l_err);
+    outputTree->Branch("pr_sigma_l_err", &pr_sigma_l_err);
+    outputTree->Branch("pr_mean_l_err", &pr_mean_l_err);
+    outputTree->Branch("pr_res_l_err", &pr_res_l_err);
+
+
+    //bool isContained = false;
+
+    //fiducial volume cuts
+    const float fv_radius = 200.0; // cm
+    const float fv_length = 460.0; // cm
+
+
+    //create histograms
+    std::vector<TH1F*> hMuon(nPBins, nullptr), hPion(nPBins, nullptr), hProton(nPBins, nullptr);
+    std::vector<int> ent(nPBins, 0); //count number of entries in bins
+    std::vector<TH1F*> hMuonL(nLBins, nullptr), hPionL(nLBins, nullptr), hProtonL(nLBins, nullptr);
+
+    for (int i = 0; i < nPBins; i++) {
+        //float p_bin_low = p_min + i * p_interval;
+        //float p_bin_high = p_min + (i + 1) * p_interval;
+        float p_bin_low = std::pow(10, p_bin_min + i * (p_bin_max - p_bin_min) / nPBins);
+        float p_bin_high = std::pow(10, p_bin_min + (i + 1) * (p_bin_max - p_bin_min) / nPBins);
+        hMuon[i] = new TH1F(Form("hMuon_p%0.2f-%0.2f", p_bin_low, p_bin_high), Form("Muon dE/dx for p=%0.2f-%0.2f cm; dE/dx [keV/cm]; Counts", p_bin_low, p_bin_high), 150, 0, 300);
+        hPion[i] = new TH1F(Form("hPion_p%0.2f-%0.2f", p_bin_low, p_bin_high), Form("Pion dE/dx for p=%0.2f-%0.2f cm; dE/dx [keV/cm]; Counts", p_bin_low, p_bin_high), 150, 0, 300);
+        hProton[i] = new TH1F(Form("hProton_p%0.2f-%0.2f", p_bin_low, p_bin_high), Form("Proton dE/dx for p=%0.2f-%0.2f cm; dE/dx [keV/cm]; Counts", p_bin_low, p_bin_high), 150, 0, 300);
+    }
+
+    /*
+    for (int i = 0; i < nLBins; i++) {
+        //float l_bin_low = l_min + i * l_interval;
+        //float l_bin_high = l_min + (i + 1) * l_interval;
+        float l_bin_low = std::pow(10, l_bin_min + i * (l_bin_max - l_bin_min) / nLBins);
+        float l_bin_high = std::pow(10, l_bin_min + (i + 1) * (l_bin_max - l_bin_min) / nLBins);
+        hMuonL[i] = new TH1F(Form("hMuon_l%0.2f-%0.2f", l_bin_low, l_bin_high), Form("Muon dE/dx for l=%0.2f-%0.2f MeV/c; dE/dx [keV/cm]; Counts", l_bin_low, l_bin_high), 150, 0, 300);
+        hPionL[i] = new TH1F(Form("hPion_l%0.2f-%0.2f", l_bin_low, l_bin_high), Form("Pion dE/dx for l=%0.2f-%0.2f MeV/c; dE/dx [keV/cm]; Counts", l_bin_low, l_bin_high), 150, 0, 300);
+        hProtonL[i] = new TH1F(Form("hProton_l%0.2f-%0.2f", l_bin_low, l_bin_high), Form("Proton dE/dx for l=%0.2f-%0.2f MeV/c; dE/dx [keV/cm]; Counts", l_bin_low, l_bin_high), 150, 0, 300);
+    }*/
+
+    //histogram to find momentum of 1m tracks
+    TH1F* hP_1m = new TH1F("hP_1m", "Momentum for ~1 m tracks;Momentum [MeV/c];Tracks", 100, 0, 5000);
+    TH1F* hH_1m_mu = new TH1F("hH_1m_mu", "Hits for ~1 m muon tracks;Hits;Tracks", 100, 0, 100);
+
+    //create output branch
+    //outputTree->Branch("hMuon", &hMuon);
+    //outputTree->Branch("hPion", &hPion);
+    //outputTree->Branch("hProton", &hProton);
+
+
+    // Get number of entries
+    Long64_t nEntries = chain->GetEntries();
+    std::cout << "Total number of entries: " << nEntries << std::endl;
+
+    for (Long64_t entry = 0; entry < nEntries; entry++) {
+
+        static Int_t lastTree = -1; //track file/tree we're on
+
+        Long64_t currentTree = chain->LoadTree(entry); // load tree, but not data
+
+        if (currentTree != lastTree) {
+            lastTree = currentTree; // tree has changed - re-attach branches
+
+            chain->TChain::SetBranchAddress("particles_trackID",               &trackID);
+            chain->TChain::SetBranchAddress("particles_pdgCode",               &pdgCode);
+            chain->TChain::SetBranchAddress("particles_trajectory_points_x", 		    &trajectory_x);
+            chain->TChain::SetBranchAddress("particles_trajectory_points_y", 		    &trajectory_y);
+            chain->TChain::SetBranchAddress("particles_trajectory_points_z", 		    &trajectory_z);
+            chain->TChain::SetBranchAddress("particles_trajectory_mom_points_x", 		    &trajectory_px);
+            chain->TChain::SetBranchAddress("particles_trajectory_mom_points_y", 		    &trajectory_py);
+            chain->TChain::SetBranchAddress("particles_trajectory_mom_points_z", 		    &trajectory_pz);
+            chain->TChain::SetBranchAddress("particles_tpcHits_x", 		 &tpcHitX);
+            chain->TChain::SetBranchAddress("particles_tpcHits_y", 		 &tpcHitY);
+            chain->TChain::SetBranchAddress("particles_tpcHits_z", 		 &tpcHitZ);
+            chain->TChain::SetBranchAddress("particles_tpcHits_energyDeposit",         &tpcHitEdep);
+            chain->TChain::SetBranchAddress("particles_tpcHits_stepSize",	&tpcHitStepSize);
+            chain->TChain::SetBranchAddress("particles_sec_tpcHits_energyDeposit",      &tpcHitSec_Edep);
+            chain->TChain::SetBranchAddress("particles_creatorProcess",      &creatorProcess);
+            chain->TChain::SetBranchAddress("particles_endProcess",      &endProcess);
+            chain->TChain::SetBranchAddress("particles_trajectory_stop_vol_name",       &endVol);
+            chain->TChain::SetBranchAddress("particles_tpcHits_parent", &tpcHitParent);
+            chain->TChain::SetBranchAddress("particles_trajectory_points_parent",   &trajectory_parent);
+            chain->TChain::SetBranchAddress("particles_trajectory_mom_points_parent",   &trajectory_mom_parent);
+            chain->TChain::SetBranchAddress("particles_sec_tpcHits_parent", &tpcHitSecParent);
+
+
+        }
+
+        //load the entry
+        chain->GetEntry(entry);
+
+        size_t nParticles = pdgCode->size();
+
+        // TPC hits belonging to each particle
+        std::vector<std::vector<size_t>> tpcHitsByParticle(nParticles);
+
+        // Trajectory position points belonging to each particle
+        std::vector<std::vector<size_t>> trajByParticle(nParticles);
+
+        // Trajectory momentum points belonging to each particle
+        std::vector<std::vector<size_t>> momByParticle(nParticles);
+
+
+        for (size_t j = 0; j < tpcHitParent->size(); ++j) {
+
+            int parent = tpcHitParent->at(j);
+
+            if (parent >= 0 &&
+                static_cast<size_t>(parent) < nParticles) {
+
+                tpcHitsByParticle[parent].push_back(j);
+            }
+        }
+
+
+        for (size_t j = 0; j < trajectory_parent->size(); ++j) {
+
+            int parent = trajectory_parent->at(j);
+
+            if (parent >= 0 &&
+                static_cast<size_t>(parent) < nParticles) {
+
+                trajByParticle[parent].push_back(j);
+            }
+        }
+
+        for (size_t j = 0; j < trajectory_mom_parent->size(); ++j) {
+
+            int parent = trajectory_mom_parent->at(j);
+
+            if (parent >= 0 &&
+                static_cast<size_t>(parent) < nParticles) {
+
+                momByParticle[parent].push_back(j);
+            }
+        }
+
+           
+
+        for (size_t i = 0; i < nParticles; i++) {
+            int pdg = std::abs(pdgCode->at(i));
+
+            if (!(pdg == 13 || pdg == 211 || pdg == 2212)) continue;
+
+            // Only use primary particles
+            if (creatorProcess->at(i) != "primary") continue;
+
+            if (trajByParticle[i].empty()) continue;
+
+            
+            size_t firstTraj = trajByParticle[i].front();
+            size_t lastTraj  = trajByParticle[i].back();
+
+            float start_x = trajectory_x->at(firstTraj);
+            float start_y = trajectory_y->at(firstTraj);
+            float start_z = trajectory_z->at(firstTraj);
+
+            float end_x = trajectory_x->at(lastTraj);
+            float end_y = trajectory_y->at(lastTraj);
+            float end_z = trajectory_z->at(lastTraj);
+            
+            
+            // compute momentum at start
+            if (momByParticle[i].empty()) continue;
+
+            size_t firstMom = momByParticle[i].front();
+
+            double px = trajectory_px->at(firstMom);
+            double py = trajectory_py->at(firstMom);
+            double pz = trajectory_pz->at(firstMom);
+
+            double p = std::sqrt(px*px + py*py + pz*pz);
+
+            if (p <= 0) continue;
+
+            //find bin for momentum
+            //int bin = static_cast<int>((p - p_min) / static_cast<double>(p_max - p_min) * nPBins);
+
+            //find bin for momentum
+            float log_p = std::log10(p);
+            int bin = (log_p - p_bin_min) / (p_bin_max - p_bin_min) * nPBins;
+            //int bin = (p-p_min) / (p_max - p_min) * nPBins;
+
+            //compute track length
+            float track_length = 0;
+
+            //check if track ends in TPC
+            //bool isInTPC = (std::abs(end_x) < radius) && (std::abs(end_y) < radius) && (std::abs(end_z) < length/2);
+            //if (!isInTPC) continue;
+
+            //skip tracks that don't start in TPC
+            //bool startInFV = (std::abs(start_x) <= fv_radius) && (std::abs(start_y) <= fv_radius) && (std::abs(start_z) <=  fv_length/2);
+            //if (!startInFV) continue;
+
+            //skip particles that stop in the TPC
+            bool stopInTPC = (std::abs(end_x) < radius) && (std::abs(end_y) < radius) && (std::abs(end_z) < length/2);
+            if (stopInTPC) continue;
+
+            //compute dE/dx for track
+            std::vector<float> dEdx_values;
+
+            for (size_t j : tpcHitsByParticle[i]) {
+
+                if (tpcHitEdep->at(j) <= 0) continue;
+
+                if (tpcHitStepSize->at(j) <= 0) continue;
+
+                if (std::abs(tpcHitX->at(j)) > radius || std::abs(tpcHitY->at(j)) > radius || std::abs(tpcHitZ->at(j)) > length / 2.0) continue;
+
+                double edep = tpcHitEdep->at(j);
+                double stepSize = tpcHitStepSize->at(j);
+
+                dEdx_values.push_back((edep / stepSize) * 1000.0);
+                track_length += stepSize;
+            }
+
+            //find bin for track length
+            float log_l = std::log10(track_length);
+            int bin_l = (log_l - l_bin_min) / (l_bin_max - l_bin_min) * nLBins;
+            //int bin_l = (track_length-l_min) / (l_max - l_min) * nLBins;
+/*
+            if (track_length > 95 && track_length < 105) {
+                hP_1m->Fill(p);
+                if (pdg == 13) {
+                    hH_1m_mu->Fill(nTpcHits);
+                }
+            }*/
+
+            //if (dEdx_values.size()<20) continue;
+            if (dEdx_values.empty()) continue;
+
+            //sort dE/dx values and truncate
+            std::sort(dEdx_values.begin(), dEdx_values.end());
+            float truncation_factor = 0.6; //Francisco's study
+            size_t newSize = dEdx_values.size() * truncation_factor;
+            dEdx_values.resize(newSize);
+
+            float truncated_mean = std::accumulate(dEdx_values.begin(), dEdx_values.end(), 0.0) / dEdx_values.size();
+
+            //fill momentum histograms
+            if (bin >= 0 && bin < nPBins) {
+                switch (pdg) {
+                    case 13: hMuon[bin]->Fill(truncated_mean); break;
+                    case 211: hPion[bin]->Fill(truncated_mean); break;
+                    case 2212: hProton[bin]->Fill(truncated_mean); break;
+                }
+            }
+            /*
+            if (bin_l >= 0 && bin_l < nLBins) {
+                switch (pdg) {
+                    case 13: hMuonL[bin_l]->Fill(truncated_mean); break;
+                    case 211: hPionL[bin_l]->Fill(truncated_mean); break;
+                    case 2212: hProtonL[bin_l]->Fill(truncated_mean); break;
+                }
+            }*/
+
+        }//end loop over particles
+    }//end loop over entries   
+
+    //loop over momentum bins to get gaussian fit, variables and separation power
+    for (size_t i = 0; i < nPBins; ++i){
+
+        float p_bin_center = std::pow(10, p_bin_min + (i + 0.5) * (p_bin_max - p_bin_min) / nPBins);
+        float p_bin_low = std::pow(10, p_bin_min + i * (p_bin_max - p_bin_min) / nPBins);
+        float p_bin_high = std::pow(10, p_bin_min + (i + 1) * (p_bin_max - p_bin_min) / nPBins);
+        float p_bin_err = (p_bin_high - p_bin_low) / 2.0;
+        //float p_bin_center = p_min + (i + 0.5) * p_interval;
+        //float p_bin_err = p_interval;
+
+        fit_results mu_fit = {0,0,0,0,0,0,0};
+        fit_results pi_fit = {0,0,0,0,0,0,0};
+        fit_results p_fit  = {0,0,0,0,0,0,0};
+
+        if (hMuon[i]->GetEntries() > 300){
+            //float m = hMuon[i]->GetMean();
+            //float s = hMuon[i]->GetRMS();
+            //hMuon[i]->Fit("gaus", "Q", "", m - 2*s, m + 2*s);
+            mu_fit = calc_res(hMuon[i]); //get fit parameters
+            if (mu_fit.sigma > 0 && mu_fit.mean > 0){ //skip if fit failed
+                pdg_to_p[13].push_back(p_bin_center);
+                pdg_to_mean[13].push_back(mu_fit.mean);
+                pdg_to_sigma[13].push_back(mu_fit.sigma);
+                pdg_to_res[13].push_back(mu_fit.res);
+                pdg_to_p_err[13].push_back(p_bin_err);
+                pdg_to_mean_err[13].push_back(mu_fit.mean_err);
+                pdg_to_sigma_err[13].push_back(mu_fit.sigma_err);
+                pdg_to_res_err[13].push_back(mu_fit.res_err);
+                mu_p.push_back(p_bin_center);
+                mu_mean.push_back(mu_fit.mean);
+                mu_sigma.push_back(mu_fit.sigma);
+                mu_res.push_back(mu_fit.res);
+                mu_p_err.push_back(p_bin_err);
+                mu_mean_err.push_back(mu_fit.mean_err);
+                mu_sigma_err.push_back(mu_fit.sigma_err);
+                mu_res_err.push_back(mu_fit.res_err);
+            }
+        }
+        if (hPion[i]->GetEntries() > 300){
+            //float m = hPion[i]->GetMean();
+            //float s = hPion[i]->GetRMS();
+            //hPion[i]->Fit("gaus", "Q", "", m - 2*s, m + 2*s);
+            pi_fit = calc_res(hPion[i]); //get fit parameters
+            if (pi_fit.sigma > 0 && pi_fit.mean > 0){//skip if fit failed
+                pdg_to_p[211].push_back(p_bin_center);
+                pdg_to_mean[211].push_back(pi_fit.mean);
+                pdg_to_sigma[211].push_back(pi_fit.sigma);
+                pdg_to_res[211].push_back(pi_fit.res);
+                pdg_to_p_err[211].push_back(p_bin_err);
+                pdg_to_mean_err[211].push_back(pi_fit.mean_err);
+                pdg_to_sigma_err[211].push_back(pi_fit.sigma_err);
+                pdg_to_res_err[211].push_back(pi_fit.res_err);
+                pi_p.push_back(p_bin_center);
+                pi_mean.push_back(pi_fit.mean);
+                pi_sigma.push_back(pi_fit.sigma);
+                pi_res.push_back(pi_fit.res);
+                pi_p_err.push_back(p_bin_err);
+                pi_mean_err.push_back(pi_fit.mean_err);
+                pi_sigma_err.push_back(pi_fit.sigma_err);
+                pi_res_err.push_back(pi_fit.res_err);
+            }
+        }
+        if (hProton[i]->GetEntries() > 300){
+            //float m = hProton[i]->GetMean();
+            //float s = hProton[i]->GetRMS();
+            //hProton[i]->Fit("gaus", "Q", "", m - 2*s, m + 2*s);
+            p_fit = calc_res(hProton[i]); //get fit parameters
+            if (p_fit.sigma > 0 && p_fit.mean > 0) { //skip if fit failed
+                pdg_to_p[2212].push_back(p_bin_center);
+                pdg_to_mean[2212].push_back(p_fit.mean);
+                pdg_to_sigma[2212].push_back(p_fit.sigma);
+                pdg_to_res[2212].push_back(p_fit.res);
+                pdg_to_p_err[2212].push_back(p_bin_err);
+                pdg_to_mean_err[2212].push_back(p_fit.mean_err);
+                pdg_to_sigma_err[2212].push_back(p_fit.sigma_err);
+                pdg_to_res_err[2212].push_back(p_fit.res_err);
+                pr_p.push_back(p_bin_center);
+                pr_mean.push_back(p_fit.mean);
+                pr_sigma.push_back(p_fit.sigma);
+                pr_res.push_back(p_fit.res);
+                pr_p_err.push_back(p_bin_err);
+                pr_mean_err.push_back(p_fit.mean_err);
+                pr_sigma_err.push_back(p_fit.sigma_err);
+                pr_res_err.push_back(p_fit.res_err);
+            }
+        }
+
+        //muon pion separation power
+        if (hMuon[i]->GetEntries() > 300 && hPion[i]->GetEntries() > 300){ //only do this if onw of the particles has enough stats
+            if((mu_fit.sigma > 0 && mu_fit.mean > 0) && (pi_fit.sigma > 0 && pi_fit.mean > 0)){// && (frac_err_mu < 0.5) && (frac_err_pi < 0.5) && (frac_err_sigma_mu < 0.5) && (frac_err_sigma_pi < 0.5)){ //skip if either fail
+                float denominator = std::sqrt(mu_fit.sigma * mu_fit.sigma + pi_fit.sigma * pi_fit.sigma);
+                float numerator = std::abs(mu_fit.mean - pi_fit.mean);
+                if (denominator != 0){ //avoid division by 0
+                    float sep_pow = numerator / denominator;
+                    
+                    float dS_dmu1 = 1/denominator;
+                    float dS_dmu2 = -1/denominator;
+                    float dS_dsigma1 = -numerator * mu_fit.sigma / (denominator*denominator*denominator);
+                    float dS_dsigma2 = -numerator * pi_fit.sigma / (denominator*denominator*denominator);
+                    float sep_pow_err = std::sqrt(dS_dmu1*dS_dmu1 * mu_fit.mean_err*mu_fit.mean_err 
+                        + dS_dmu2*dS_dmu2 * pi_fit.mean_err*pi_fit.mean_err 
+                        + dS_dsigma1*dS_dsigma1 * mu_fit.sigma_err*mu_fit.sigma_err 
+                        + dS_dsigma2*dS_dsigma2 * pi_fit.sigma_err*pi_fit.sigma_err
+                        + 2 * dS_dmu1 * dS_dsigma1 * mu_fit.cov_mean_sigma
+                        + 2 * dS_dmu2 * dS_dsigma2 * pi_fit.cov_mean_sigma);
+                        
+                    //float sep_pow_err = 0;
+                    muon_pion_sp.push_back(sep_pow);
+                    mom_vec1.push_back(p_bin_center);
+                    mom_vec1_err.push_back(p_bin_err);
+                    muon_pion_sp_err.push_back(sep_pow_err);
+                }
+            }
+        }
+
+        //muon proton separation power
+        if (hMuon[i]->GetEntries() > 300 && hProton[i]->GetEntries() > 300){ //only do this if onw of the particles has enough stats
+            if((mu_fit.sigma > 0 && mu_fit.mean > 0) && (p_fit.sigma > 0 && p_fit.mean > 0)){// && (frac_err_mu < 0.5) && (frac_err_p < 0.5) && (frac_err_sigma_mu < 0.5) && (frac_err_sigma_p < 0.5)){ //skip if either fail
+                float denominator = std::sqrt(mu_fit.sigma * mu_fit.sigma + p_fit.sigma * p_fit.sigma);
+                float numerator = std::abs(mu_fit.mean - p_fit.mean);
+                if (denominator != 0) { //avoid division by 0
+                    float sep_pow = numerator / denominator;
+                    
+                    float dS_dmu1 = 1/denominator;
+                    float dS_dmu2 = -1/denominator;
+                    float dS_dsigma1 = -numerator * mu_fit.sigma / (denominator*denominator*denominator);
+                    float dS_dsigma2 = -numerator * p_fit.sigma / (denominator*denominator*denominator);
+                    float sep_pow_err = std::sqrt(dS_dmu1*dS_dmu1 * mu_fit.mean_err*mu_fit.mean_err 
+                        + dS_dmu2*dS_dmu2 * p_fit.mean_err*p_fit.mean_err 
+                        + dS_dsigma1*dS_dsigma1 * mu_fit.sigma_err*mu_fit.sigma_err 
+                        + dS_dsigma2*dS_dsigma2 * p_fit.sigma_err*p_fit.sigma_err
+                        + 2 * dS_dmu1 * dS_dsigma1 * mu_fit.cov_mean_sigma
+                        + 2 * dS_dmu2 * dS_dsigma2 * p_fit.cov_mean_sigma);
+                        
+                    //float sep_pow_err = 0;
+                    muon_proton_sp.push_back(sep_pow);
+                    mom_vec2.push_back(p_bin_center);
+                    mom_vec2_err.push_back(p_bin_err);
+                    muon_proton_sp_err.push_back(sep_pow_err);
+                }
+            }
+        }
+
+        //pion proton separation power
+        if (hPion[i]->GetEntries() > 300 && hProton[i]->GetEntries() > 300){ //only do this if onw of the particles has enough stats
+            if((pi_fit.sigma > 0 && pi_fit.mean > 0) && (p_fit.sigma > 0 && p_fit.mean > 0)){// && (frac_err_pi < 0.5) && (frac_err_p < 0.5) && (frac_err_sigma_pi < 0.5) && (frac_err_sigma_p < 0.5)){ //skip if either fail
+                float denominator = std::sqrt(pi_fit.sigma * pi_fit.sigma + p_fit.sigma * p_fit.sigma);
+                float numerator = std::abs(pi_fit.mean - p_fit.mean);
+                if (denominator != 0){ //avoid division by 0
+                    float sep_pow = numerator / denominator;
+                    
+                    float dS_dmu1 = 1/denominator;
+                    float dS_dmu2 = -1/denominator;
+                    float dS_dsigma1 = -numerator * p_fit.sigma / (denominator*denominator*denominator);
+                    float dS_dsigma2 = -numerator * pi_fit.sigma / (denominator*denominator*denominator);
+                    float sep_pow_err = std::sqrt(dS_dmu1*dS_dmu1 * p_fit.mean_err*p_fit.mean_err 
+                        + dS_dmu2*dS_dmu2 * pi_fit.mean_err*pi_fit.mean_err 
+                        + dS_dsigma1*dS_dsigma1 * p_fit.sigma_err*p_fit.sigma_err 
+                        + dS_dsigma2*dS_dsigma2 * pi_fit.sigma_err*pi_fit.sigma_err
+                        + 2 * dS_dmu1 * dS_dsigma1 * p_fit.cov_mean_sigma
+                        + 2 * dS_dmu2 * dS_dsigma2 * pi_fit.cov_mean_sigma);
+                        
+                    //float sep_pow_err = 0;
+                    pion_proton_sp.push_back(sep_pow);
+                    mom_vec3.push_back(p_bin_center);
+                    mom_vec3_err.push_back(p_bin_err);
+                    pion_proton_sp_err.push_back(sep_pow_err);
+                }
+            }
+        }
+        
+    }
+
+    /*
+    //loop over track length bins to get gaussian fit, variables and separation power
+    for (size_t i = 0; i < nLBins; ++i){
+
+        float l_bin_center = std::pow(10, l_bin_min + (i + 0.5) * (l_bin_max - l_bin_min) / nLBins);
+        float l_bin_low = std::pow(10, l_bin_min + i * (l_bin_max - l_bin_min) / nLBins);
+        float l_bin_high = std::pow(10, l_bin_min + (i + 1) * (l_bin_max - l_bin_min) / nLBins);
+        float l_bin_err = (l_bin_high - l_bin_low) / 2.0;
+        //float l_bin_center = l_min + (i + 0.5) * l_interval;
+        //float l_bin_err = l_interval;
+
+        fit_results mu_fit = {0,0,0,0,0,0,0};
+        fit_results pi_fit = {0,0,0,0,0,0,0};
+        fit_results p_fit  = {0,0,0,0,0,0,0};
+
+        if (hMuonL[i]->GetEntries() > 300){
+            //float m = hMuon[i]->GetMean();
+            //float s = hMuon[i]->GetRMS();
+            //hMuon[i]->Fit("gaus", "Q", "", m - 2*s, m + 2*s);
+            mu_fit = calc_res_land(hMuonL[i]); //get fit parameters
+            if (mu_fit.sigma > 0 && mu_fit.mean > 0){ //skip if fit failed
+                pdg_to_l[13].push_back(l_bin_center);
+                pdg_to_mean_l[13].push_back(mu_fit.mean);
+                pdg_to_sigma_l[13].push_back(mu_fit.sigma);
+                pdg_to_res_l[13].push_back(mu_fit.res);
+                pdg_to_l_err[13].push_back(l_bin_err);
+                pdg_to_mean_l_err[13].push_back(mu_fit.mean_err);
+                pdg_to_sigma_l_err[13].push_back(mu_fit.sigma_err);
+                pdg_to_res_l_err[13].push_back(mu_fit.res_err);
+                mu_l.push_back(l_bin_center);
+                mu_mean_l.push_back(mu_fit.mean);
+                mu_sigma_l.push_back(mu_fit.sigma);
+                mu_res_l.push_back(mu_fit.res);
+                mu_l_err.push_back(l_bin_err);
+                mu_mean_l_err.push_back(mu_fit.mean_err);
+                mu_sigma_l_err.push_back(mu_fit.sigma_err);
+                mu_res_l_err.push_back(mu_fit.res_err);
+            }
+        }
+        if (hPionL[i]->GetEntries() > 300){
+            //float m = hPion[i]->GetMean();
+            //float s = hPion[i]->GetRMS();
+            //hPion[i]->Fit("gaus", "Q", "", m - 2*s, m + 2*s);
+            pi_fit = calc_res_land(hPionL[i]); //get fit parameters
+            if (pi_fit.sigma > 0 && pi_fit.mean > 0){//skip if fit failed
+                pdg_to_l[211].push_back(l_bin_center);
+                pdg_to_mean_l[211].push_back(pi_fit.mean);
+                pdg_to_sigma_l[211].push_back(pi_fit.sigma);
+                pdg_to_res_l[211].push_back(pi_fit.res);
+                pdg_to_l_err[211].push_back(l_bin_err);
+                pdg_to_mean_l_err[211].push_back(pi_fit.mean_err);
+                pdg_to_sigma_l_err[211].push_back(pi_fit.sigma_err);
+                pdg_to_res_l_err[211].push_back(pi_fit.res_err);
+                pi_l.push_back(l_bin_center);
+                pi_mean_l.push_back(pi_fit.mean);
+                pi_sigma_l.push_back(pi_fit.sigma);
+                pi_res_l.push_back(pi_fit.res);
+                pi_l_err.push_back(l_bin_err);
+                pi_mean_l_err.push_back(pi_fit.mean_err);
+                pi_sigma_l_err.push_back(pi_fit.sigma_err);
+                pi_res_l_err.push_back(pi_fit.res_err);
+            }
+        }
+        if (hProtonL[i]->GetEntries() > 300){
+            //float m = hProton[i]->GetMean();
+            //float s = hProton[i]->GetRMS();
+            //hProton[i]->Fit("gaus", "Q", "", m - 2*s, m + 2*s);
+            p_fit = calc_res_land(hProtonL[i]); //get fit parameters
+            if (p_fit.sigma > 0 && p_fit.mean > 0) { //skip if fit failed
+                pdg_to_l[2212].push_back(l_bin_center);
+                pdg_to_mean_l[2212].push_back(p_fit.mean);
+                pdg_to_sigma_l[2212].push_back(p_fit.sigma);
+                pdg_to_res_l[2212].push_back(p_fit.res);
+                pdg_to_l_err[2212].push_back(l_bin_err);
+                pdg_to_mean_l_err[2212].push_back(p_fit.mean_err);
+                pdg_to_sigma_l_err[2212].push_back(p_fit.sigma_err);
+                pdg_to_res_l_err[2212].push_back(p_fit.res_err);
+                pr_l.push_back(l_bin_center);
+                pr_mean_l.push_back(p_fit.mean);
+                pr_sigma_l.push_back(p_fit.sigma);
+                pr_res_l.push_back(p_fit.res);
+                pr_l_err.push_back(l_bin_err);
+                pr_mean_l_err.push_back(p_fit.mean_err);
+                pr_sigma_l_err.push_back(p_fit.sigma_err);
+                pr_res_l_err.push_back(p_fit.res_err);
+            }
+        }
+
+        //muon pion separation power
+        if (hMuonL[i]->GetEntries() > 300 && hPionL[i]->GetEntries() > 300){ //only do this if onw of the particles has enough stats
+            if((mu_fit.sigma > 0 && mu_fit.mean > 0) && (pi_fit.sigma > 0 && pi_fit.mean > 0)){// && (frac_err_mu < 0.5) && (frac_err_pi < 0.5) && (frac_err_sigma_mu < 0.5) && (frac_err_sigma_pi < 0.5)){ //skip if either fail
+                float denominator = std::sqrt(mu_fit.sigma * mu_fit.sigma + pi_fit.sigma * pi_fit.sigma);
+                float numerator = std::abs(mu_fit.mean - pi_fit.mean);
+                if (denominator != 0){ //avoid division by 0
+                    float sep_pow = numerator / denominator;
+                    
+                    float dS_dmu1 = 1/denominator;
+                    float dS_dmu2 = -1/denominator;
+                    float dS_dsigma1 = -numerator * mu_fit.sigma / (denominator*denominator*denominator);
+                    float dS_dsigma2 = -numerator * pi_fit.sigma / (denominator*denominator*denominator);
+                    float sep_pow_err = std::sqrt(dS_dmu1*dS_dmu1 * mu_fit.mean_err*mu_fit.mean_err 
+                        + dS_dmu2*dS_dmu2 * pi_fit.mean_err*pi_fit.mean_err 
+                        + dS_dsigma1*dS_dsigma1 * mu_fit.sigma_err*mu_fit.sigma_err 
+                        + dS_dsigma2*dS_dsigma2 * pi_fit.sigma_err*pi_fit.sigma_err
+                        + 2 * dS_dmu1 * dS_dsigma1 * mu_fit.cov_mean_sigma
+                        + 2 * dS_dmu2 * dS_dsigma2 * pi_fit.cov_mean_sigma);
+                        
+                    //float sep_pow_err = 0;
+                    muon_pion_sp_l.push_back(sep_pow);
+                    l_vec1.push_back(l_bin_center);
+                    l_vec1_err.push_back(l_bin_err);
+                    muon_pion_sp_l_err.push_back(sep_pow_err);
+                }
+            }
+        }
+
+        //muon proton separation power
+        if (hMuonL[i]->GetEntries() > 300 && hProtonL[i]->GetEntries() > 300){ //only do this if onw of the particles has enough stats
+            if((mu_fit.sigma > 0 && mu_fit.mean > 0) && (p_fit.sigma > 0 && p_fit.mean > 0)){// && (frac_err_mu < 0.5) && (frac_err_p < 0.5) && (frac_err_sigma_mu < 0.5) && (frac_err_sigma_p < 0.5)){ //skip if either fail
+                float denominator = std::sqrt(mu_fit.sigma * mu_fit.sigma + p_fit.sigma * p_fit.sigma);
+                float numerator = std::abs(mu_fit.mean - p_fit.mean);
+                if (denominator != 0) { //avoid division by 0
+                    float sep_pow = numerator / denominator;
+                    
+                    float dS_dmu1 = 1/denominator;
+                    float dS_dmu2 = -1/denominator;
+                    float dS_dsigma1 = -numerator * mu_fit.sigma / (denominator*denominator*denominator);
+                    float dS_dsigma2 = -numerator * p_fit.sigma / (denominator*denominator*denominator);
+                    float sep_pow_err = std::sqrt(dS_dmu1*dS_dmu1 * mu_fit.mean_err*mu_fit.mean_err 
+                        + dS_dmu2*dS_dmu2 * p_fit.mean_err*p_fit.mean_err 
+                        + dS_dsigma1*dS_dsigma1 * mu_fit.sigma_err*mu_fit.sigma_err 
+                        + dS_dsigma2*dS_dsigma2 * p_fit.sigma_err*p_fit.sigma_err
+                        + 2 * dS_dmu1 * dS_dsigma1 * mu_fit.cov_mean_sigma
+                        + 2 * dS_dmu2 * dS_dsigma2 * p_fit.cov_mean_sigma);
+                        
+                    //float sep_pow_err = 0;
+                    muon_proton_sp_l.push_back(sep_pow);
+                    l_vec2.push_back(l_bin_center);
+                    l_vec2_err.push_back(l_bin_err);
+                    muon_proton_sp_l_err.push_back(sep_pow_err);
+                }
+            }
+        }
+
+        //pion proton separation power
+        if (hPionL[i]->GetEntries() > 300 && hProtonL[i]->GetEntries() > 300){ //only do this if onw of the particles has enough stats
+            if((pi_fit.sigma > 0 && pi_fit.mean > 0) && (p_fit.sigma > 0 && p_fit.mean > 0)){// && (frac_err_pi < 0.5) && (frac_err_p < 0.5) && (frac_err_sigma_pi < 0.5) && (frac_err_sigma_p < 0.5)){ //skip if either fail
+                float denominator = std::sqrt(pi_fit.sigma * pi_fit.sigma + p_fit.sigma * p_fit.sigma);
+                float numerator = std::abs(pi_fit.mean - p_fit.mean);
+                if (denominator != 0){ //avoid division by 0
+                    float sep_pow = numerator / denominator;
+                    
+                    float dS_dmu1 = 1/denominator;
+                    float dS_dmu2 = -1/denominator;
+                    float dS_dsigma1 = -numerator * p_fit.sigma / (denominator*denominator*denominator);
+                    float dS_dsigma2 = -numerator * pi_fit.sigma / (denominator*denominator*denominator);
+                    float sep_pow_err = std::sqrt(dS_dmu1*dS_dmu1 * p_fit.mean_err*p_fit.mean_err 
+                        + dS_dmu2*dS_dmu2 * pi_fit.mean_err*pi_fit.mean_err 
+                        + dS_dsigma1*dS_dsigma1 * p_fit.sigma_err*p_fit.sigma_err 
+                        + dS_dsigma2*dS_dsigma2 * pi_fit.sigma_err*pi_fit.sigma_err
+                        + 2 * dS_dmu1 * dS_dsigma1 * p_fit.cov_mean_sigma
+                        + 2 * dS_dmu2 * dS_dsigma2 * pi_fit.cov_mean_sigma);
+                        
+                    //float sep_pow_err = 0;
+                    pion_proton_sp_l.push_back(sep_pow);
+                    l_vec3.push_back(l_bin_center);
+                    l_vec3_err.push_back(l_bin_err);
+                    pion_proton_sp_l_err.push_back(sep_pow_err);
+                }
+            }
+        }
+        
+    }*/
+
+    //draw example histograms
+    for(size_t i = 0; i < nPBins; i++){
+        if (sampleName.find("CDR") == std::string::npos) continue; //only draw example histograms for CDR samples
+        std::string p_bin_range = std::to_string(i);
+        if (hMuon[i]->GetEntries() > 50 && hMuon[i]->Integral() > 0) draw_gaussian_fit(hMuon[i], "Muon dE/dx", ("gaussiandEdx/" + sampleName + "_muon_dEdx_" + p_bin_range + "_GaussianFit.png").c_str());
+        if (hPion[i]->GetEntries() > 50 && hPion[i]->Integral() > 0) draw_gaussian_fit(hPion[i], "Pion dE/dx", ("gaussiandEdx/" + sampleName + "_pion_dEdx_" + p_bin_range + "_GaussianFit.png").c_str());
+        if (hProton[i]->GetEntries() > 50 && hProton[i]->Integral() > 0) draw_gaussian_fit(hProton[i], "Proton dE/dx", ("gaussiandEdx/" + sampleName + "_proton_dEdx_" + p_bin_range + "_GaussianFit.png").c_str());
+    }
+    /*
+    for(size_t i = 0; i < nLBins; i++){
+        if (sampleName.find("CDR") == std::string::npos) continue; //only draw example histograms for CDR samples
+        std::string l_bin_range = std::to_string(i);
+        if (hMuonL[i]->GetEntries() > 300 && hMuonL[i]->Integral() > 0) draw_landau_fit(hMuonL[i], "Muon dE/dx", ("gaussiandEdx/" + sampleName + "_track_muon_dEdx_" + l_bin_range + "_GaussianFit.png").c_str());
+        if (hPionL[i]->GetEntries() > 300 && hPionL[i]->Integral() > 0) draw_landau_fit(hPionL[i], "Pion dE/dx", ("gaussiandEdx/" + sampleName + "_track_pion_dEdx_" + l_bin_range + "_GaussianFit.png").c_str());
+        if (hProtonL[i]->GetEntries() > 300 && hProtonL[i]->Integral() > 0) draw_landau_fit(hProtonL[i], "Proton dE/dx", ("gaussiandEdx/" + sampleName + "_track_proton_dEdx_" + l_bin_range + "_GaussianFit.png").c_str());
+    }*/
+
+
+    /*
+    for (size_t i = 0; i < nPBins; i++){
+        float p_bin_low = std::pow(10, p_bin_min + i * (p_bin_max - p_bin_min) / nPBins);
+        float p_bin_high = std::pow(10, p_bin_min + (i + 1) * (p_bin_max - p_bin_min) / nPBins);
+        ent[i] = hMuon[i]->GetEntries() + hPion[i]->GetEntries() + hProton[i]->GetEntries();
+        std::cout << "Number of entries between " << p_bin_low << " MeV and " << p_bin_high << " MeV: " << ent[i] << std::endl;
+    }
+
+    //get mean value
+    hP_1m->Write();
+    std::cout << "Mean momentum for ~1 m tracks = " << hP_1m->GetMean() << " MeV/c" << std::endl;
+    */
+    //hH_1m_mu->Write();
+    //std::cout << "Mean number of hits for ~1 m muon tracks = " << hH_1m_mu->GetMean() << std::endl;
+    
+    //make plots
+    draw_graphs(pdg_to_p, pdg_to_mean, pdg_to_p_err, pdg_to_mean_err, ("outputs_sepPow/" + sampleName + "_mean_dEdx_fit.png").c_str(), "p vs dE/dx", "Momentum [MeV/c]", "dE/dx [keV/cm]", 6e3, 35);
+    draw_graphs(pdg_to_p, pdg_to_sigma, pdg_to_p_err, pdg_to_sigma_err, ("outputs_sepPow/" + sampleName + "_sigma_dEdx_fit.png").c_str(), "p vs sigma of dE/dx fit", "Momentum [MeV/c]", "Sigma of dE/dx [keV/cm]", 6e3, 10);
+    draw_graphs(pdg_to_p, pdg_to_res, pdg_to_p_err, pdg_to_res_err, ("outputs_sepPow/" + sampleName + "_res_dEdx_fit.png").c_str(), "p vs resolution of dE/dx fit", "Momentum [MeV/c]", "Resolution of dE/dx", 6e3, 0.5);
+    
+    draw_graphs(pdg_to_l, pdg_to_mean_l, pdg_to_l_err, pdg_to_mean_l_err, ("outputs_sepPow/" + sampleName + "_track_mean_dEdx_fit.png").c_str(), "l vs dE/dx", "Track Length [cm]", "dE/dx [keV/cm]", 6e3, 35);
+    draw_graphs(pdg_to_l, pdg_to_sigma_l, pdg_to_l_err, pdg_to_sigma_l_err, ("outputs_sepPow/" + sampleName + "_track_sigma_dEdx_fit.png").c_str(), "l vs sigma of dE/dx fit", "Track Length [cm]", "Sigma of dE/dx [keV/cm]", 6e3, 10);
+    draw_graphs(pdg_to_l, pdg_to_res_l, pdg_to_l_err, pdg_to_res_l_err, ("outputs_sepPow/" + sampleName + "_track_res_dEdx_fit.png").c_str(), "l vs resolution of dE/dx fit", "Track Length [cm]", "Resolution of dE/dx", 6e3, 0.5);
+    
+
+    //draw separation power graphs
+    if (muon_pion_sp.size() > 0) {
+        draw_sepPow(mom_vec1, muon_pion_sp, muon_pion_sp_err, mom_vec1_err, ("outputs_sepPow/" + sampleName + "_sep_pow_muon_pion.png").c_str(), "Muon-Pion Separation Power", "Momentum [MeV/c]", "Separation Power", 6e3, 5, false);
+        //draw_sepPow(mom_vec1, muon_pion_sp, muon_pion_sp_err, mom_vec1_err, ("outputs_sepPow/" + sampleName + "_sep_pow_muon_pion_zoomed.png").c_str(), "Muon-Pion Separation Power", "Momentum [MeV/c]", "Separation Power", 6e3, 5, true);
+    }
+    if (muon_proton_sp.size() > 0) {
+        draw_sepPow(mom_vec2, muon_proton_sp, muon_proton_sp_err, mom_vec2_err, ("outputs_sepPow/" + sampleName + "_sep_pow_muon_proton.png").c_str(), "Muon-Proton Separation Power", "Momentum [MeV/c]", "Separation Power", 6e3, 5, false);
+        //draw_sepPow(mom_vec2, muon_proton_sp, muon_proton_sp_err, mom_vec2_err, ("outputs_sepPow/" + sampleName + "_sep_pow_muon_proton_zoomed.png").c_str(), "Muon-Proton Separation Power", "Momentum [MeV/c]", "Separation Power", 6e3, 10, true);
+    }
+    if (pion_proton_sp.size() > 0) {
+        draw_sepPow(mom_vec3, pion_proton_sp, pion_proton_sp_err, mom_vec3_err, ("outputs_sepPow/" + sampleName + "_sep_pow_pion_proton.png").c_str(), "Pion-Proton Separation Power", "Momentum [MeV/c]", "Separation Power", 6e3, 5, false);
+        //draw_sepPow(mom_vec3, pion_proton_sp, pion_proton_sp_err, mom_vec3_err, ("outputs_sepPow/" + sampleName + "_sep_pow_pion_proton_zoomed.png").c_str(), "Pion-Proton Separation Power", "Momentum [MeV/c]", "Separation Power", 6e3, 10, true);
+    }
+
+    if (muon_pion_sp.size() > 0 || muon_proton_sp.size() > 0 || pion_proton_sp.size() > 0){
+        draw_all_sepPow(mom_vec1, muon_pion_sp, muon_pion_sp_err, mom_vec1_err, mom_vec2, muon_proton_sp, muon_proton_sp_err, mom_vec2_err, mom_vec3, pion_proton_sp, pion_proton_sp_err, mom_vec3_err, ("outputs_sepPow/" + sampleName + "_sep_pow_all.png").c_str(), "dE/dx Separation Power", "Momentum [MeV/c]", "Separation Power", true);
+        draw_all_sepPow(mom_vec1, muon_pion_sp, muon_pion_sp_err, mom_vec1_err, mom_vec2, muon_proton_sp, muon_proton_sp_err, mom_vec2_err, mom_vec3, pion_proton_sp, pion_proton_sp_err, mom_vec3_err, ("outputs_sepPow/" + sampleName + "_sep_pow_mup_pip.png").c_str(), "dE/dx Separation Power", "Momentum [MeV/c]", "Separation Power", false);
+    }
+
+    /*
+    if (muon_pion_sp_l.size() > 0) {
+        draw_sepPow(l_vec1, muon_pion_sp_l, muon_pion_sp_l_err, l_vec1_err, ("outputs_sepPow/" + sampleName + "_track_sep_pow_muon_pion.png").c_str(), "Muon-Pion Separation Power", "Track Length [cm]", "Separation Power", 6e3, 5, false);
+        //draw_sepPow(mom_vec1, muon_pion_sp, muon_pion_sp_err, mom_vec1_err, ("outputs_sepPow/" + sampleName + "_sep_pow_muon_pion_zoomed.png").c_str(), "Muon-Pion Separation Power", "Momentum [MeV]", "Separation Power", 6e3, 5, true);
+    }
+    if (muon_proton_sp_l.size() > 0) {
+        draw_sepPow(l_vec2, muon_proton_sp_l, muon_proton_sp_l_err, l_vec2_err, ("outputs_sepPow/" + sampleName + "_track_sep_pow_muon_proton.png").c_str(), "Muon-Proton Separation Power", "Track Length [cm]", "Separation Power", 6e3, 5, false);
+        //draw_sepPow(mom_vec2, muon_proton_sp, muon_proton_sp_err, mom_vec2_err, ("outputs_sepPow/" + sampleName + "_sep_pow_muon_proton_zoomed.png").c_str(), "Muon-Proton Separation Power", "Momentum [MeV]", "Separation Power", 6e3, 10, true);
+    }
+    if (pion_proton_sp_l.size() > 0) {
+        draw_sepPow(l_vec3, pion_proton_sp_l, pion_proton_sp_l_err, l_vec3_err, ("outputs_sepPow/" + sampleName + "_track_sep_pow_pion_proton.png").c_str(), "Pion-Proton Separation Power", "Track Length [cm]", "Separation Power", 6e3, 5, false);
+        //draw_sepPow(mom_vec3, pion_proton_sp, pion_proton_sp_err, mom_vec3_err, ("outputs_sepPow/" + sampleName + "_sep_pow_pion_proton_zoomed.png").c_str(), "Pion-Proton Separation Power", "Momentum [MeV]", "Separation Power", 6e3, 10, true);
+    }
+
+    if (muon_pion_sp_l.size() > 0 || muon_proton_sp_l.size() > 0 || pion_proton_sp_l.size() > 0){
+        draw_all_sepPow(l_vec1, muon_pion_sp_l, muon_pion_sp_l_err, l_vec1_err, l_vec2, muon_proton_sp_l, muon_proton_sp_l_err, l_vec2_err, l_vec3, pion_proton_sp_l, pion_proton_sp_l_err, l_vec3_err, ("outputs_sepPow/" + sampleName + "_track_sep_pow_all.png").c_str(), "dE/dx Separation Power", "Track Length [cm]", "Separation Power");
+    }*/
+
+    //write separation power to text file
+    txtOutputFile << "Separation Power Values:\n\n";
+
+    txtOutputFile << std::left
+                << std::setw(15) << "Particle Pair"
+                << std::setw(15) << "Momentum (MeV)"
+                << "Separation Power\n";
+    
+    txtOutputFile << std::string(65, '-') << '\n';
+    txtOutputFile << std::fixed << std::setprecision(3);
+
+    //write muon-pion separation power
+    for (size_t i = 0; i < mom_vec1.size(); ++i) {
+        txtOutputFile << std::setw(15) << "Muon-Pion"
+            << std::setw(15) << mom_vec1[i]
+            << std::setw(20) << muon_pion_sp[i]<< " ± " << muon_pion_sp_err[i]
+            << '\n';
+    }
+
+    //write muon-proton separation power
+    for (size_t i = 0; i < mom_vec2.size(); ++i) {
+        txtOutputFile << std::setw(15) << "Muon-Proton"
+            << std::setw(15) << mom_vec2[i]
+            << std::setw(20) << muon_proton_sp[i]<< " ± " << muon_proton_sp_err[i]
+            << '\n';
+    }
+
+    //write pion-proton separation power
+    for (size_t i = 0; i < mom_vec3.size(); ++i) {
+        txtOutputFile << std::setw(15) << "Pion-Proton"
+            << std::setw(15) << mom_vec3[i]
+            << std::setw(20) << pion_proton_sp[i]<< " ± " << pion_proton_sp_err[i]
+            << '\n';
+    }
+    txtOutputFile.close();
+
+
+    // Write output tree and close
+    outputTree->Fill();
+    outputFile->cd();
+    for (int i = 0; i < nPBins; ++i){
+        hMuon[i]->Write();
+        hPion[i]->Write();
+        hProton[i]->Write();
+    }
+    /*
+    for (int i = 0; i < nLBins; ++i){
+        hMuonL[i]->Write();
+        hPionL[i]->Write();
+        hProtonL[i]->Write();
+    }*/
+    //hMuon->Write();
+    //hPion->Write();
+    //hProton->Write();
+    outputTree->Write();
+    outputFile->Close();
+
+}
