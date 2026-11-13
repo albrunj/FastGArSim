@@ -473,12 +473,12 @@ void draw_all_sepPow(std::vector<Float_t>& mupi_mom_vec, std::vector<Float_t>& m
     gr_err1->SetLineColor(kBlue);
 
     TGraphErrors* gr_err2 = new TGraphErrors(mup_x.size(), mup_x.data(), mup_y.data(), mup_x_err.data(), mup_y_err.data());
-    gr_err2->SetMarkerStyle(20);
+    gr_err2->SetMarkerStyle(22);
     gr_err2->SetMarkerColor(kGreen);
     gr_err2->SetLineColor(kGreen);
 
     TGraphErrors* gr_err3 = new TGraphErrors(pip_x.size(), pip_x.data(), pip_y.data(), pip_x_err.data(), pip_y_err.data());
-    gr_err3->SetMarkerStyle(20);
+    gr_err3->SetMarkerStyle(25);
     gr_err3->SetMarkerColor(kOrange);
     gr_err3->SetLineColor(kOrange);
     

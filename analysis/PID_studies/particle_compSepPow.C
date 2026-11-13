@@ -1066,38 +1066,43 @@ void draw_percentages_line(std::vector<std::pair<float, float>> perc2, std::vect
 
     TGraphErrors* gr2 = new TGraphErrors(clean_x2.size(), clean_x2.data(), clean_y2.data(), err_x2.data(), err_y2.data());
     gr2->SetMarkerStyle(20);
+    gr2->SetLineStyle(7);
     gr2->SetMarkerColor(kBlue);
     gr2->SetLineColor(kBlue);
     gr2->SetLineWidth(5);
-    gr2->Draw("L SAME");
+    gr2->Draw("PL SAME");
 
     TGraphErrors* gr3 = new TGraphErrors(clean_x3.size(), clean_x3.data(), clean_y3.data(), err_x3.data(), err_y3.data());
-    gr3->SetMarkerStyle(20);
+    gr3->SetMarkerStyle(22);
+    gr3->SetLineStyle(9);
     gr3->SetMarkerColor(kGreen);
     gr3->SetLineColor(kGreen);
     gr3->SetLineWidth(5);
-    gr3->Draw("L SAME");
+    gr3->Draw("PL SAME");
 
     TGraphErrors* gr4 = new TGraphErrors(clean_x4.size(), clean_x4.data(), clean_y4.data(), err_x4.data(), err_y4.data());
-    gr4->SetMarkerStyle(20);
+    gr4->SetMarkerStyle(21);
+    gr4->SetLineStyle(6);
     gr4->SetMarkerColor(kOrange);
     gr4->SetLineColor(kOrange);
     gr4->SetLineWidth(5);
-    gr4->Draw("L SAME");
+    gr4->Draw("PL SAME");
 
     TGraphErrors* gr5 = new TGraphErrors(clean_x5.size(), clean_x5.data(), clean_y5.data(), err_x5.data(), err_y5.data());
-    gr5->SetMarkerStyle(20);
+    gr5->SetMarkerStyle(24);
+    gr5->SetLineStyle(1);
     gr5->SetMarkerColor(kMagenta);
     gr5->SetLineColor(kMagenta);
     gr5->SetLineWidth(5);
-    gr5->Draw("L SAME");
+    gr5->Draw("PL SAME");
 
     TGraphErrors* gr6 = new TGraphErrors(clean_x6.size(), clean_x6.data(), clean_y6.data(), err_x6.data(), err_y6.data());
-    gr6->SetMarkerStyle(20);
+    gr6->SetMarkerStyle(27);
+    gr6->SetLineStyle(3);
     gr6->SetMarkerColor(kCyan-5);
     gr6->SetLineColor(kCyan-5);
     gr6->SetLineWidth(5);
-    gr6->Draw("L SAME");
+    gr6->Draw("PL SAME");
 
     TLine* CDR = new TLine(0.8*x_min,0, 1.2*x_max, 0);
     CDR->SetLineStyle(2);
